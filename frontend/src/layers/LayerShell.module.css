@@ -1,0 +1,34 @@
+/* LayerShell.module.css */
+.layer {
+  position: absolute;
+  inset: 0;
+  transition:
+    opacity 320ms ease,
+    transform 320ms ease;
+  will-change: opacity, transform;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  transition:
+    filter 320ms ease,
+    transform 320ms ease;
+  will-change: filter, transform;
+}
+
+.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.closed {
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+}
+
+.blurred {
+  filter: blur(12px);
+}
