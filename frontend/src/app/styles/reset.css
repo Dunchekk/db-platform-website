@@ -1,0 +1,54 @@
+/* === Modern CSS Reset (20 строк) === */
+
+/* 1. Предсказуемая модель боксов */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 2. Убираем внешние отступы по умолчанию */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* 3. Наследуем типографику */
+html {
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* 4. Убираем стандартное оформление ссылок и списков */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+ul,
+ol {
+  list-style: none;
+}
+
+/* 5. Ставим картинки отзывчивыми */
+img,
+picture,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+/* 6. Наследуем шрифт форм */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}

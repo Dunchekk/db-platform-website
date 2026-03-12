@@ -1,6 +1,8 @@
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router";
 import appRouter from "./app/providers/router/router";
+import "@/app/styles/reset.css";
+import "@/app/styles/App.css";
 
 const root = document.getElementById("root");
 
