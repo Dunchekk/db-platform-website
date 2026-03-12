@@ -5,7 +5,6 @@ backend/node_modules/
 
 # production
 frontend/docs/
-build/
 
 # misc
 .DS_Store
