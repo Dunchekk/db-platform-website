@@ -1,6 +1,10 @@
 import type { OverlayLayerId } from "@/shared/types/layers";
 
 export function getLayersByPath(pathname: string): OverlayLayerId[] {
+  if (pathname === "/about") {
+    return [];
+  }
+
   if (pathname === "/") {
     return ["objects"];
   }

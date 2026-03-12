@@ -10,6 +10,10 @@ export function getPathByState({
   openedLayers,
   activeObjectId,
 }: GetPathByStateParams): string {
+  if (openedLayers.length === 0) {
+    return "/about";
+  }
+
   const hasDetails = openedLayers.includes("details");
   const hasCheckout = openedLayers.includes("checkout");
   const hasInfo = openedLayers.includes("info");
