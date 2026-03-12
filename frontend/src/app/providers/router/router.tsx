@@ -7,6 +7,10 @@ const appRouter = createBrowserRouter([
     element: <App />,
   },
   {
+    path: "/about",
+    element: <App />,
+  },
+  {
     path: "/checkout",
     element: <App />,
   },
