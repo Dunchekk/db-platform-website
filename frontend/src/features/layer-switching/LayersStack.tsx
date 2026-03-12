@@ -13,6 +13,7 @@ export function LayersStack() {
   const openedLayers = useLayersStore((state) => state.openedLayers);
 
   const isObjectsOpen = openedLayers.includes("objects");
+  const isDetailsOpen = openedLayers.includes("details");
   const isCheckoutOpen = openedLayers.includes("checkout");
   const isInfoOpen = openedLayers.includes("info");
 
@@ -29,7 +30,7 @@ export function LayersStack() {
       </LayerShell>
 
       <LayerShell
-        isOpen={isObjectsOpen}
+        isOpen={isDetailsOpen}
         isBlurred={isBlurredLayer(openedLayers, "details")}
         zIndex={30}
       >
