@@ -2,7 +2,9 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router";
 import appRouter from "./app/providers/router/router";
 import "@/app/styles/reset.css";
-import "@/app/styles/App.css";
+import "@/app/styles/font.css";
+import "@/app/styles/config.css";
+import "@/app/styles/globals.css";
 
 const root = document.getElementById("root");
 

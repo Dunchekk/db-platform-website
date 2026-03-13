@@ -1,0 +1,24 @@
+:root {
+  /* MEASURES */
+
+  --max-width: min(95vw, 2560px);
+  --max-main-box-width: min(90vw, 1300px);
+
+  --space: clamp(10px, 1.38vw, 20px);
+  --double-space: calc(var(--space) * 2);
+
+  --padding: calc(var(--space) * 2);
+
+  /* TYPO */
+
+  --text-color-black: #000000;
+  --text-color-black-opacity: rgba(0, 0, 0, 0.6);
+
+  --text-1-text-size: clamp(16px, calc(12.818px + 0.55vw), 20px);
+  /* --text-1-text-size: 20px; */
+  --p-gap: clamp(24px, 3vw, 40px);
+
+  /* MORE */
+
+  --blur-bg: 10px;
+}

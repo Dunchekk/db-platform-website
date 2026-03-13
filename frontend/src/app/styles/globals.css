@@ -1,40 +1,13 @@
-/* === Основной стиль проекта === */
-
-/* 1. Базовая флюидная типографика */
 html {
-  font-size: clamp(12px, 0.8vw + 8px, 18px);
+  font-size: var(--text-1-text-size);
   scroll-behavior: smooth;
 }
 
-/* 2. Цветовая палитра и масштабные единицы */
-:root {
-  /* Цвета проекта */
-  --color-bg: #f7f7f7;
-  --color-text: #111;
-  --color-accent: #3a86ff;
-
-  /* Флюидные единицы пространства */
-  --space: clamp(4px, 0.5vw, 12px);
-  --radius: clamp(4px, 0.3vw, 10px);
-
-  /* Контейнерные размеры */
-  --max-width: 1200px;
-  --side-padding: clamp(16px, 4vw, 48px);
-}
-
-/* 3. Общие стили страницы */
 body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font-size: 1rem; /* 1rem = html.font-size */
-  font-weight: 400;
-  font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  color: var(--text-color-black);
+  font-family: "IBM PLex";
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-wrap: break-word;
 }
