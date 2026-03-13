@@ -1,2 +1,7 @@
 // src/shared/types/layers.ts
-export type OverlayLayerId = "objects" | "details" | "checkout" | "info";
+export type OverlayLayerId =
+  | "about"
+  | "objects"
+  | "details"
+  | "checkout"
+  | "info";

@@ -2,13 +2,20 @@
 import { create } from "zustand";
 import type { OverlayLayerId } from "@/shared/types/layers";
 
-const LAYER_ORDER: OverlayLayerId[] = ["objects", "details", "info", "checkout"];
+const LAYER_ORDER: OverlayLayerId[] = [
+  "about",
+  "objects",
+  "details",
+  "info",
+  "checkout",
+];
 
 function normalizeOpenedLayers(
   layers: OverlayLayerId[],
   activeObjectId: string | null
 ): { openedLayers: OverlayLayerId[]; activeObjectId: string | null } {
-  const uniqueLayers = Array.from(new Set(layers));
+  const withAbout = layers.includes("about") ? layers : ["about", ...layers];
+  const uniqueLayers = Array.from(new Set(withAbout));
   const lastIndex = (layer: OverlayLayerId) => layers.lastIndexOf(layer);
 
   // Resolve conflicts: "info" is exclusive with "details" and "checkout".
@@ -26,25 +33,30 @@ function normalizeOpenedLayers(
     );
   }
 
+  const hasObjects = next.includes("objects");
+
   // Details require an active object id.
   if (next.includes("details") && !activeObjectId) {
     next = next.filter((layer) => layer !== "details");
   }
 
-  // Any overlay except "objects" implies "objects".
-  const hasAnyOverlay = next.length > 0;
-  const hasNonObjectsOverlay = next.some((layer) => layer !== "objects");
-  if (hasAnyOverlay && hasNonObjectsOverlay && !next.includes("objects")) {
+  // Any layer above "objects" implies "objects".
+  const needsObjects = next.some(
+    (layer) => layer === "details" || layer === "info" || layer === "checkout"
+  );
+  if (needsObjects && !hasObjects) {
     next = [...next, "objects"];
   }
 
-  // If "objects" is closed, everything above it must be closed.
+  // If "objects" is closed, everything above it must be closed (keeping "about").
   if (!next.includes("objects")) {
-    next = [];
+    next = ["about"];
   }
 
   const openedLayers = LAYER_ORDER.filter((layer) => next.includes(layer));
-  const nextActiveObjectId = openedLayers.includes("details") ? activeObjectId : null;
+  const nextActiveObjectId = openedLayers.includes("objects")
+    ? activeObjectId
+    : null;
 
   return { openedLayers, activeObjectId: nextActiveObjectId };
 }
@@ -67,7 +79,7 @@ type LayersState = {
 };
 
 export const useLayersStore = create<LayersState>((set, get) => ({
-  openedLayers: [],
+  openedLayers: ["about"],
   activeLayer: null,
   activeObjectId: null,
 
@@ -96,7 +108,7 @@ export const useLayersStore = create<LayersState>((set, get) => ({
     const nextOpened = openedLayers.filter((item) => item !== layer);
 
     const nextActiveObjectId =
-      layer === "details" || layer === "objects" ? null : get().activeObjectId;
+      layer === "objects" ? null : get().activeObjectId;
 
     const normalized = normalizeOpenedLayers(nextOpened, nextActiveObjectId);
 
@@ -150,7 +162,7 @@ export const useLayersStore = create<LayersState>((set, get) => ({
 
   resetLayers: () => {
     set({
-      openedLayers: [],
+      openedLayers: ["about"],
       activeLayer: null,
       activeObjectId: null,
     });
