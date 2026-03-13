@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router";
 import appRouter from "./app/providers/router/router";
+import { ObjectsProvider } from "@/shared/objects/objects.context";
 import "@/app/styles/reset.css";
 import "@/app/styles/font.css";
 import "@/app/styles/config.css";
@@ -14,4 +15,8 @@ if (!root) {
 
 const router = appRouter;
 
-ReactDOM.createRoot(root).render(<RouterProvider router={router} />);
+ReactDOM.createRoot(root).render(
+  <ObjectsProvider>
+    <RouterProvider router={router} />
+  </ObjectsProvider>
+);
