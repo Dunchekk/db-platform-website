@@ -1,0 +1,48 @@
+.main {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.wrapper {
+  height: var(--max-main-box-height);
+  width: var(--max-main-box-width);
+  margin-top: var(--max-main-box-up-margin);
+  margin-inline: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.textwrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--double-space);
+  margin-top: var(--p-gap);
+}
+
+.p {
+  width: calc(50% - var(--space));
+}
+
+.imgs {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.imgTrack {
+  width: 100vw;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+.img {
+  width: 100vw;
+  height: auto;
+  display: block;
+  user-select: none;
+  opacity: 55%;
+}
