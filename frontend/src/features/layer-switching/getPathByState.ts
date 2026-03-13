@@ -14,9 +14,19 @@ export function getPathByState({
     return "/about";
   }
 
+  const hasAbout = openedLayers.includes("about");
+  if (!hasAbout) {
+    return "/about";
+  }
+
+  const hasObjects = openedLayers.includes("objects");
   const hasDetails = openedLayers.includes("details");
   const hasCheckout = openedLayers.includes("checkout");
   const hasInfo = openedLayers.includes("info");
+
+  if (!hasObjects) {
+    return "/about";
+  }
 
   if (hasDetails && activeObjectId) {
     if (hasCheckout) {

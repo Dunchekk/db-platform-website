@@ -12,6 +12,7 @@ import DetailsLayer from "@/layers/DetailsLayer/DetailsLayer";
 export function LayersStack() {
   const openedLayers = useLayersStore((state) => state.openedLayers);
 
+  const isAboutOpen = openedLayers.includes("about");
   const isObjectsOpen = openedLayers.includes("objects");
   const isDetailsOpen = openedLayers.includes("details");
   const isCheckoutOpen = openedLayers.includes("checkout");
@@ -19,7 +20,13 @@ export function LayersStack() {
 
   return (
     <>
-      <AboutLayer />
+      <LayerShell
+        isOpen={isAboutOpen}
+        isBlurred={isBlurredLayer(openedLayers, "about")}
+        zIndex={10}
+      >
+        <AboutLayer />
+      </LayerShell>
 
       <LayerShell
         isOpen={isObjectsOpen}
