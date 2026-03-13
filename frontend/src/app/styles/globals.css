@@ -6,8 +6,20 @@ html {
 body {
   color: var(--text-color-black);
   font-family: "IBM PLex";
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
   overflow-wrap: break-word;
+  line-height: var(--text-line-height);
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+p + p {
+  margin-top: var(--p-gap);
 }
