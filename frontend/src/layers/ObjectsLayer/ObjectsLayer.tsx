@@ -1,19 +1,44 @@
 import React from "react";
 import cls from "@/layers/ObjectsLayer/ObjectsLayer.module.css";
 import M_itemCard from "@/components/M_itemCard/M_itemCard";
-// import { useObjects } from "@/shared/objects/objects.context"
-import Objects from "@/mocks/objects.json";
 import { DbObject } from "@/shared/types/object";
+import { useObjects } from "@/shared/objects/objects.context";
+import { useLayersStore } from "@/features/layer-switching/layers.store";
 
 const ObjectsLayer = () => {
-  // const { objects, objectsById, isLoading, error } = useObjects();
+  const { objects, isLoading, error } = useObjects();
+  const openLayer = useLayersStore((state) => state.openLayer);
+  const setActiveObjectId = useLayersStore((state) => state.setActiveObjectId);
 
-  const objects: DbObject[] = Objects;
-  const object: DbObject = objects[0];
+  const wrapperClasses =
+    objects.length === 1
+      ? cls.oneobj
+      : objects.length === 2
+        ? cls.twoobj
+        : undefined;
 
   return (
     <div className={cls.main}>
-      <M_itemCard object={object} />
+      <div className={cls.wrapper}>
+        <div className={cls.wrapper2}>
+          {isLoading && <div>Loading...</div>}
+          {error && <div>{error}</div>}
+          {objects.map((obj: DbObject) => {
+            return (
+              <div
+                key={obj.id}
+                onClick={() => {
+                  setActiveObjectId(obj.id);
+                  openLayer("details");
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                <M_itemCard addClasses={wrapperClasses} object={obj} />
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
