@@ -5,7 +5,13 @@
     "name": "мешочек",
     "prise": "2000",
     "choise": ["s", "m"],
-    "images": ["ссылка", "ссылка", "ссылка", "ссылка", "ссылка"],
+    "images": [
+      "/bg-items/Frame 32.png",
+      "/bg-items/Frame 31.png",
+      "/bg-items/Frame 32.png",
+      "/bg-items/Frame 31.png",
+      "/bg-items/Frame 32.png"
+    ],
     "details": {
       "properties": [
         {
