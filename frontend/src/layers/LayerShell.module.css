@@ -2,14 +2,14 @@
 .layer {
   position: absolute;
   inset: 0;
-  transition: opacity 1s ease;
+  transition: opacity var(--duration) ease;
   will-change: filter, opasity;
 }
 
 .content {
   width: 100%;
   height: 100%;
-  transition: filter 1s ease;
+  transition: filter var(--duration) ease;
   filter: blur(0px);
   will-change: filter, opasity;
 }

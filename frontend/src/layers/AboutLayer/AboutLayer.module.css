@@ -44,5 +44,10 @@
   height: auto;
   display: block;
   user-select: none;
-  opacity: 55%;
+  opacity: 60%;
+  transition: opacity var(--duration) ease;
+}
+
+.aboutRoute .img {
+  opacity: 50%;
 }

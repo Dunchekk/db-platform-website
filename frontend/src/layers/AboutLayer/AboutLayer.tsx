@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useLocation } from "react-router";
 import cls from "@/layers/AboutLayer/AboutLayer.module.css";
 
 import frame28 from "@/assets/images/bg-items/Frame 28.png";
@@ -8,6 +9,7 @@ import frame31 from "@/assets/images/bg-items/Frame 31.png";
 import frame32 from "@/assets/images/bg-items/Frame 32.png";
 
 const AboutLayer = () => {
+  const { pathname } = useLocation();
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
 
@@ -92,7 +94,9 @@ const AboutLayer = () => {
   }, []);
 
   return (
-    <div className={cls.main}>
+    <div
+      className={`${cls.main} ${pathname === "/about" ? cls.aboutRoute : ""}`}
+    >
       <div className={cls.imgs} ref={viewportRef} aria-hidden="true">
         <div className={cls.imgTrack} ref={trackRef}>
           {[frame28, frame29, frame30, frame31, frame32].map((src) => (
@@ -101,7 +105,7 @@ const AboutLayer = () => {
         </div>
       </div>
       <div className={cls.wrapper}>
-        <div>DB:</div>
+        <div>&nbsp;&nbsp;DB:</div>
         <div className={cls.textwrapper}>
           <div className={cls.p}>
             <p>
