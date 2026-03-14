@@ -2,19 +2,35 @@
   width: 100vw;
   height: 100vh;
   position: absolute;
-  background: rgba(255, 255, 255, 0.01);
 }
 
 .wrapper {
-  height: var(--max-main-box-height);
   width: var(--max-main-box-width);
-  margin-top: var(--max-main-box-up-margin);
   margin-inline: auto;
   position: relative;
+}
+
+.wrapper2 {
+  height: 100vh;
+  padding-top: var(--max-main-box-up-margin);
+  padding-bottom: var(--max-main-box-up-margin);
 
   display: flex;
   flex-wrap: wrap;
+
   justify-content: center;
-  gap: var(--double-space);
+  gap: var(--space-5);
+  row-gap: calc(var(--space-3));
   align-items: center;
+
+  scroll-behavior: smooth;
+  overflow: scroll;
+}
+
+.oneobj {
+  --card-width: var(--card-width-one);
+}
+
+.twoobj {
+  --card-width: var(--card-width-two);
 }

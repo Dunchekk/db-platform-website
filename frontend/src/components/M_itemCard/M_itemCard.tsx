@@ -1,26 +1,30 @@
 import cls from "@/components/M_itemCard/M_itemCard.module.css";
-import img from "@/assets/images/bg-items/Frame 29.png";
+// import img from "@/assets/images/bg-items/Frame 29.png";
 
 import React from "react";
 import { DbObject } from "@/shared/types/object";
-import { Link } from "react-router";
 
 type Props = {
   object: DbObject;
+  addClasses?: string;
 };
 
-const M_itemCard = ({ object }: Props) => {
+const M_itemCard = ({ object, addClasses }: Props) => {
+  const wrapperClassName = addClasses
+    ? `${cls.wrapper} ${addClasses}`
+    : cls.wrapper;
+  const infoClassName = addClasses ? `${cls.info} ${addClasses}` : cls.info;
+  const id = +object.id <= 9 ? "0" + object.id : object.id;
+
   return (
-    <Link to={""}>
-      <div className={cls.wrapper}>
-        <img src={object.img} alt="img" className={cls.img} />
-        <span className={cls.id}>0{object.id}</span>
-        <div className={cls.info}>
-          <span>{object.name}</span>
-          <span>{object.prise}</span>
-        </div>
+    <div className={wrapperClassName}>
+      <img src={object.img} alt="img" className={cls.img} />
+      <span className={cls.id}>{id}</span>
+      <div className={infoClassName}>
+        <span>{object.name}</span>
+        <span>{object.prise}</span>
       </div>
-    </Link>
+    </div>
   );
 };
 

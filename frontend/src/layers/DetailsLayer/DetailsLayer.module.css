@@ -1,0 +1,86 @@
+.main {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.wrapper {
+  width: var(--max-main-box-width);
+  margin-inline: auto;
+  height: 100vh;
+  padding-top: var(--max-main-box-up-margin);
+  padding-bottom: var(--max-main-box-up-margin);
+  overflow: auto;
+  position: relative;
+}
+
+.back {
+  all: unset;
+  position: absolute;
+  cursor: pointer;
+  top: var(--max-main-box-up-margin);
+  left: 0;
+  z-index: 100;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+/* ---- */
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--double-space);
+}
+
+.obj {
+  width: calc(50% - var(--space));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.info {
+  width: calc(50% - var(--space));
+  position: relative;
+  height: var(--max-main-box-height);
+}
+/* ------- */
+
+.detailsToggle {
+  cursor: pointer;
+  user-select: none;
+}
+
+.details {
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.detailsOpen {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 60ms;
+}
+
+.ul {
+  margin-top: calc(var(--space) * 0.7);
+}
+
+.tocard {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.tocard:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}

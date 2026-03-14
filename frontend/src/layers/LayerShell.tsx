@@ -18,14 +18,33 @@ export function LayerShell({
   className,
 }: Props) {
   const [shouldRender, setShouldRender] = useState(isOpen);
+  const [isShown, setIsShown] = useState(false);
   const ref = useRef<HTMLElement | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      // ПОЗЖЕ ПОПРАВИТЬ!
-      //eslint-disable-next-line react-hooks/set-state-in-effect
       setShouldRender(true);
+      setIsShown(false);
+
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+      }
+
+      rafRef.current = window.requestAnimationFrame(() => {
+        rafRef.current = window.requestAnimationFrame(() => {
+          rafRef.current = null;
+          setIsShown(true);
+        });
+      });
+      return;
     }
+
+    if (rafRef.current !== null) {
+      window.cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    setIsShown(false);
   }, [isOpen]);
 
   useEffect(() => {
@@ -46,6 +65,14 @@ export function LayerShell({
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    return () => {
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, []);
+
   if (!shouldRender) return null;
 
   return (
@@ -53,7 +80,7 @@ export function LayerShell({
       ref={ref}
       className={[
         cls.layer,
-        isOpen ? cls.open : cls.closed,
+        isShown ? cls.open : cls.closed,
         className ?? "",
       ].join(" ")}
       style={{ zIndex }}
