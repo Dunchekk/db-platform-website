@@ -21,30 +21,54 @@ export function LayerShell({
   const [isShown, setIsShown] = useState(false);
   const ref = useRef<HTMLElement | null>(null);
   const rafRef = useRef<number | null>(null);
+  const effectTokenRef = useRef(0);
 
   useEffect(() => {
-    if (isOpen) {
-      setShouldRender(true);
-      setIsShown(false);
+    effectTokenRef.current += 1;
+    const token = effectTokenRef.current;
 
-      if (rafRef.current !== null) {
-        window.cancelAnimationFrame(rafRef.current);
+    const defer = (fn: () => void) => {
+      if (typeof queueMicrotask === "function") {
+        queueMicrotask(fn);
+      } else {
+        Promise.resolve().then(fn);
       }
+    };
 
-      rafRef.current = window.requestAnimationFrame(() => {
+    if (isOpen) {
+      defer(() => {
+        if (effectTokenRef.current !== token) return;
+
+        setShouldRender(true);
+        setIsShown(false);
+
+        if (rafRef.current !== null) {
+          window.cancelAnimationFrame(rafRef.current);
+        }
+
         rafRef.current = window.requestAnimationFrame(() => {
-          rafRef.current = null;
-          setIsShown(true);
+          if (effectTokenRef.current !== token) return;
+
+          rafRef.current = window.requestAnimationFrame(() => {
+            if (effectTokenRef.current !== token) return;
+
+            rafRef.current = null;
+            setIsShown(true);
+          });
         });
       });
       return;
     }
 
-    if (rafRef.current !== null) {
-      window.cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-    }
-    setIsShown(false);
+    defer(() => {
+      if (effectTokenRef.current !== token) return;
+
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      setIsShown(false);
+    });
   }, [isOpen]);
 
   useEffect(() => {
@@ -67,6 +91,7 @@ export function LayerShell({
 
   useEffect(() => {
     return () => {
+      effectTokenRef.current += 1;
       if (rafRef.current !== null) {
         window.cancelAnimationFrame(rafRef.current);
       }
