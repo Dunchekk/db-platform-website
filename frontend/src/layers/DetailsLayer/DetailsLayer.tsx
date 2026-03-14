@@ -8,12 +8,14 @@ import { useLayersStore } from "@/features/layer-switching/layers.store";
 
 const DetailsLayer = () => {
   const { id } = useParams();
-  const objectId = typeof id === "string" ? id : null;
+  const routeObjectId = typeof id === "string" ? id : null;
+  const storeObjectId = useLayersStore((state) => state.activeObjectId);
+  const effectiveObjectId = routeObjectId ?? storeObjectId;
 
   const { objectsById, isLoading, error } = useObjects();
   const closeLayer = useLayersStore((state) => state.closeLayer);
 
-  const object = objectId ? objectsById[objectId] : undefined;
+  const object = effectiveObjectId ? objectsById[effectiveObjectId] : undefined;
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const images = useMemo(() => {
@@ -37,9 +39,11 @@ const DetailsLayer = () => {
         {isLoading && <div>Loading...</div>}
         {error && <div>{error}</div>}
 
-        {!isLoading && !error && !objectId && <div>Object id not found</div>}
-        {!isLoading && !error && objectId && !object && (
-          <div>Object {objectId} not found</div>
+        {!isLoading && !error && !effectiveObjectId && (
+          <div>Object id not found</div>
+        )}
+        {!isLoading && !error && effectiveObjectId && !object && (
+          <div>Object {effectiveObjectId} not found</div>
         )}
 
         {/* ------------------------------- */}
@@ -47,7 +51,7 @@ const DetailsLayer = () => {
         {!isLoading && !error && object && (
           <div className={cls.content}>
             <ImagesSlider
-              key={objectId ?? "no-object"}
+              key={effectiveObjectId ?? "no-object"}
               className={cls.obj}
               images={images}
               alt={object.name}

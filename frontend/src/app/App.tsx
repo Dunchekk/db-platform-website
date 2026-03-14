@@ -21,9 +21,12 @@ export default function App() {
     const routeObjectId =
       typeof params.id === "string" ? params.id : null;
 
+    const prevActiveObjectId =
+      useLayersStore.getState().activeObjectId;
+
     setRouteState({
       openedLayers: getLayersByPath(pathname),
-      activeObjectId: routeObjectId,
+      activeObjectId: routeObjectId ?? prevActiveObjectId,
     });
 
     hasHydratedFromRouteRef.current = true;
