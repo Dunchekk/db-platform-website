@@ -65,6 +65,7 @@ type LayersState = {
   openedLayers: OverlayLayerId[];
   activeLayer: OverlayLayerId | null;
   activeObjectId: string | null;
+  lastActiveObjectId: string | null;
 
   openLayer: (layer: OverlayLayerId) => void;
   closeLayer: (layer: OverlayLayerId) => void;
@@ -82,6 +83,7 @@ export const useLayersStore = create<LayersState>((set, get) => ({
   openedLayers: ["about"],
   activeLayer: null,
   activeObjectId: null,
+  lastActiveObjectId: null,
 
   openLayer: (layer) => {
     const opened = get().openedLayers;
@@ -100,6 +102,8 @@ export const useLayersStore = create<LayersState>((set, get) => ({
       openedLayers: normalized.openedLayers,
       activeLayer: normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
       activeObjectId: normalized.activeObjectId,
+      lastActiveObjectId:
+        normalized.activeObjectId ?? get().lastActiveObjectId,
     });
   },
 
@@ -116,6 +120,8 @@ export const useLayersStore = create<LayersState>((set, get) => ({
       openedLayers: normalized.openedLayers,
       activeLayer: normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
       activeObjectId: normalized.activeObjectId,
+      lastActiveObjectId:
+        normalized.activeObjectId ?? get().lastActiveObjectId,
     });
   },
 
@@ -137,6 +143,8 @@ export const useLayersStore = create<LayersState>((set, get) => ({
       openedLayers: normalized.openedLayers,
       activeLayer: normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
       activeObjectId: normalized.activeObjectId,
+      lastActiveObjectId:
+        normalized.activeObjectId ?? get().lastActiveObjectId,
     });
   },
 
@@ -147,6 +155,8 @@ export const useLayersStore = create<LayersState>((set, get) => ({
       openedLayers: normalized.openedLayers,
       activeLayer: normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
       activeObjectId: normalized.activeObjectId,
+      lastActiveObjectId:
+        objectId ?? get().lastActiveObjectId,
     });
   },
 
@@ -157,6 +167,8 @@ export const useLayersStore = create<LayersState>((set, get) => ({
       openedLayers: normalized.openedLayers,
       activeLayer: normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
       activeObjectId: normalized.activeObjectId,
+      lastActiveObjectId:
+        activeObjectId ?? get().lastActiveObjectId,
     });
   },
 
