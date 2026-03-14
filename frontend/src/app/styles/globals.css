@@ -8,6 +8,9 @@ body {
   font-family: "IBM PLex";
   overflow-wrap: break-word;
   line-height: var(--text-line-height);
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
 #root {
