@@ -11,8 +11,7 @@ export type DbObject = {
   choise: string[];
   images: string[];
   details: {
-    "always-shown": DbObjectDetailsEntry[];
-    "all-shown": DbObjectDetailsEntry[];
+    properties: DbObjectDetailsEntry[];
+    points: string[];
   };
 };
-
