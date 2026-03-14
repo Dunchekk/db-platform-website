@@ -5,6 +5,9 @@ import { LayersStack } from "@/features/layer-switching/LayersStack";
 import { getLayersByPath } from "@/features/layer-switching/getLayersByPath";
 import { getPathByState } from "@/features/layer-switching/getPathByState";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
+import Q_Circle from "@/components/Q_Circle/Q_Circle";
+import Q_Cursor from "@/components/Q_Cursor/Q_Cursor";
+import cls from "@/app/App.module.css";
 
 export default function App() {
   const navigate = useNavigate();
@@ -18,11 +21,9 @@ export default function App() {
   const hasHydratedFromRouteRef = useRef(false);
 
   useLayoutEffect(() => {
-    const routeObjectId =
-      typeof params.id === "string" ? params.id : null;
+    const routeObjectId = typeof params.id === "string" ? params.id : null;
 
-    const prevActiveObjectId =
-      useLayersStore.getState().activeObjectId;
+    const prevActiveObjectId = useLayersStore.getState().activeObjectId;
 
     setRouteState({
       openedLayers: getLayersByPath(pathname),
@@ -46,5 +47,11 @@ export default function App() {
     }
   }, [openedLayers, activeObjectId, pathname, navigate]);
 
-  return <LayersStack />;
+  return (
+    <div className={cls.wrapper}>
+      <LayersStack />
+      <Q_Circle />
+      <Q_Cursor />
+    </div>
+  );
 }
