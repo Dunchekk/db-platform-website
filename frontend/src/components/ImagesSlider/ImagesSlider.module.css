@@ -1,0 +1,32 @@
+.imgwrapper {
+  width: 100%;
+  overflow: hidden;
+  cursor: ew-resize;
+  user-select: none;
+  touch-action: manipulation;
+  position: relative;
+}
+
+.count {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
+}
+
+.sliderImg {
+  width: 100%;
+  height: var(--max-main-box-height);
+  object-fit: contain;
+  display: block;
+  transition: opacity 260ms ease;
+}
+
+.sliderImgVisible {
+  opacity: 1;
+}
+
+.sliderImgHidden {
+  opacity: 0;
+}
