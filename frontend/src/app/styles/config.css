@@ -2,7 +2,7 @@
   /* MEASURES */
 
   --max-width: min(95vw, 2560px);
-  --max-main-box-width: min(90vw, 1200px);
+  --max-main-box-width: min(90vw, 1100px);
   --max-main-box-height: 76vh;
   --max-main-box-up-margin: 12vh;
 
@@ -20,6 +20,8 @@
   --text-color-black-opacity: rgba(0, 0, 0, 0.6);
 
   --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 18px);
+
+  --text-2-text-size: clamp(24px, calc(12.118px + 0.6vw), 30px);
   /* --text-1-text-size: clamp(16px, calc(12.818px + 0.55vw), 20px); */
 
   --p-gap: clamp(12px, 2vw, 24px);

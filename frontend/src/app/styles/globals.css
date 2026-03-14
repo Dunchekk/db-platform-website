@@ -26,3 +26,13 @@ body {
 p + p {
   margin-top: var(--p-gap);
 }
+
+li {
+  display: block;
+  display: flex;
+  gap: 8px;
+}
+
+li::before {
+  content: "—";
+}
