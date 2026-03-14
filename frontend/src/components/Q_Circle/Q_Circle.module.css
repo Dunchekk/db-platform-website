@@ -1,0 +1,23 @@
+.circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: black;
+  cursor: pointer;
+  appearance: none;
+  border: none;
+  padding: 0;
+  display: block;
+
+  position: absolute;
+  top: calc(var(--space) * 0.7);
+  left: calc(var(--space) * 0.7);
+
+  z-index: 999;
+  transition: top var(--duration) ease, left var(--duration) ease;
+}
+
+.aboutopen {
+  top: calc(var(--max-main-box-up-margin) + 2px);
+  left: var(--bleed);
+}
