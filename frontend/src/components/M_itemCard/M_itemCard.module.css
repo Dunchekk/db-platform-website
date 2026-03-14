@@ -6,6 +6,12 @@
 .img {
   width: 100%;
   height: 100%;
+  transform: scale(100%);
+  transition: all 500ms;
+}
+
+.wrapper:hover .img {
+  transform: scale(102%);
 }
 
 .id {
@@ -16,5 +22,7 @@
 .info {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: var(--card-width);
 }
