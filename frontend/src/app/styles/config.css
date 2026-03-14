@@ -6,6 +6,8 @@
   --max-main-box-height: 76vh;
   --max-main-box-up-margin: 12vh;
 
+  --bleed: calc(calc(100vw - var(--max-main-box-width))/2);
+
   --space: clamp(10px, 1.3vw, 20px);
   --double-space: calc(var(--space) * 2);
   --space-3: calc(var(--space) * 3);
@@ -19,16 +21,24 @@
   --text-color-black: #000000;
   --text-color-black-opacity: rgba(0, 0, 0, 0.6);
 
-  --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 18px);
+  --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 17px);
 
   --text-2-text-size: clamp(24px, calc(12.118px + 0.6vw), 30px);
-  /* --text-1-text-size: clamp(16px, calc(12.818px + 0.55vw), 20px); */
 
   --p-gap: clamp(12px, 2vw, 24px);
   --text-line-height: 1.3;
 
   /* MORE */
   --blur-bg: 15px;
+
+  /* MOTION */
+  /* --duration: 1s; */
+  --duration: 0.8s;
+  --cursor-duration: 0.1s;
+
+  /* SELECTION */
+  --selection-color: rgb(255, 255, 255);
+  --selection-bg: rgba(255, 255, 255, 0.2);
 
   --card-width: 17vw;
   --card-width-one: 32vw;
