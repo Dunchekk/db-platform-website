@@ -12,7 +12,7 @@ type Props = {
 
 const Q_Button = ({ children, addClasses, isActive, ...rest }: Props) => {
   if (!addClasses) addClasses = "";
-  if (isActive) addClasses = addClasses + cls.active;
+  if (isActive) addClasses = [addClasses, cls.active].filter(Boolean).join(" ");
   return (
     <button className={cls.button + " " + addClasses} {...rest}>
       {children}
