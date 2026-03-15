@@ -1,14 +1,17 @@
 // src/features/layer-switching/model/getPathByState.ts
 import type { OverlayLayerId } from "@/shared/types/layers";
+import { DEFAULT_INFO_SECTION, type InfoSectionId } from "@/shared/types/info";
 
 type GetPathByStateParams = {
   openedLayers: OverlayLayerId[];
   activeObjectId: string | null;
+  activeInfoSection: InfoSectionId | null;
 };
 
 export function getPathByState({
   openedLayers,
   activeObjectId,
+  activeInfoSection,
 }: GetPathByStateParams): string {
   if (openedLayers.length === 0) {
     return "/about";
@@ -37,7 +40,7 @@ export function getPathByState({
   }
 
   if (hasInfo) {
-    return "/info";
+    return `/info/${activeInfoSection ?? DEFAULT_INFO_SECTION}`;
   }
 
   if (hasCheckout) {

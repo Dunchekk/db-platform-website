@@ -4,6 +4,7 @@ import M_itemCard from "@/components/M_itemCard/M_itemCard";
 import { DbObject } from "@/shared/types/object";
 import { useObjects } from "@/shared/objects/objects.context";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
+import Q_InfoButtons from "@/components/Q_InfoButtons/Q_InfoButtons";
 
 const ObjectsLayer = () => {
   const { objects, isLoading, error } = useObjects();
@@ -39,6 +40,7 @@ const ObjectsLayer = () => {
           })}
         </div>
       </div>
+      <Q_InfoButtons mode="objects" />
     </div>
   );
 };

@@ -88,6 +88,18 @@ const ImagesSlider = ({ images, alt, className }: Props) => {
           }
         }}
       >
+        {images.length > 1 && (
+          <>
+            <div
+              className={[cls.hitArea, cls.hitLeft].join(" ")}
+              data-q-cursor="arrow-left"
+            />
+            <div
+              className={[cls.hitArea, cls.hitRight].join(" ")}
+              data-q-cursor="arrow-right"
+            />
+          </>
+        )}
         {images[safeActiveIndex] && (
           <img
             className={[
@@ -108,4 +120,3 @@ const ImagesSlider = ({ images, alt, className }: Props) => {
 };
 
 export default ImagesSlider;
-

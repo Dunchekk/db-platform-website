@@ -17,6 +17,10 @@ export function getLayersByPath(pathname: string): OverlayLayerId[] {
     return ["about", "objects", "info"];
   }
 
+  if (/^\/info\/[^/]+$/.test(pathname)) {
+    return ["about", "objects", "info"];
+  }
+
   if (/^\/object\/[^/]+$/.test(pathname)) {
     return ["about", "objects", "details"];
   }

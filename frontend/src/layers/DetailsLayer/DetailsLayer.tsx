@@ -9,8 +9,13 @@ import { useLayersStore } from "@/features/layer-switching/layers.store";
 const DetailsLayer = () => {
   const { id } = useParams();
   const routeObjectId = typeof id === "string" ? id : null;
+  const isDetailsLayerOpen = useLayersStore((state) =>
+    state.openedLayers.includes("details")
+  );
   const storeObjectId = useLayersStore((state) => state.activeObjectId);
-  const effectiveObjectId = routeObjectId ?? storeObjectId;
+  const lastStoreObjectId = useLayersStore((state) => state.lastActiveObjectId);
+  const effectiveObjectId = routeObjectId ?? storeObjectId ?? lastStoreObjectId;
+  const isDetailsContext = routeObjectId !== null || isDetailsLayerOpen;
 
   const { objectsById, isLoading, error } = useObjects();
   const closeLayer = useLayersStore((state) => state.closeLayer);
@@ -39,10 +44,10 @@ const DetailsLayer = () => {
         {isLoading && <div>Loading...</div>}
         {error && <div>{error}</div>}
 
-        {!isLoading && !error && !effectiveObjectId && (
+        {isDetailsContext && !isLoading && !error && !effectiveObjectId && (
           <div>Object id not found</div>
         )}
-        {!isLoading && !error && effectiveObjectId && !object && (
+        {isDetailsContext && !isLoading && !error && effectiveObjectId && !object && (
           <div>Object {effectiveObjectId} not found</div>
         )}
 

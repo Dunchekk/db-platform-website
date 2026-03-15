@@ -13,6 +13,22 @@ body {
   overflow: hidden;
 }
 
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-color);
+}
+
+::-moz-selection {
+  background: var(--selection-bg);
+  color: var(--selection-color);
+}
+
+input::selection,
+textarea::selection {
+  background: var(--selection-bg);
+  color: var(--selection-color);
+}
+
 #root {
   width: 100vw;
   height: 100vh;
