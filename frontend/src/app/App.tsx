@@ -8,11 +8,13 @@ import { useLayersStore } from "@/features/layer-switching/layers.store";
 import Q_Circle from "@/components/Q_Circle/Q_Circle";
 import Q_Cursor from "@/components/Q_Cursor/Q_Cursor";
 import cls from "@/app/App.module.css";
+import { isInfoSectionId, type InfoSectionId } from "@/shared/types/info";
+import Q_CardButton from "@/components/Q_CardButton/Q_CardButton";
 
 export default function App() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const params = useParams();
+  const params = useParams<{ id?: string; section?: string }>();
 
   const setRouteState = useLayersStore((state) => state.setRouteState);
   const openedLayers = useLayersStore((state) => state.openedLayers);
@@ -22,16 +24,23 @@ export default function App() {
 
   useLayoutEffect(() => {
     const routeObjectId = typeof params.id === "string" ? params.id : null;
+    const routeInfoSectionRaw =
+      typeof params.section === "string" ? params.section : null;
+    const routeInfoSection: InfoSectionId | null =
+      routeInfoSectionRaw && isInfoSectionId(routeInfoSectionRaw)
+        ? routeInfoSectionRaw
+        : null;
 
     const prevActiveObjectId = useLayersStore.getState().activeObjectId;
 
     setRouteState({
       openedLayers: getLayersByPath(pathname),
       activeObjectId: routeObjectId ?? prevActiveObjectId,
+      activeInfoSection: routeInfoSection,
     });
 
     hasHydratedFromRouteRef.current = true;
-  }, [pathname, params.id, setRouteState]);
+  }, [pathname, params.id, params.section, setRouteState]);
 
   useEffect(() => {
     if (!hasHydratedFromRouteRef.current) return;
@@ -40,6 +49,7 @@ export default function App() {
     const nextPath = getPathByState({
       openedLayers: state.openedLayers,
       activeObjectId: state.activeObjectId,
+      activeInfoSection: state.activeInfoSection,
     });
 
     if (nextPath !== pathname) {
@@ -51,6 +61,7 @@ export default function App() {
     <div className={cls.wrapper}>
       <LayersStack />
       <Q_Circle />
+      {openedLayers.includes("objects") && <Q_CardButton />}
       <Q_Cursor />
     </div>
   );
