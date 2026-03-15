@@ -16,6 +16,8 @@
 
   --padding: calc(var(--space) * 2);
 
+  --inner-buttons-padding: calc(var(--space) * 0.7);
+
   /* TYPO */
 
   --text-color-black: #000000;
@@ -38,9 +40,11 @@
 
   /* SELECTION */
   --selection-color: rgb(255, 255, 255);
-  --selection-bg: rgba(255, 255, 255, 0.2);
+  --selection-bg: rgba(145, 145, 145, 0.2);
 
   --card-width: 17vw;
   --card-width-one: 32vw;
   --card-width-two: 25vw;
+
+  --info-buttons-width: 30vw;
 }
