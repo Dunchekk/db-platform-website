@@ -32,6 +32,9 @@ export function buildLoaders(options: BuildOptions): ModuleOptions["rules"] {
       {
         loader: "css-loader",
         options: {
+          url: {
+            filter: (url: string) => !url.startsWith("/"),
+          },
           modules: {
             localIdentName: isDev ? "[path][name]__[local]" : "[hash:base64:8]",
             namedExport: false,
@@ -44,7 +47,17 @@ export function buildLoaders(options: BuildOptions): ModuleOptions["rules"] {
   const cssLoader = {
     test: /\.css$/i,
     exclude: /\.module\.css$/i,
-    use: [styleOrExtract, "css-loader"],
+    use: [
+      styleOrExtract,
+      {
+        loader: "css-loader",
+        options: {
+          url: {
+            filter: (url: string) => !url.startsWith("/"),
+          },
+        },
+      },
+    ],
   };
 
   const tsLoader = {
