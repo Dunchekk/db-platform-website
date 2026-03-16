@@ -1,0 +1,37 @@
+.checkbox {
+  all: unset;
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-block;
+  width: var(--checkbox-size);
+  height: var(--checkbox-size);
+  min-width: var(--checkbox-size);
+  min-height: var(--checkbox-size);
+  cursor: pointer;
+  flex: 0 0 auto;
+
+  border-radius: 50%;
+
+  background-image: url("/unchecked.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color 300ms ease;
+}
+
+.checkbox:checked {
+  background-image: url("/checked.svg");
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.checkbox:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
