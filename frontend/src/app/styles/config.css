@@ -2,7 +2,7 @@
   /* MEASURES */
 
   --max-width: min(95vw, 2560px);
-  --max-main-box-width: min(90vw, 1100px);
+  --max-main-box-width: min(90vw, 1150px);
   --max-main-box-height: 76vh;
   --max-main-box-up-margin: 12vh;
 
@@ -33,8 +33,10 @@
   /* MORE */
   --blur-bg: 15px;
 
-  /* MOTION */
-  /* --duration: 1s; */
+  --text-opacity: 0.4;
+  --checkbox-size: 16px;
+
+  /* MOTION */ /* --duration: 1s; */
   --duration: 0.8s;
   --cursor-duration: 0.1s;
 
