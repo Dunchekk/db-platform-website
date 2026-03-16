@@ -1,0 +1,33 @@
+.input {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-block;
+  padding: calc(var(--space));
+  padding-left: 3px;
+  padding-top: calc(
+    calc(var(--space) / 3) + calc(var(--text-1-text-size) * 2.3)
+  );
+  position: relative;
+  height: calc(var(--text-1-text-size) * 1);
+  width: 100%;
+}
+
+.wrapper {
+  border-bottom: 1.5px solid black;
+  position: relative;
+}
+
+.label {
+  position: absolute;
+  color: rgb(0, 0, 0);
+  top: calc(calc(var(--space) / 3) + calc(var(--text-1-text-size) * 1.6));
+  left: 3px;
+  opacity: var(--text-opacity);
+  transition: all 400ms ease;
+}
+
+.input:focus + .label,
+.input:not(:placeholder-shown) + .label {
+  /* лучше + если label сразу после input */
+  top: calc(var(--space) / 1.4);
+}
