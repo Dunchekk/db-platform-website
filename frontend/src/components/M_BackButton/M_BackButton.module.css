@@ -1,0 +1,47 @@
+.button {
+  position: absolute;
+  top: var(--inner-buttons-padding);
+  left: var(--inner-buttons-padding);
+  z-index: 100;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+.button[data-visible="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.icon {
+  display: block;
+}
+
+.arrowText {
+  line-height: 1;
+}
+
+.eyes {
+  width: 26px;
+  height: 26px;
+  background-image: url("../../assets/images/eyes.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+}
