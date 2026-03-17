@@ -58,7 +58,9 @@ const Q_InfoButtons = ({ mode }: Props) => {
           className={cls.arrowToggle}
           aria-label="Закрыть информацию"
           onClick={() => closeLayer("info")}
-        />
+        >
+          {"<————"}
+        </button>
       ) : (
         <Q_Button
           aria-label="Показать информацию"

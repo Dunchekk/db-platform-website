@@ -37,14 +37,9 @@
 .arrowToggle {
   all: unset;
   cursor: pointer;
-  width: 20px;
-  height: 20px;
   margin-top: 10px;
-  background-image: url("../../assets/images/arrow.svg");
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  transform: rotate(180deg);
+  line-height: 1;
+  user-select: none;
 }
 
 .arrowToggle:hover {

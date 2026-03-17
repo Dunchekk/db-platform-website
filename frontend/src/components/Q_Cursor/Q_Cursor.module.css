@@ -20,6 +20,7 @@
   height: 18px;
   border-radius: 50%;
   background: #000000;
+  position: relative;
 
   transform: translate(-50%, -50%) scale(1);
   will-change: transform;
@@ -40,16 +41,31 @@
   height: 24px;
   border-radius: 0;
   background-color: transparent;
-  background-image: url("../../assets/images/arrow.svg");
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
 }
 
 .arrowLeft .dot {
-  transform: translate(-50%, -50%) rotate(180deg);
+  transform: translate(-50%, -50%);
 }
 
 .arrowRight .dot {
-  transform: translate(-50%, -50%) rotate(0deg);
+  transform: translate(-50%, -50%);
+}
+
+.arrowLeft .dot::before,
+.arrowRight .dot::before {
+  content: "<————";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #000000;
+  font-size: 16px;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+.arrowRight .dot::before {
+  transform: translate(-50%, -50%) scaleX(-1);
 }
