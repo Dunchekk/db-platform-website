@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router";
 import cls from "@/layers/AboutLayer/AboutLayer.module.css";
+import M_BackButton from "@/components/M_BackButton/M_BackButton";
 
 import frame28 from "@/assets/images/bg-items/Frame 28.png";
 import frame29 from "@/assets/images/bg-items/Frame 29.png";
@@ -97,6 +98,7 @@ const AboutLayer = () => {
     <div
       className={`${cls.main} ${pathname === "/about" ? cls.aboutRoute : ""}`}
     >
+      <M_BackButton isVisible={pathname === "/about"} />
       <div className={cls.imgs} ref={viewportRef} aria-hidden="true">
         <div className={cls.imgTrack} ref={trackRef}>
           {[frame28, frame29, frame30, frame31, frame32].map((src) => (
