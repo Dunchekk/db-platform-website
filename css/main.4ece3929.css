@@ -734,7 +734,7 @@
 
   border-radius: 50%;
 
-  background-image: url("/unchecked.svg");
+  background-image: url(../53b676c29d86f1d3bfd8.svg);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -743,7 +743,7 @@
 }
 
 .W0Cl8mnd:checked {
-  background-image: url("/checked.svg");
+  background-image: url(../a96770638a5a2ea3bf98.svg);
   background-color: rgba(0, 0, 0, 0.05);
 }
 
