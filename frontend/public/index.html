@@ -24,8 +24,75 @@
         }
       })();
     </script>
+    <style>
+      #boot-loader {
+        position: fixed;
+        inset: 0;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 1;
+        transition: opacity 280ms ease;
+        pointer-events: all;
+        z-index: 9999;
+      }
+
+      #boot-loader.is-hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #boot-loader .bootLoader {
+        width: 66px;
+        height: 66px;
+        position: relative;
+      }
+
+      #boot-loader .bootLoaderDot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #000;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      #boot-loader .bootLoaderOrbit {
+        position: absolute;
+        inset: 0;
+        animation: bootLoaderSpin 900ms linear infinite;
+      }
+
+      #boot-loader .bootLoaderOrbitDot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #000;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) translateX(18px);
+      }
+
+      @keyframes bootLoaderSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="boot-loader" aria-label="Loading" role="status">
+      <div class="bootLoader" aria-hidden="true">
+        <div class="bootLoaderDot"></div>
+        <div class="bootLoaderOrbit">
+          <div class="bootLoaderOrbitDot"></div>
+        </div>
+      </div>
+    </div>
     <div id="root"></div>
   </body>
 </html>
