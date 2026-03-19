@@ -4,6 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <script>
+      (function () {
+        try {
+          var params = new URLSearchParams(window.location.search);
+          var redirect = params.get("redirect");
+          if (!redirect) return;
+
+          params.delete("redirect");
+
+          var base = window.location.pathname.replace(/\/$/, "");
+          var nextUrl = base + decodeURIComponent(redirect);
+          var restSearch = params.toString();
+          if (restSearch) nextUrl += "?" + restSearch;
+
+          window.history.replaceState(null, "", nextUrl);
+        } catch (e) {
+          // no-op
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
