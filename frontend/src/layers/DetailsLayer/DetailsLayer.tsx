@@ -65,19 +65,22 @@ const DetailsLayer = () => {
             />
 
             <div className={cls.info}>
-              <span>{+object.id < 9 ? "0" + object.id : object.id}</span>
-              <br />
               <span>{object.name}</span>
               <br />
               <br />
               <span>{object.prise} ₽</span>
               <br />
               <br />
-              <span>
-                {object.choise.map((c) => {
-                  return <span key={c}>{c} </span>;
+              <div className={cls.choiseblock}>
+                {object.choise.map((c, i) => {
+                  const choise = i === 0 ? cls.ch : "";
+                  return (
+                    <div className={choise} key={c}>
+                      {c}
+                    </div>
+                  );
                 })}
-              </span>
+              </div>
               <br />
               <br />
               <br />

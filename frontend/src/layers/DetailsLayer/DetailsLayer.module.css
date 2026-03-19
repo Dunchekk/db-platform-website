@@ -84,3 +84,12 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.ch {
+  text-decoration: underline;
+}
+
+.choiseblock {
+  display: flex;
+  gap: calc(var(--space) * 0.5);
+}
