@@ -1,4 +1,23 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>db</title><script>(function () {
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><base href="/"/><script>(function () {
+        try {
+          var baseEl = document.querySelector("base");
+          if (!baseEl) return;
+
+          var hostname = window.location.hostname;
+          var isGithubIo = /(^|\\.)github\\.io$/i.test(hostname);
+          if (!isGithubIo) {
+            baseEl.setAttribute("href", "/");
+            return;
+          }
+
+          var segments = window.location.pathname.split("/").filter(Boolean);
+          var repo = segments.length > 0 ? segments[0] : "";
+          var href = repo ? "/" + repo + "/" : "/";
+          baseEl.setAttribute("href", href);
+        } catch (e) {
+          // no-op
+        }
+      })();</script><title>db</title><script>(function () {
         try {
           var params = new URLSearchParams(window.location.search);
           var redirect = params.get("redirect");
@@ -15,4 +34,60 @@
         } catch (e) {
           // no-op
         }
-      })();</script><link rel="icon" href="favicon.svg"><script defer="defer" src="main.024d337ffe98469b7bdc.js"></script><link href="css/main.fcacf55c.css" rel="stylesheet"></head><body><div id="root"></div></body></html>
+      })();</script><style>#boot-loader {
+        position: fixed;
+        inset: 0;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 1;
+        transition: opacity 280ms ease;
+        pointer-events: all;
+        z-index: 9999;
+      }
+
+      #boot-loader.is-hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #boot-loader .bootLoader {
+        width: 66px;
+        height: 66px;
+        position: relative;
+      }
+
+      #boot-loader .bootLoaderDot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #000;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      #boot-loader .bootLoaderOrbit {
+        position: absolute;
+        inset: 0;
+        animation: bootLoaderSpin 900ms linear infinite;
+      }
+
+      #boot-loader .bootLoaderOrbitDot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #000;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) translateX(18px);
+      }
+
+      @keyframes bootLoaderSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }</style><link rel="icon" href="favicon.svg"><script defer="defer" src="main.653db5aba3374652f926.js"></script><link href="css/main.6664602e.css" rel="stylesheet"></head><body><div id="boot-loader" aria-label="Loading" role="status"><div class="bootLoader" aria-hidden="true"><div class="bootLoaderDot"></div><div class="bootLoaderOrbit"><div class="bootLoaderOrbitDot"></div></div></div></div><div id="root"></div></body></html>

@@ -329,6 +329,11 @@
   line-height: 1;
 }
 
+.lmfI61pC:hover .Y46xSo8r,
+.lmfI61pC:focus-visible .Y46xSo8r {
+  text-decoration: underline;
+}
+
 .HlHCXXoj {
   width: 26px;
   height: 26px;
@@ -852,6 +857,12 @@
 .Q2DydNTN {
   display: flex;
   gap: calc(var(--space) * 0.5);
+}
+
+.X0lrbeW_ {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space) * 0.8);
 }
 
 .LkfbMYf6 {
