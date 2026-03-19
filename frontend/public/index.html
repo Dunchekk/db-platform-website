@@ -3,6 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <script>
+      (function () {
+        try {
+          var baseEl = document.querySelector("base");
+          if (!baseEl) return;
+
+          var hostname = window.location.hostname;
+          var isGithubIo = /(^|\\.)github\\.io$/i.test(hostname);
+          if (!isGithubIo) {
+            baseEl.setAttribute("href", "/");
+            return;
+          }
+
+          var segments = window.location.pathname.split("/").filter(Boolean);
+          var repo = segments.length > 0 ? segments[0] : "";
+          var href = repo ? "/" + repo + "/" : "/";
+          baseEl.setAttribute("href", href);
+        } catch (e) {
+          // no-op
+        }
+      })();
+    </script>
     <title>db</title>
     <script>
       (function () {
