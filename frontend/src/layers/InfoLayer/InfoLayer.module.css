@@ -10,7 +10,9 @@
   height: 100vh;
   padding-top: var(--max-main-box-up-margin);
   padding-bottom: var(--max-main-box-up-margin);
-  overflow: auto;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.15);
+
   position: relative;
 }
 
