@@ -1,3 +1,5 @@
+import { useRef } from "react";
+
 import cls from "@/layers/InfoLayer/InfoLayer.module.css";
 import M_ReqInfo from "@/components/M_InfoBlocks/M_ReqInfo/M_ReqInfo";
 import M_ContactInfo from "@/components/M_InfoBlocks/M_ContactInfo/M_ContactInfo";
@@ -11,6 +13,12 @@ import { useLayersStore } from "@/features/layer-switching/layers.store";
 const InfoLayer = () => {
   const activeInfoSection = useLayersStore((state) => state.activeInfoSection);
   const section: InfoSectionId = activeInfoSection ?? DEFAULT_INFO_SECTION;
+  const closeLayer = useLayersStore((state) => state.closeLayer);
+  const openedLayers = useLayersStore((state) => state.openedLayers);
+  const isInfoLayerOpen = openedLayers.includes("info");
+
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const navRef = useRef<HTMLDivElement | null>(null);
 
   const renderBlock = (section: InfoSectionId) => {
     switch (section) {
@@ -30,14 +38,33 @@ const InfoLayer = () => {
   };
 
   return (
-    <div className={cls.main}>
-      <div className={cls.wrapper}>
+    <div
+      className={cls.main}
+      onPointerDown={(event) => {
+        if (!isInfoLayerOpen) return;
+        if (event.button !== 0) return;
+
+        const targetNode = event.target as Node | null;
+        if (!targetNode) return;
+
+        const wrapper = wrapperRef.current;
+        if (wrapper && wrapper.contains(targetNode)) return;
+
+        const nav = navRef.current;
+        if (nav && nav.contains(targetNode)) return;
+
+        closeLayer("info");
+      }}
+    >
+      <div className={cls.wrapper} ref={wrapperRef}>
         <div key={section} className={cls.fadeIn}>
           {renderBlock(section)}
         </div>
       </div>
 
-      <Q_InfoButtons mode="info" />
+      <div ref={navRef}>
+        <Q_InfoButtons mode="info" />
+      </div>
     </div>
   );
 };
