@@ -43,6 +43,10 @@ const appRouter = createBrowserRouter([
     path: "/object/:id/checkout",
     element: <App />,
   },
+  {
+    path: "*",
+    element: <App />,
+  },
 ], {
   basename: getGithubPagesBasename(),
 });
