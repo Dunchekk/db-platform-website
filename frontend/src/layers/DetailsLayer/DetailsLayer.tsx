@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router";
 
 import cls from "@/layers/DetailsLayer/DetailsLayer.module.css";
@@ -22,6 +22,7 @@ const DetailsLayer = () => {
 
   const object = effectiveObjectId ? objectsById[effectiveObjectId] : undefined;
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const images = useMemo(() => {
     if (!object) return [];
@@ -31,8 +32,20 @@ const DetailsLayer = () => {
   }, [object]);
 
   return (
-    <div className={cls.main}>
-      <div className={cls.wrapper}>
+    <div
+      className={cls.main}
+      onPointerDown={(event) => {
+        if (!isDetailsContext) return;
+        if (event.button !== 0) return;
+
+        const wrapper = wrapperRef.current;
+        const targetNode = event.target as Node | null;
+        if (wrapper && targetNode && wrapper.contains(targetNode)) return;
+
+        closeLayer("details");
+      }}
+    >
+      <div className={cls.wrapper} ref={wrapperRef}>
         <button
           type="button"
           className={cls.back}
