@@ -2,6 +2,7 @@
   width: 100vw;
   height: 100vh;
   position: absolute;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .wrapper {
@@ -17,19 +18,12 @@
   gap: var(--double-space);
 }
 
-.firstborder {
-  border-bottom: 1.5px black solid;
+.column {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--space) / 2);
-  padding-bottom: calc(var(--space) / 3);
-  padding-top: calc(var(--space) / 3);
-  width: calc(calc(var(--max-main-box-width) / 3) - var(--space));
 }
 
-.third {
-  display: flex;
-  flex-direction: column;
+.columnGapSm {
   gap: calc(var(--space) / 4);
 }
 
@@ -38,10 +32,11 @@
   margin-top: calc(var(--space) / 1.6);
 }
 
-.firstthird {
-  display: flex;
-  flex-direction: column;
+.columnBetween {
   justify-content: space-between;
+}
+
+.columnRelative {
   position: relative;
 }
 
@@ -53,41 +48,35 @@
   right: 0;
 }
 
-.checkboxwrapper {
+.checkboxRow {
   display: flex;
   gap: calc(var(--space) / 2);
-  margin-top: calc(var(--space) / 1.6);
   align-items: flex-start;
 }
 
-.checkboxwrapper label {
+.checkboxRowMtLg {
+  margin-top: calc(var(--space) / 1.6);
+}
+
+.checkboxRowMtSm {
+  margin-top: calc(var(--space) / 4);
+}
+
+.checkboxRowMtMd {
+  margin-top: calc(var(--space) / 1);
+}
+
+.checkboxRowMt0 {
+  margin-top: 0;
+}
+
+.checkboxLabel {
   flex: 1 1 auto;
   min-width: 0;
 }
 
 .checkbox {
   margin-top: 4px;
-}
-
-.checkboxwrapper2 {
-  display: flex;
-  gap: calc(var(--space) / 2);
-  margin-top: calc(var(--space) / 4);
-  align-items: flex-start;
-}
-
-.checkboxwrapper3 {
-  margin-top: calc(var(--space) / 1);
-  display: flex;
-  gap: calc(var(--space) / 2);
-  align-items: flex-start;
-}
-
-.checkboxwrapper4 {
-  margin-top: 0;
-  display: flex;
-  gap: calc(var(--space) / 2);
-  align-items: flex-start;
 }
 
 .adress {
@@ -108,13 +97,23 @@
   margin-bottom: calc(var(--space) / 2);
 }
 
-.thirdthird {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.columnFullHeight {
   height: 100%;
 }
 
 .order {
   align-self: flex-end;
+  cursor: pointer;
+}
+
+.order:hover {
+  text-decoration: underline;
+}
+
+.prisediv {
+  display: flex;
+  justify-content: space-between;
+}
+.prisediv1 {
+  margin-top: calc(var(--space) / 1);
 }
