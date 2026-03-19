@@ -38,7 +38,7 @@ const DetailsLayer = () => {
           className={cls.back}
           onClick={() => closeLayer("details")}
         >
-          ✕
+          Х
         </button>
 
         {isLoading && <div>Loading...</div>}
@@ -47,9 +47,11 @@ const DetailsLayer = () => {
         {isDetailsContext && !isLoading && !error && !effectiveObjectId && (
           <div>Object id not found</div>
         )}
-        {isDetailsContext && !isLoading && !error && effectiveObjectId && !object && (
-          <div>Object {effectiveObjectId} not found</div>
-        )}
+        {isDetailsContext &&
+          !isLoading &&
+          !error &&
+          effectiveObjectId &&
+          !object && <div>Object {effectiveObjectId} not found</div>}
 
         {/* ------------------------------- */}
 
