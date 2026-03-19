@@ -1,0 +1,84 @@
+.root {
+  min-width: 0;
+}
+
+.inner {
+  --scroll-fade-size: 20px;
+  --_fade-top: var(--scroll-fade-size);
+  --_fade-bottom: var(--scroll-fade-size);
+
+  height: var(--scroll-fade-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+
+  position: relative;
+  width: 100%;
+}
+
+.inner[data-scrollable="true"] {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--_fade-top),
+    #000 calc(100% - var(--_fade-bottom)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--_fade-top),
+    #000 calc(100% - var(--_fade-bottom)),
+    transparent 100%
+  );
+}
+
+.inner[data-scrollable="false"] {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.inner[data-scrollable="true"][data-at-top="true"] {
+  --_fade-top: 0px;
+}
+
+.inner[data-scrollable="true"][data-at-bottom="true"] {
+  --_fade-bottom: 0px;
+}
+
+.inner::before,
+.inner::after {
+  content: "";
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: var(--scroll-fade-size);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 120ms ease;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
+
+.inner::before {
+  top: 0;
+  margin-top: calc(-1 * var(--scroll-fade-size));
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), transparent);
+}
+
+.inner::after {
+  bottom: 0;
+  margin-bottom: calc(-1 * var(--scroll-fade-size));
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.9), transparent);
+}
+
+.inner[data-scrollable="true"][data-at-top="false"]::before {
+  opacity: 1;
+}
+
+.inner[data-scrollable="true"][data-at-bottom="false"]::after {
+  opacity: 1;
+}
