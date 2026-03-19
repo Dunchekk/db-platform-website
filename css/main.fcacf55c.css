@@ -845,6 +845,15 @@
   cursor: pointer;
 }
 
+.TzDs3V2e {
+  text-decoration: underline;
+}
+
+.Q2DydNTN {
+  display: flex;
+  gap: calc(var(--space) * 0.5);
+}
+
 .LkfbMYf6 {
   width: 100%;
   overflow: hidden;
