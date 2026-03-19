@@ -1,1 +1,18 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Document</title><link rel="icon" href="favicon.svg"><script defer="defer" src="main.d10c7025a7300612beeb.js"></script><link href="css/main.82eea71f.css" rel="stylesheet"></head><body><div id="root"></div></body></html>
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>db</title><script>(function () {
+        try {
+          var params = new URLSearchParams(window.location.search);
+          var redirect = params.get("redirect");
+          if (!redirect) return;
+
+          params.delete("redirect");
+
+          var base = window.location.pathname.replace(/\/$/, "");
+          var nextUrl = base + decodeURIComponent(redirect);
+          var restSearch = params.toString();
+          if (restSearch) nextUrl += "?" + restSearch;
+
+          window.history.replaceState(null, "", nextUrl);
+        } catch (e) {
+          // no-op
+        }
+      })();</script><link rel="icon" href="favicon.svg"><script defer="defer" src="main.aaa0d9e439687866f605.js"></script><link href="css/main.82eea71f.css" rel="stylesheet"></head><body><div id="root"></div></body></html>
