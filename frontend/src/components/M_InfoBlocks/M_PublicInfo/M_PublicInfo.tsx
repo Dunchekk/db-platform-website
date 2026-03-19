@@ -1,5 +1,6 @@
 import cls from "@/components/M_InfoBlocks/M_PublicInfo/M_PublicInfo.module.css";
 import React from "react";
+import W_ScrollFadeBox from "@/components/W_ScrollFadeBox/W_ScrollFadeBox";
 
 type Props = { addClasses: string };
 
@@ -16,7 +17,7 @@ const M_PublicInfo = ({ addClasses }: Props) => {
           дней.
         </p>
       </div>
-      <div className={cls.left}>
+      <W_ScrollFadeBox className={cls.left} height="var(--max-main-box-height)">
         <p>
           Публичная оферта о заключении договора купли-продажи товара
           дистанционным способом:
@@ -73,7 +74,7 @@ const M_PublicInfo = ({ addClasses }: Props) => {
           вступает в силу с момента публикации на Сайте. 9.3. К отношениям
           сторон применяется законодательство Российской Федерации.
         </p>
-      </div>
+      </W_ScrollFadeBox>
     </div>
   );
 };

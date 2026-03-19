@@ -1,5 +1,6 @@
 import React from "react";
 import cls from "@/components/M_InfoBlocks/M_ConfInfo/M_ConfInfo.module.css";
+import W_ScrollFadeBox from "@/components/W_ScrollFadeBox/W_ScrollFadeBox";
 
 type Props = { addClasses: string };
 
@@ -16,7 +17,7 @@ const M_ConfInfo = ({ addClasses }: Props) => {
           написать мне и попросить удалить или изменить ваши данные.
         </p>
       </div>
-      <div className={cls.left}>
+      <W_ScrollFadeBox className={cls.left} height="var(--max-main-box-height)">
         <p>Политика обработки персональных данных:</p>
         <p>
           1. Общие положения 1.1. Настоящая Политика обработки персональных
@@ -65,7 +66,7 @@ const M_ConfInfo = ({ addClasses }: Props) => {
           версия Политики размещается на Сайте и вступает в силу с момента
           публикации.
         </p>
-      </div>
+      </W_ScrollFadeBox>
     </div>
   );
 };

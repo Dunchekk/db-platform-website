@@ -1,5 +1,6 @@
 import React from "react";
 import cls from "@/components/M_InfoBlocks/M_DelivInfo/M_DelivInfo.module.css";
+import W_ScrollFadeBox from "@/components/W_ScrollFadeBox/W_ScrollFadeBox";
 
 type Props = { addClasses: string };
 
@@ -16,7 +17,7 @@ const M_DelivInfo = ({ addClasses }: Props) => {
           на возврат, а если вдруг брак — мы разберёмся и я заменю/верну деньги.
         </p>
       </div>
-      <div className={cls.left}>
+      <W_ScrollFadeBox className={cls.left} height="var(--max-main-box-height)">
         <p>Доставка и возврат:</p>
         <p>
           Доставка Способы доставки Доставка осуществляется транспортной
@@ -48,7 +49,7 @@ const M_DelivInfo = ({ addClasses }: Props) => {
           состояния. Контакты по вопросам возврата Email: [email] Телефон:
           [номер]
         </p>
-      </div>
+      </W_ScrollFadeBox>
     </div>
   );
 };
