@@ -2,7 +2,7 @@ import type { DbObject } from "@/shared/types/object";
 import { OBJECTS_URL } from "@/shared/api/endpoints";
 import { requestJson } from "@/shared/api/requestJson";
 
-import objectsMock from "@/mocks/objects.json";
+import objectsMock from "@/mocks/objects";
 
 export async function getObjects(
   url: string = OBJECTS_URL
@@ -17,4 +17,3 @@ export async function getObjects(
     },
   });
 }
-

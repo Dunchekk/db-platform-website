@@ -2,7 +2,7 @@ import cls from "@/components/M_CardItemBox/M_CardItemBox.module.css";
 
 import React from "react";
 
-import objects from "@/mocks/objects.json";
+import objects from "@/mocks/objects";
 import { DbObject } from "@/shared/types/object";
 
 const object: DbObject = objects[0];

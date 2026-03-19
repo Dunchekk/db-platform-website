@@ -2,7 +2,7 @@ import React from "react";
 import cls from "@/layers/CheckoutLayer/CheckoutLayer.module.css";
 import W_CardItemsWrapper from "@/components/W_CardItemsWrapper/W_CardItemsWrapper";
 
-import objects from "@/mocks/objects.json";
+import objects from "@/mocks/objects";
 import { DbObject } from "@/shared/types/object";
 import M_Input from "@/components/M_Input/M_Input";
 import M_InputCheckbox from "@/components/M_InputCheckbox/M_InputCheckbox";
