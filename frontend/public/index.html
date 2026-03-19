@@ -11,7 +11,7 @@
           if (!baseEl) return;
 
           var hostname = window.location.hostname;
-          var isGithubIo = /(^|\\.)github\\.io$/i.test(hostname);
+          var isGithubIo = /(^|\.)github\.io$/i.test(hostname);
           if (!isGithubIo) {
             baseEl.setAttribute("href", "/");
             return;
@@ -47,6 +47,32 @@
         }
       })();
     </script>
+    <script>
+      (function () {
+        try {
+          var el = document.getElementById("boot-loader");
+          if (!el) return;
+
+          var reduceMotionQuery =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)");
+
+          if (reduceMotionQuery && reduceMotionQuery.matches) {
+            el.classList.add("is-visible");
+            return;
+          }
+
+          window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(function () {
+              if (el.dataset.state === "hidden") return;
+              el.classList.add("is-visible");
+            });
+          });
+        } catch (e) {
+          // no-op
+        }
+      })();
+    </script>
     <style>
       #boot-loader {
         position: fixed;
@@ -55,10 +81,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        opacity: 1;
-        transition: opacity 280ms ease;
+        opacity: 0;
+        transition: opacity 1000ms ease;
         pointer-events: all;
         z-index: 9999;
+      }
+
+      #boot-loader.is-visible {
+        opacity: 1;
       }
 
       #boot-loader.is-hidden {

@@ -7,11 +7,15 @@
     <script>
       (function () {
         try {
+          var hostname = window.location.hostname;
+          var isGithubIo = /(^|\.)github\.io$/i.test(hostname);
+
           var pathname = window.location.pathname;
           var segments = pathname.split("/").filter(Boolean);
 
           // GitHub Pages project site: /<repo>/<route...>
-          var base = segments.length > 0 ? "/" + segments[0] : "";
+          // Custom domain (or non-github.io): /<route...>
+          var base = isGithubIo && segments.length > 0 ? "/" + segments[0] : "";
           var rest = pathname.slice(base.length) || "/";
 
           var redirect = rest + window.location.search + window.location.hash;
