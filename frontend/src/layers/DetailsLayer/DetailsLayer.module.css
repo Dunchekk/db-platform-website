@@ -93,3 +93,9 @@
   display: flex;
   gap: calc(var(--space) * 0.5);
 }
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space) * 0.8);
+}

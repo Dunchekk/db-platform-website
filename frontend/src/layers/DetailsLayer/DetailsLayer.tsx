@@ -78,21 +78,19 @@ const DetailsLayer = () => {
             />
 
             <div className={cls.info}>
-              <span>{object.name}</span>
-              <br />
-              <br />
-              <span>{object.prise} ₽</span>
-              <br />
-              <br />
-              <div className={cls.choiseblock}>
-                {object.choise.map((c, i) => {
-                  const choise = i === 0 ? cls.ch : "";
-                  return (
-                    <div className={choise} key={c}>
-                      {c}
-                    </div>
-                  );
-                })}
+              <div className={cls.header}>
+                <span>{object.name}</span>
+                <span>{object.prise} ₽</span>
+                <div className={cls.choiseblock}>
+                  {object.choise.map((c, i) => {
+                    const choise = i === 0 ? cls.ch : "";
+                    return (
+                      <div className={choise} key={c}>
+                        {c}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
               <br />
               <br />
