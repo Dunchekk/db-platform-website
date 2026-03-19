@@ -1,0 +1,39 @@
+.loader {
+  width: 66px;
+  height: 66px;
+  position: relative;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.orbit {
+  position: absolute;
+  inset: 0;
+  animation: spin 900ms linear infinite;
+}
+
+.orbitDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateX(18px);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
