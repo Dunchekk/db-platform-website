@@ -3,11 +3,11 @@ import { useLocation } from "react-router";
 import cls from "@/layers/AboutLayer/AboutLayer.module.css";
 import M_BackButton from "@/components/M_BackButton/M_BackButton";
 
-import frame28 from "@/assets/images/bg-items/Frame 28.png";
-import frame29 from "@/assets/images/bg-items/Frame 29.png";
-import frame30 from "@/assets/images/bg-items/Frame 30.png";
-import frame31 from "@/assets/images/bg-items/Frame 31.png";
-import frame32 from "@/assets/images/bg-items/Frame 32.png";
+import frame28 from "@/assets/images/bg-items/bag.png";
+import frame29 from "@/assets/images/bg-items/belt.png";
+import frame30 from "@/assets/images/bg-items/gloves.png";
+import frame31 from "@/assets/images/bg-items/pasport.png";
+import frame32 from "@/assets/images/bg-items/wallet.png";
 
 const AboutLayer = () => {
   const { pathname } = useLocation();
