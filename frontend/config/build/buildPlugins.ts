@@ -16,6 +16,11 @@ export function buildPlugins(params: BuildOptions): Configuration["plugins"] {
       template: params.paths.html,
       favicon: path.resolve(params.paths.public, "favicon.svg"),
     }),
+    new HtmlWebpackPlugin({
+      template: path.resolve(params.paths.public, "404.html"),
+      filename: "404.html",
+      inject: false,
+    }),
     new DefinePlugin({
       __PLATFORM__: JSON.stringify(params.platform),
     }), // подменяет глобальные переменные на значения которые мы задаем при сборке
