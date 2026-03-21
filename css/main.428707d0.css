@@ -33,6 +33,7 @@
   width: 100vw;
   height: 100vh;
   position: absolute;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .q2V0G9U1 {
@@ -42,7 +43,6 @@
   padding-top: var(--max-main-box-up-margin);
   padding-bottom: var(--max-main-box-up-margin);
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.15);
 
   position: relative;
 }
@@ -492,8 +492,19 @@
   min-width: 0;
 }
 
-.MUNHAfuk {
-  margin-top: 4px;
+.vBA1Zsy2 .MUNHAfuk {
+  position: relative;
+  margin-top: 3px;
+}
+
+.KK61o3tj {
+  color: inherit;
+  text-decoration: none;
+}
+
+.KK61o3tj:hover,
+.KK61o3tj:focus-visible {
+  text-decoration: underline;
 }
 
 .ztYKnmmf {
@@ -865,13 +876,13 @@
   gap: calc(var(--space) * 0.8);
 }
 
-.LkfbMYf6 {
+.qZpt9GpT {
   width: 100%;
   overflow: hidden;
   position: relative;
 }
 
-.N6XtXFK4 {
+.nzqP8aOu {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -879,15 +890,15 @@
   z-index: 2;
 }
 
-.dST25o8x {
+.Hz0gMdyq {
   left: 0;
 }
 
-.AJSjnzt3 {
+.oBDDDB2H {
   right: 0;
 }
 
-._6XCjL0g {
+.oOzxzf91 {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -895,7 +906,7 @@
   bottom: 0;
 }
 
-.CNPLQqeo {
+.DDThzNDi {
   width: 100%;
   height: var(--max-main-box-height);
   object-fit: contain;
@@ -905,24 +916,21 @@
   z-index: 1;
 }
 
-.JbVKUfeS {
+.qV8loqQK {
   opacity: 1;
 }
 
-.R2CcO2eB {
+.I03h9UIi {
   opacity: 0;
 }
 
-.SXEEU1dj {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: black;
+.v4KDPdnB {
+  all: unset;
   cursor: pointer;
   appearance: none;
-  border: none;
-  padding: 0;
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 
   position: absolute;
   top: calc(var(--space) * 0.7);
@@ -930,6 +938,35 @@
 
   z-index: 999;
   transition: top var(--duration) ease, left var(--duration) ease;
+}
+
+.v4KDPdnB:disabled {
+  cursor: default;
+}
+
+.SXEEU1dj {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: black;
+  flex: 0 0 auto;
+}
+
+.p4p9N5d6 {
+  line-height: 1;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+
+.sawrN9qH {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.v4KDPdnB:not(:disabled):hover .sawrN9qH {
+  text-decoration: underline;
 }
 
 .kbUTKh3O {
