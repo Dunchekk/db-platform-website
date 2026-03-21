@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import cls from "./ImagesSlider.module.css";
+import cls from "./M_ImageSlider.module.css";
 
 const FADE_MS = 260;
 const GAP_MS = 90;
@@ -11,7 +11,7 @@ type Props = {
   className?: string;
 };
 
-const ImagesSlider = ({ images, alt, className }: Props) => {
+const M_ImageSlider = ({ images, alt, className }: Props) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isImageVisible, setIsImageVisible] = useState(true);
   const isAnimatingRef = useRef(false);
@@ -119,4 +119,4 @@ const ImagesSlider = ({ images, alt, className }: Props) => {
   );
 };
 
-export default ImagesSlider;
+export default M_ImageSlider;

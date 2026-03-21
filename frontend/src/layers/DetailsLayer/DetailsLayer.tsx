@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router";
 
 import cls from "@/layers/DetailsLayer/DetailsLayer.module.css";
-import ImagesSlider from "@/components/ImagesSlider/ImagesSlider";
+import M_ImageSlider from "@/components/M_ImageSlider/M_ImageSlider";
 import { useObjects } from "@/shared/objects/objects.context";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
 
@@ -70,7 +70,7 @@ const DetailsLayer = () => {
 
         {!isLoading && !error && object && (
           <div className={cls.content}>
-            <ImagesSlider
+            <M_ImageSlider
               key={effectiveObjectId ?? "no-object"}
               className={cls.obj}
               images={images}
