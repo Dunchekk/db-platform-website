@@ -54,7 +54,11 @@ const Q_Circle = () => {
       disabled={shouldShiftPosition}
       onClick={shouldShiftPosition ? undefined : resetLayers}
     >
-      <span className={cls.circle} aria-hidden="true" />
+      <span
+        className={cls.circle}
+        data-q-circle-hit="true"
+        aria-hidden="true"
+      />
       <span
         className={[cls.label, isLabelVisible ? cls.labelVisible : ""].join(
           " "

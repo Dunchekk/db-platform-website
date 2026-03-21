@@ -2,15 +2,23 @@ import { useEffect, useRef } from "react";
 
 import cls from "@/components/Q_Cursor/Q_Cursor.module.css";
 
+const CIRCLE_AVOID_GAP_PX = 3;
+
 export default function Q_Cursor() {
   const cursorRef = useRef<HTMLDivElement | null>(null);
+  const dotRef = useRef<HTMLDivElement | null>(null);
   const lastTargetRef = useRef<EventTarget | null>(null);
   const isPointerRef = useRef(false);
   const modeRef = useRef<"default" | "arrow-left" | "arrow-right">("default");
+  const qCircleHitRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const cursorEl = cursorRef.current;
     if (!cursorEl) return;
+
+    qCircleHitRef.current = document.querySelector<HTMLElement>(
+      '[data-q-circle-hit="true"]'
+    );
 
     const getCursorMode = (target: Element) => {
       let el: Element | null = target;
@@ -22,11 +30,44 @@ export default function Q_Cursor() {
       return "default";
     };
 
+    const avoidQCircle = (x: number, y: number) => {
+      const qCircleEl =
+        qCircleHitRef.current ??
+        document.querySelector<HTMLElement>('[data-q-circle-hit="true"]');
+      qCircleHitRef.current = qCircleEl;
+      if (!qCircleEl) return { x, y };
+
+      const rect = qCircleEl.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return { x, y };
+
+      const circleX = rect.left + rect.width / 2;
+      const circleY = rect.top + rect.height / 2;
+      const circleRadius = rect.width / 2;
+
+      const dotRadius = (dotRef.current?.offsetWidth ?? 18) / 2;
+
+      const minDistance = circleRadius + dotRadius + CIRCLE_AVOID_GAP_PX;
+
+      const dx = x - circleX;
+      const dy = y - circleY;
+      const distance = Math.hypot(dx, dy);
+
+      if (distance >= minDistance) return { x, y };
+
+      if (distance === 0) {
+        return { x: circleX + minDistance, y: circleY };
+      }
+
+      const scale = minDistance / distance;
+      return { x: circleX + dx * scale, y: circleY + dy * scale };
+    };
+
     const onPointerMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
 
-      cursorEl.style.setProperty("--cursor-x", `${e.clientX}px`);
-      cursorEl.style.setProperty("--cursor-y", `${e.clientY}px`);
+      const nextPos = avoidQCircle(e.clientX, e.clientY);
+      cursorEl.style.setProperty("--cursor-x", `${nextPos.x}px`);
+      cursorEl.style.setProperty("--cursor-y", `${nextPos.y}px`);
 
       if (e.target === lastTargetRef.current) return;
       lastTargetRef.current = e.target;
@@ -34,7 +75,8 @@ export default function Q_Cursor() {
       const target = e.target;
       if (!(target instanceof Element)) return;
 
-      const nextIsPointer = window.getComputedStyle(target).cursor === "pointer";
+      const nextIsPointer =
+        window.getComputedStyle(target).cursor === "pointer";
       if (nextIsPointer !== isPointerRef.current) {
         isPointerRef.current = nextIsPointer;
         cursorEl.classList.toggle(cls.pointer, nextIsPointer);
@@ -56,7 +98,7 @@ export default function Q_Cursor() {
 
   return (
     <div ref={cursorRef} className={cls.cursor} aria-hidden="true">
-      <div className={cls.dot} />
+      <div ref={dotRef} className={cls.dot} />
     </div>
   );
 }
