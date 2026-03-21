@@ -8,7 +8,7 @@ const M_PublicInfo = ({ addClasses }: Props) => {
   return (
     <div className={addClasses}>
       <div className={cls.left}>
-        <p>DB:</p>
+        <p>&nbsp;&nbsp;DB:</p>
         <p>
           Короче, оформляя заказ на сайте, вы соглашаетесь купить товар на тех
           условиях, которые там описаны (цена, доставка, возврат и всё

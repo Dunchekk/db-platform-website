@@ -8,7 +8,7 @@ const M_ConfInfo = ({ addClasses }: Props) => {
   return (
     <div className={addClasses}>
       <div className={cls.left}>
-        <p>DB:</p>
+        <p>&nbsp;&nbsp;DB:</p>
         <p>
           Короче, я беру ваши имя, телефон, почту и адрес только для того, чтобы
           оформить заказ, связаться с вами и отправить доставку. Данные могу

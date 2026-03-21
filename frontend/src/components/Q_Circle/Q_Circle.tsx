@@ -4,15 +4,22 @@ import { useLocation } from "react-router";
 
 const Q_Circle = () => {
   const resetLayers = useLayersStore((state) => state.resetLayers);
+  const isInfoLayerOpen = useLayersStore((state) =>
+    state.openedLayers.includes("info")
+  );
   const { pathname } = useLocation();
   const isAboutRoute = pathname === "/about";
+  const shouldShiftPosition = isAboutRoute || isInfoLayerOpen;
 
   return (
     <button
-      className={[cls.circle, isAboutRoute ? cls.aboutopen : ""].join(" ")}
+      className={[cls.circle, shouldShiftPosition ? cls.aboutopen : ""].join(
+        " "
+      )}
       type="button"
       aria-label="Go to About"
-      onClick={resetLayers}
+      disabled={shouldShiftPosition}
+      onClick={shouldShiftPosition ? undefined : resetLayers}
     />
   );
 };

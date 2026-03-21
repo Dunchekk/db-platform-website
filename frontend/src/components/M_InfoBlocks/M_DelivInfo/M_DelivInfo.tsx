@@ -8,7 +8,7 @@ const M_DelivInfo = ({ addClasses }: Props) => {
   return (
     <div className={addClasses}>
       <div className={cls.left}>
-        <p>DB:</p>
+        <p>&nbsp;&nbsp;DB:</p>
         <p>
           Короче, мы отправляем заказы через СДЭК — можете выбрать ПВЗ или
           курьером. Сроки и стоимость показываем сразу при оформлении,

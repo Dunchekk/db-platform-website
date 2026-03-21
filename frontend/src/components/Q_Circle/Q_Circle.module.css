@@ -17,6 +17,10 @@
   transition: top var(--duration) ease, left var(--duration) ease;
 }
 
+.circle:disabled {
+  cursor: default;
+}
+
 .aboutopen {
   top: calc(var(--max-main-box-up-margin) + 2px);
   left: var(--bleed);

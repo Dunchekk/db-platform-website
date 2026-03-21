@@ -7,7 +7,7 @@ const M_ReqInfo = ({ addClasses }: Props) => {
   return (
     <div className={addClasses}>
       <div className={cls.left}>
-        <p>DB:</p>
+        <p>&nbsp;&nbsp;DB:</p>
         <p>
           Публикация реквизитов — требование Закона о защите прав потребителей.
           Можете проверить мою регистрацию на сайте ФНС, направить претензию по

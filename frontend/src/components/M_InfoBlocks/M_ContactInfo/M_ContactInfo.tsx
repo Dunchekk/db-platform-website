@@ -7,7 +7,7 @@ const M_ContactInfo = ({ addClasses }: Props) => {
   return (
     <div className={addClasses}>
       <div className={cls.left}>
-        <p>DB:</p>
+        <p>&nbsp;&nbsp;DB:</p>
         <p>
           Если возникли проблемы с заказом, доставкой и тому подобное, то
           быстрее всего решим, если напишете мне в телеграмме, отвечу в
