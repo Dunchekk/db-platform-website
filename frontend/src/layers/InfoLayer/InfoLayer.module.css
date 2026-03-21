@@ -2,6 +2,7 @@
   width: 100vw;
   height: 100vh;
   position: absolute;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .wrapper {
@@ -11,7 +12,6 @@
   padding-top: var(--max-main-box-up-margin);
   padding-bottom: var(--max-main-box-up-margin);
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.15);
 
   position: relative;
 }
