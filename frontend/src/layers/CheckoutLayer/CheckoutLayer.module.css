@@ -75,8 +75,19 @@
   min-width: 0;
 }
 
-.checkbox {
-  margin-top: 4px;
+.checkboxRow .checkbox {
+  position: relative;
+  margin-top: 3px;
+}
+
+.inlineLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.inlineLink:hover,
+.inlineLink:focus-visible {
+  text-decoration: underline;
 }
 
 .adress {

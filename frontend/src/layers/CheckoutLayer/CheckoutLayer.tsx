@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router";
 import cls from "@/layers/CheckoutLayer/CheckoutLayer.module.css";
 import W_CardItemsWrapper from "@/components/W_CardItemsWrapper/W_CardItemsWrapper";
 
@@ -65,8 +66,23 @@ const CheckoutLayer = () => {
           <div className={[cls.checkboxRow, cls.checkboxRowMtLg].join(" ")}>
             <M_InputCheckbox required className={cls.checkbox} id="policy" />
             <label className={cls.checkboxLabel} htmlFor="policy">
-              Я принимаю условия Публичной оферты и соглашаюсь с Политикой
-              обработки персональных данных*
+              Я принимаю условия{" "}
+              <Link
+                to="/info/offer"
+                className={cls.inlineLink}
+                onClick={(event) => event.stopPropagation()}
+              >
+                Публичной оферты
+              </Link>{" "}
+              и соглашаюсь с{" "}
+              <Link
+                to="/info/privacy"
+                className={cls.inlineLink}
+                onClick={(event) => event.stopPropagation()}
+              >
+                Политикой обработки персональных данных
+              </Link>
+              *
             </label>
           </div>
           <div className={[cls.checkboxRow, cls.checkboxRowMtSm].join(" ")}>
