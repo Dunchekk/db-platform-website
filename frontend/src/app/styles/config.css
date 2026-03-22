@@ -2,7 +2,7 @@
   /* MEASURES */
 
   --max-width: min(95vw, 2560px);
-  --max-main-box-width: min(90vw, 1150px);
+  --max-main-box-width: min(90vw, 1250px);
   --max-main-box-height: 76vh;
   --max-main-box-up-margin: 12vh;
 
@@ -23,7 +23,7 @@
   --text-color-black: #000000;
   --text-color-black-opacity: rgba(0, 0, 0, 0.6);
 
-  --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 17px);
+  --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 18.5px);
 
   --text-2-text-size: clamp(24px, calc(12.118px + 0.6vw), 30px);
 
@@ -51,4 +51,25 @@
   --info-buttons-width: 30vw;
   --checkout-card-item-img-size: clamp(72px, 7vw, 220px);
   /* --checkout-card-item-img-size: 10vw; */
+}
+
+@media screen and (max-width: 1400px) {
+  :root {
+    --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 17px);
+    --max-main-box-width: min(90vw, 1150px);
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  :root {
+    --text-1-text-size: 16px;
+    --max-main-box-width: min(90vw, 1150px);
+  }
+}
+
+@media screen and (min-width: 1650px) {
+  :root {
+    --max-main-box-width: min(90vw, 1350px);
+    --card-width: 16vw;
+  }
 }
