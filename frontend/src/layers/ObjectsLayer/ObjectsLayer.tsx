@@ -6,6 +6,8 @@ import { useObjects } from "@/shared/objects/objects.context";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
 import Q_InfoButtons from "@/components/Q_InfoButtons/Q_InfoButtons";
 
+const PROTOTYPE_ONLY_FIRST_OBJECT_CLICKABLE = true;
+
 const ObjectsLayer = () => {
   const { objects, isLoading, error } = useObjects();
   const openLayer = useLayersStore((state) => state.openLayer);
@@ -24,15 +26,21 @@ const ObjectsLayer = () => {
         <div className={cls.wrapper2}>
           {isLoading && <div>Loading...</div>}
           {error && <div>{error}</div>}
-          {objects.map((obj: DbObject) => {
+          {objects.map((obj: DbObject, index) => {
+            const isClickable =
+              !PROTOTYPE_ONLY_FIRST_OBJECT_CLICKABLE || index === 0;
             return (
               <div
                 key={obj.id}
-                onClick={() => {
-                  setActiveObjectId(obj.id);
-                  openLayer("details");
-                }}
-                style={{ cursor: "pointer" }}
+                onClick={
+                  isClickable
+                    ? () => {
+                        setActiveObjectId(obj.id);
+                        openLayer("details");
+                      }
+                    : undefined
+                }
+                style={{ cursor: isClickable ? "pointer" : "default" }}
               >
                 <M_itemCard addClasses={wrapperClasses} object={obj} />
               </div>
