@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useLocation } from "react-router";
 import cls from "@/layers/AboutLayer/AboutLayer.module.css";
 import M_BackButton from "@/components/M_BackButton/M_BackButton";
+import W_ScrollFadeBox from "@/components/W_ScrollFadeBox/W_ScrollFadeBox";
 
 import frame28 from "@/assets/images/bg-items/bag.png";
 import frame29 from "@/assets/images/bg-items/belt.png";
@@ -107,7 +108,7 @@ const AboutLayer = () => {
         </div>
       </div>
       <div className={cls.wrapper}>
-        <div>&nbsp;&nbsp;DB:</div>
+        <div className={cls.dbHeader}>&nbsp;&nbsp;DB:</div>
         <div className={cls.textwrapper}>
           <div className={cls.p}>
             <p>
@@ -159,6 +160,53 @@ const AboutLayer = () => {
             </p>
           </div>
         </div>
+
+        <W_ScrollFadeBox className={cls.mobileScroll} height="100%">
+          <p className={cls.mobileText}>
+            Мне нравится создавать, и&nbsp;предметы, которые я&nbsp;создаю,
+            получают какое-то одобрение от&nbsp;моего окружения. Устраиваться
+            же&nbsp;на&nbsp;работу&nbsp;— просто самое отвратное для меня
+            дело; это как школа, только еще хуже. И&nbsp;я&nbsp;подумал, что
+            могу попробовать монетизировать свое увлечение.
+            <br />
+            <br />
+            Почему мои предметы именно такие? Мне нравится окружать себя
+            чем-то максимально веселым, максимально не-негативным, без
+            ограничений. Подобные предметы мне больше всего нравится
+            и&nbsp;создавать — максимально веселые.
+            <br />
+            <br />
+            Также предметы, попадающие сюда, должны иметь какой-то
+            практический смысл. Мои предметы не должны быть «дополнением», они
+            должны как-бы заменять уже и&nbsp;так обязательные вещи
+            на&nbsp;себя, на&nbsp;веселый вариант этих вещей.
+            <br />
+            <br />
+            Ну и&nbsp;качество, это дефолт. Важно, чтобы их&nbsp;жизненный
+            цикл был адекватным для подобных предметов. Хочу, чтобы эти
+            предметы выполняли свою функцию и&nbsp;не&nbsp;страдали
+            от&nbsp;этого.
+            <br />
+            <br />
+            Что касается технологии, мне интересно всё. Все&nbsp;пути,
+            все&nbsp;варианты создания предмета. Но,&nbsp;очевидно,
+            я&nbsp;использую те,&nbsp;которые мне сейчас доступнее всего.
+            У&nbsp;меня нет завода или промышленных станков, я&nbsp;создаю
+            те&nbsp;предметы, которые могу создать в&nbsp;рамках своих
+            финансов и&nbsp;физических возможностей.
+            <br />
+            <br />
+            Я начал осваивать кожу, как один из&nbsp;доступных вариантов
+            создания предмета, и&nbsp;в&nbsp;этот момент создал мешочек.
+            Поэтому мешочек стал кожаным. Если бы я&nbsp;осваивал фрезерный
+            станок, то&nbsp;я&nbsp;бы&nbsp;сделал какой-то предмет, который
+            создается с&nbsp;помощью фрезеровки.
+            <br />
+            <br />
+            Так что, давайте я&nbsp;вам мешочки (и не только),
+            а&nbsp;вы&nbsp;мне возможность не&nbsp;работать на&nbsp;кого-то?
+          </p>
+        </W_ScrollFadeBox>
       </div>
     </div>
   );

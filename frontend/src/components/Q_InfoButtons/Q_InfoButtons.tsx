@@ -55,7 +55,7 @@ const Q_InfoButtons = ({ mode }: Props) => {
       {effectiveMode === "info" ? (
         <button
           type="button"
-          className={cls.arrowToggle}
+          className={[cls.arrowToggle, cls.toggle].join(" ")}
           aria-label="Закрыть информацию"
           onClick={() => closeLayer("info")}
         >
@@ -63,6 +63,7 @@ const Q_InfoButtons = ({ mode }: Props) => {
         </button>
       ) : (
         <Q_Button
+          addClasses={cls.toggle}
           aria-label="Показать информацию"
           aria-expanded={isExpanded}
           onClick={() => setIsObjectsMenuExpanded((prev) => !prev)}

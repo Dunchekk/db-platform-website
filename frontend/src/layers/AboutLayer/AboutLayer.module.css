@@ -14,6 +14,10 @@
   z-index: 1;
 }
 
+.dbHeader {
+  width: 100%;
+}
+
 .textwrapper {
   display: flex;
   justify-content: space-between;
@@ -23,6 +27,14 @@
 
 .p {
   width: calc(50% - var(--space));
+}
+
+.mobileScroll {
+  display: none;
+}
+
+.mobileText {
+  margin: 0;
 }
 
 .imgs {
@@ -50,4 +62,30 @@
 
 .aboutRoute .img {
   opacity: 50%;
+}
+
+@media screen and (max-width: 1000px) {
+  .wrapper {
+    width: 95%;
+    box-sizing: border-box;
+    padding-inline: var(--inner-buttons-padding);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .textwrapper {
+    display: none;
+  }
+
+  .mobileScroll {
+    display: block;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    margin-top: var(--space);
+  }
+
+  .dbHeader {
+    margin-left: 11px;
+  }
 }
