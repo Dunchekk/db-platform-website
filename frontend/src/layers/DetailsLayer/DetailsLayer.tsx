@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router";
 
 import cls from "@/layers/DetailsLayer/DetailsLayer.module.css";
@@ -22,6 +22,7 @@ const DetailsLayer = () => {
 
   const object = effectiveObjectId ? objectsById[effectiveObjectId] : undefined;
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [selectedChoise, setSelectedChoise] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const images = useMemo(() => {
@@ -30,6 +31,42 @@ const DetailsLayer = () => {
       return object.images;
     return object.img ? [object.img] : [];
   }, [object]);
+
+  useEffect(() => {
+    if (!object?.choise?.length) {
+      setSelectedChoise(null);
+      return;
+    }
+    setSelectedChoise(object.choise[0]);
+  }, [effectiveObjectId, object?.choise]);
+
+  const renderChoise = (items: string[]) => {
+    const active = selectedChoise ?? items[0] ?? null;
+    return (
+      <div className={cls.choiseblock}>
+        {items.map((c) => {
+          const isActive = active === c;
+          return (
+            <div
+              key={c}
+              className={[cls.choiseItem, isActive ? cls.ch : ""].join(" ")}
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedChoise(c)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setSelectedChoise(c);
+                }
+              }}
+            >
+              {c}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <div
@@ -73,16 +110,7 @@ const DetailsLayer = () => {
             <div className={[cls.header, cls.mobileHeader].join(" ")}>
               <span>{object.name}</span>
               <span>{object.prise} ₽</span>
-              <div className={cls.choiseblock}>
-                {object.choise.map((c, i) => {
-                  const choise = i === 0 ? cls.ch : "";
-                  return (
-                    <div className={choise} key={c}>
-                      {c}
-                    </div>
-                  );
-                })}
-              </div>
+              {renderChoise(object.choise)}
               <span className={[cls.tocard, cls.mobileTocard].join(" ")}>
                 + в корзину
               </span>
@@ -99,16 +127,7 @@ const DetailsLayer = () => {
               <div className={[cls.header, cls.desktopHeader].join(" ")}>
                 <span>{object.name}</span>
                 <span>{object.prise} ₽</span>
-                <div className={cls.choiseblock}>
-                  {object.choise.map((c, i) => {
-                    const choise = i === 0 ? cls.ch : "";
-                    return (
-                      <div className={choise} key={c}>
-                        {c}
-                      </div>
-                    );
-                  })}
-                </div>
+                {renderChoise(object.choise)}
               </div>
               <span className={cls.desktopOnlyBreaks}>
                 <br />

@@ -97,6 +97,11 @@
   text-decoration: underline;
 }
 
+.choiseItem {
+  cursor: pointer;
+  user-select: none;
+}
+
 .choiseblock {
   display: flex;
   gap: calc(var(--space) * 0.5);
