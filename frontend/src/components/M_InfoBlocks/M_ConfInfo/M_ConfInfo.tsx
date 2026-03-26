@@ -7,7 +7,7 @@ type Props = { addClasses: string };
 const M_ConfInfo = ({ addClasses }: Props) => {
   return (
     <div className={addClasses}>
-      <div className={cls.left}>
+      <div className={[cls.left, cls.leftTop].join(" ")}>
         <p>&nbsp;&nbsp;DB:</p>
         <p>
           Короче, я беру ваши имя, телефон, почту и адрес только для того, чтобы
@@ -17,7 +17,10 @@ const M_ConfInfo = ({ addClasses }: Props) => {
           написать мне и попросить удалить или изменить ваши данные.
         </p>
       </div>
-      <W_ScrollFadeBox className={cls.left} height="var(--max-main-box-height)">
+      <W_ScrollFadeBox
+        className={[cls.left, cls.leftadd].join(" ")}
+        height="var(--info-block-right-height)"
+      >
         <p>Политика обработки персональных данных:</p>
         <p>
           1. Общие положения 1.1. Настоящая Политика обработки персональных

@@ -7,7 +7,7 @@ type Props = { addClasses: string };
 const M_DelivInfo = ({ addClasses }: Props) => {
   return (
     <div className={addClasses}>
-      <div className={cls.left}>
+      <div className={[cls.left, cls.leftTop].join(" ")}>
         <p>&nbsp;&nbsp;DB:</p>
         <p>
           Короче, мы отправляем заказы через СДЭК — можете выбрать ПВЗ или
@@ -17,7 +17,10 @@ const M_DelivInfo = ({ addClasses }: Props) => {
           на возврат, а если вдруг брак — мы разберёмся и я заменю/верну деньги.
         </p>
       </div>
-      <W_ScrollFadeBox className={cls.left} height="var(--max-main-box-height)">
+      <W_ScrollFadeBox
+        className={[cls.left, cls.leftadd].join(" ")}
+        height="var(--info-block-right-height)"
+      >
         <p>Доставка и возврат:</p>
         <p>
           Доставка Способы доставки Доставка осуществляется транспортной

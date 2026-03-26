@@ -7,7 +7,7 @@ type Props = { addClasses: string };
 const M_PublicInfo = ({ addClasses }: Props) => {
   return (
     <div className={addClasses}>
-      <div className={cls.left}>
+      <div className={[cls.left, cls.leftTop].join(" ")}>
         <p>&nbsp;&nbsp;DB:</p>
         <p>
           Короче, оформляя заказ на сайте, вы соглашаетесь купить товар на тех
@@ -17,7 +17,10 @@ const M_PublicInfo = ({ addClasses }: Props) => {
           дней.
         </p>
       </div>
-      <W_ScrollFadeBox className={cls.left} height="var(--max-main-box-height)">
+      <W_ScrollFadeBox
+        className={[cls.left, cls.leftadd].join(" ")}
+        height="var(--info-block-right-height)"
+      >
         <p>
           Публичная оферта о заключении договора купли-продажи товара
           дистанционным способом:

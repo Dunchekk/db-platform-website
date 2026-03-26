@@ -6,7 +6,7 @@ type Props = { addClasses: string };
 const M_ReqInfo = ({ addClasses }: Props) => {
   return (
     <div className={addClasses}>
-      <div className={cls.left}>
+      <div className={[cls.left, cls.leftTop].join(" ")}>
         <p>&nbsp;&nbsp;DB:</p>
         <p>
           Публикация реквизитов — требование Закона о защите прав потребителей.
@@ -15,7 +15,7 @@ const M_ReqInfo = ({ addClasses }: Props) => {
           тг напишите, ладно?
         </p>
       </div>
-      <div>
+      <div className={[cls.left, cls.leftadd].join(" ")}>
         <p>Реквизиты:</p>
         <p>
           {"ИП [ФИО полностью]"}

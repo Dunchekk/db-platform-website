@@ -2,12 +2,30 @@
   position: absolute;
   bottom: var(--inner-buttons-padding);
   left: var(--inner-buttons-padding);
+  z-index: 1;
+  isolation: isolate;
 
   width: var(--info-buttons-width);
 
   display: flex;
   flex-direction: column;
   justify-content: end;
+}
+
+.wrapper > * {
+  position: relative;
+  z-index: 1;
+}
+
+.wrapper::before,
+.wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
 }
 
 .buttons {
@@ -17,6 +35,26 @@
   transition:
     opacity 220ms ease,
     transform 220ms ease;
+}
+
+.wrapper::before {
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.wrapper::after {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 1), transparent);
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 1), transparent);
 }
 
 .objectsMode .buttons {
@@ -36,6 +74,8 @@
 
 .arrowToggle {
   all: unset;
+  position: relative;
+  z-index: 1;
   cursor: pointer;
   margin-top: 10px;
   line-height: 1;
@@ -45,4 +85,41 @@
 .arrowToggle:hover {
   opacity: 0.7;
   text-decoration: underline;
+}
+
+@media screen and (max-width: 1000px) {
+  .wrapper {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: var(--inner-buttons-padding);
+  }
+
+  .objectsMode.expanded::before,
+  .objectsMode.expanded::after,
+  .infoMode::before,
+  .infoMode::after {
+    opacity: 1;
+  }
+
+  .objectsMode .buttons {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    margin-bottom: 0;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    max-height: 0;
+    overflow: hidden;
+  }
+
+  .objectsMode.expanded .buttons {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    margin-bottom: calc(var(--space) * 0.3);
+    max-height: 50vh;
+  }
 }

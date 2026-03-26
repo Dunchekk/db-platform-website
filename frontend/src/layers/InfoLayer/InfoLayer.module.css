@@ -36,3 +36,14 @@
   display: flex;
   gap: var(--space-3);
 }
+
+@media screen and (max-width: 1000px) {
+  .wrapper {
+    overflow: auto;
+  }
+
+  .block {
+    flex-direction: column;
+    gap: var(--space);
+  }
+}

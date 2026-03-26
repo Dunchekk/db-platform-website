@@ -6,7 +6,7 @@ type Props = { addClasses: string };
 const M_ContactInfo = ({ addClasses }: Props) => {
   return (
     <div className={addClasses}>
-      <div className={cls.left}>
+      <div className={[cls.left, cls.leftTop].join(" ")}>
         <p>&nbsp;&nbsp;DB:</p>
         <p>
           Если возникли проблемы с заказом, доставкой и тому подобное, то
@@ -15,7 +15,7 @@ const M_ContactInfo = ({ addClasses }: Props) => {
           придется ждать дольше.
         </p>
       </div>
-      <div className={cls.contact}>
+      <div className={[cls.contact, cls.left, cls.leftadd].join(" ")}>
         <div>
           <p>Контакты:</p>
           <p>
