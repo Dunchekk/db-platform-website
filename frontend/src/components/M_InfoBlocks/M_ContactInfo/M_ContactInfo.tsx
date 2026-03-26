@@ -19,11 +19,11 @@ const M_ContactInfo = ({ addClasses }: Props) => {
         <div>
           <p>Контакты:</p>
           <p>
-            Email: [email]
+            Email: db-example@mail.ru
             <br />
-            Телефон: [номер]
+            Телефон: +7 495 123-45-67
             <br />
-            tg: @blabla
+            tg: @db-example
           </p>
         </div>
         <div>
