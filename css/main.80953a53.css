@@ -1163,6 +1163,11 @@
   text-decoration: underline;
 }
 
+.rFS04kRf {
+  cursor: pointer;
+  user-select: none;
+}
+
 .Q2DydNTN {
   display: flex;
   gap: calc(var(--space) * 0.5);
