@@ -22,7 +22,7 @@ const M_itemCard = ({ object, addClasses }: Props) => {
       <span className={cls.id}>{id}</span>
       <div className={infoClassName}>
         <span>{object.name}</span>
-        <span>{object.prise}</span>
+        <span>{object.prise} ₽</span>
       </div>
     </div>
   );
