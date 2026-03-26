@@ -128,3 +128,34 @@
 .prisediv1 {
   margin-top: calc(var(--space) / 1);
 }
+
+.end {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space);
+}
+
+@media screen and (max-width: 800px) {
+  .wrapper {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  .columnFullHeight {
+    height: auto;
+  }
+
+  .prise {
+    position: static;
+  }
+
+  .order {
+    margin-top: var(--space-3);
+  }
+
+  .checkboxRowMtMd,
+  .checkboxRowMtLg {
+    margin-top: calc(var(--space) * 1.5);
+  }
+}

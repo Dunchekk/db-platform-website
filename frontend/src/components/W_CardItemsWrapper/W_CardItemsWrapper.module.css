@@ -1,7 +1,4 @@
 .root {
-  --checkout-card-item-img-size: clamp(88px, 8.5vw, 150px);
-  --card-items-scroll-fade: 20px;
-
   border-bottom: 1.5px black solid;
   width: calc(calc(var(--max-main-box-width) / 3) - var(--space));
 }
@@ -97,4 +94,11 @@
 
 .inner[data-show-fades="true"][data-at-bottom="false"]::after {
   opacity: 1;
+}
+
+@media screen and (max-width: 800px) {
+  .root {
+    border-bottom: 1.5px black solid;
+    width: 100%;
+  }
 }

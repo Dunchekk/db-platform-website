@@ -43,7 +43,7 @@ const CheckoutLayer = () => {
             </p>
           </div>
 
-          <div>
+          <div className={cls.end}>
             <span>итого:</span>{" "}
             <div className={cls.prise}>
               <span>(?)&nbsp;</span>

@@ -51,6 +51,9 @@
   --info-buttons-width: 30vw;
   --checkout-card-item-img-size: clamp(72px, 7vw, 220px);
   /* --checkout-card-item-img-size: 10vw; */
+
+  --checkout-card-item-img-size: clamp(88px, 8.5vw, 150px);
+  --card-items-scroll-fade: 20px;
 }
 
 @media screen and (min-width: 1650px) {
