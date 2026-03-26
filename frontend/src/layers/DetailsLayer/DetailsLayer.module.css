@@ -1,6 +1,6 @@
 .main {
   width: 100vw;
-  height: 100vh;
+  /* height: 100vh; */
   position: absolute;
   background: rgba(255, 255, 255, 0.15);
 }
@@ -37,7 +37,7 @@
 }
 
 .obj {
-  width: calc(50% - var(--space));
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -45,9 +45,9 @@
 }
 
 .info {
-  width: calc(50% - var(--space));
+  width: 100%;
   position: relative;
-  height: var(--max-main-box-height);
+  /* height: var(--max-main-box-height); */
 }
 /* ------- */
 
@@ -80,6 +80,14 @@
   right: 0;
 }
 
+.mobileTocard {
+  display: none;
+}
+
+.desktopTocard {
+  display: inline;
+}
+
 .tocard:hover {
   text-decoration: underline;
   cursor: pointer;
@@ -98,4 +106,55 @@
   display: flex;
   flex-direction: column;
   gap: calc(var(--space) * 0.8);
+}
+
+.mobileHeader {
+  display: none;
+}
+
+.desktopHeader {
+  display: flex;
+}
+
+.desktopOnlyBreaks {
+  display: inline;
+}
+
+@media screen and (max-width: 1000px) {
+  .content {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--double-space);
+  }
+
+  .mobileHeader {
+    display: flex;
+    position: relative;
+    padding-right: 6.5rem;
+  }
+
+  .desktopHeader {
+    display: none;
+  }
+
+  .mobileTocard {
+    display: inline;
+  }
+
+  .desktopTocard {
+    display: none;
+  }
+
+  .desktopOnlyBreaks {
+    display: none;
+  }
+
+  .back {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-bottom: calc(var(--space) * 0.8);
+  }
 }

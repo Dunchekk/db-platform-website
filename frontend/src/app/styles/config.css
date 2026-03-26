@@ -53,10 +53,18 @@
   /* --checkout-card-item-img-size: 10vw; */
 }
 
+@media screen and (min-width: 1650px) {
+  :root {
+    --max-main-box-width: min(90vw, 1350px);
+    --card-width: 16vw;
+  }
+}
+
 @media screen and (max-width: 1400px) {
   :root {
     --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 17px);
     --max-main-box-width: min(90vw, 1150px);
+    --card-width: 20vw;
   }
 }
 
@@ -64,12 +72,20 @@
   :root {
     --text-1-text-size: 16px;
     --max-main-box-width: min(90vw, 1150px);
+
+    --card-width: 25vw;
+
+    --card-width-one: 32vw;
+    --card-width-two: 25vw;
   }
 }
 
-@media screen and (min-width: 1650px) {
+@media screen and (max-width: 1000px) {
   :root {
-    --max-main-box-width: min(90vw, 1350px);
-    --card-width: 16vw;
+    --card-width: 75vw;
+    --card-width: 50vw;
+
+    --card-width-one: 40vw;
+    --card-width-two: 25vw;
   }
 }

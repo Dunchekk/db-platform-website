@@ -70,6 +70,24 @@ const DetailsLayer = () => {
 
         {!isLoading && !error && object && (
           <div className={cls.content}>
+            <div className={[cls.header, cls.mobileHeader].join(" ")}>
+              <span>{object.name}</span>
+              <span>{object.prise} ₽</span>
+              <div className={cls.choiseblock}>
+                {object.choise.map((c, i) => {
+                  const choise = i === 0 ? cls.ch : "";
+                  return (
+                    <div className={choise} key={c}>
+                      {c}
+                    </div>
+                  );
+                })}
+              </div>
+              <span className={[cls.tocard, cls.mobileTocard].join(" ")}>
+                + в корзину
+              </span>
+            </div>
+
             <M_ImageSlider
               key={effectiveObjectId ?? "no-object"}
               className={cls.obj}
@@ -78,7 +96,7 @@ const DetailsLayer = () => {
             />
 
             <div className={cls.info}>
-              <div className={cls.header}>
+              <div className={[cls.header, cls.desktopHeader].join(" ")}>
                 <span>{object.name}</span>
                 <span>{object.prise} ₽</span>
                 <div className={cls.choiseblock}>
@@ -92,10 +110,12 @@ const DetailsLayer = () => {
                   })}
                 </div>
               </div>
-              <br />
-              <br />
-              <br />
-              <br />
+              <span className={cls.desktopOnlyBreaks}>
+                <br />
+                <br />
+                <br />
+                <br />
+              </span>
               <div>
                 {object.details.properties.map((p, i) => {
                   if (p.property === "") return <br key={i} />;
@@ -134,7 +154,9 @@ const DetailsLayer = () => {
                   })}
                 </ul>
               </div>
-              <span className={cls.tocard}>+ в корзину</span>
+              <span className={[cls.tocard, cls.desktopTocard].join(" ")}>
+                + в корзину
+              </span>
             </div>
           </div>
 

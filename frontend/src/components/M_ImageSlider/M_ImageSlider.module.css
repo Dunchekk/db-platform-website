@@ -1,6 +1,6 @@
 .imgwrapper {
   width: 100%;
-  height: var(--max-main-box-height);
+  /* height: var(--max-main-box-height); */
   overflow: hidden;
   position: relative;
   display: flex;
@@ -50,4 +50,14 @@
 
 .sliderImgHidden {
   opacity: 0;
+}
+
+@media screen and (max-width: 1000px) {
+  .content {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--double-space);
+  }
 }
