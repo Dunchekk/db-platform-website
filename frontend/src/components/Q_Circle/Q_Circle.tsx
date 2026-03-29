@@ -14,23 +14,34 @@ const Q_Circle = () => {
 
   const [isLabelVisible, setIsLabelVisible] = useState(!shouldShiftPosition);
   const prevShiftRef = useRef(shouldShiftPosition);
+  const hideTimeoutRef = useRef<number | null>(null);
   const showTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
+    if (hideTimeoutRef.current !== null) {
+      window.clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
     if (showTimeoutRef.current !== null) {
       window.clearTimeout(showTimeoutRef.current);
       showTimeoutRef.current = null;
     }
 
     if (shouldShiftPosition) {
-      setIsLabelVisible(false);
+      hideTimeoutRef.current = window.setTimeout(() => {
+        setIsLabelVisible(false);
+        hideTimeoutRef.current = null;
+      }, 0);
     } else if (prevShiftRef.current) {
       showTimeoutRef.current = window.setTimeout(() => {
         setIsLabelVisible(true);
         showTimeoutRef.current = null;
       }, 1000);
     } else {
-      setIsLabelVisible(true);
+      showTimeoutRef.current = window.setTimeout(() => {
+        setIsLabelVisible(true);
+        showTimeoutRef.current = null;
+      }, 0);
     }
 
     prevShiftRef.current = shouldShiftPosition;
@@ -38,6 +49,9 @@ const Q_Circle = () => {
 
   useEffect(() => {
     return () => {
+      if (hideTimeoutRef.current !== null) {
+        window.clearTimeout(hideTimeoutRef.current);
+      }
       if (showTimeoutRef.current !== null) {
         window.clearTimeout(showTimeoutRef.current);
       }
@@ -60,9 +74,10 @@ const Q_Circle = () => {
         aria-hidden="true"
       />
       <span
-        className={[cls.label, isLabelVisible ? cls.labelVisible : ""].join(
-          " "
-        )}
+        className={[
+          cls.label,
+          isLabelVisible && !shouldShiftPosition ? cls.labelVisible : "",
+        ].join(" ")}
       >
         db
       </span>

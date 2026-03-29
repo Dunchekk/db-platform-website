@@ -7,11 +7,14 @@
   gap: 6px;
 
   position: absolute;
-  top: calc(var(--space) * 0.7);
+  top: var(--inner-buttons-padding);
+
   left: calc(var(--space) * 0.7);
 
   z-index: 999;
-  transition: top var(--duration) ease, left var(--duration) ease;
+  transition:
+    top var(--duration) ease,
+    left var(--duration) ease;
 }
 
 .button:disabled {
@@ -46,4 +49,10 @@
 .aboutopen {
   top: calc(var(--max-main-box-up-margin) + 2px);
   left: var(--bleed);
+}
+
+@media screen and (max-width: 1000px) {
+  .button {
+    /* top: 5dvh; */
+  }
 }

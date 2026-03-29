@@ -22,6 +22,7 @@
   content: "";
   position: absolute;
   inset: 0;
+  bottom: -6vh;
   z-index: -1;
   opacity: 0;
   pointer-events: none;
@@ -40,7 +41,8 @@
 .wrapper::before {
   background: linear-gradient(
     to top,
-    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 10%,
     rgba(255, 255, 255, 0) 100%
   );
 }
@@ -50,7 +52,8 @@
   -webkit-backdrop-filter: blur(14px);
   background: linear-gradient(
     to top,
-    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.9) 10%,
     rgba(255, 255, 255, 0) 100%
   );
   -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 1), transparent);
@@ -95,6 +98,7 @@
   .wrapper {
     left: 0;
     bottom: 0;
+    margin-bottom: 5vh;
     width: 100%;
     box-sizing: border-box;
     padding: var(--inner-buttons-padding);
