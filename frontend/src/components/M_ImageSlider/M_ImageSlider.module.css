@@ -35,7 +35,7 @@
   --image-edge-fade: 24px;
 
   max-width: 100%;
-  max-height: 100%;
+  max-height: var(--max-main-box-height);
   width: auto;
   height: auto;
   display: block;
