@@ -3,8 +3,9 @@
 
   --max-width: min(95vw, 2560px);
   --max-main-box-width: min(90vw, 1250px);
-  --max-main-box-height: 76vh;
-  --max-main-box-up-margin: 12vh;
+  --max-main-box-height: 75vh;
+  --max-main-box-up-margin: 11.5vh;
+  --max-main-box-bottom-margin: 9vh;
 
   --bleed: calc(calc(100vw - var(--max-main-box-width))/2);
 
@@ -23,7 +24,7 @@
   --text-color-black: #000000;
   --text-color-black-opacity: rgba(0, 0, 0, 0.6);
 
-  --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 18.5px);
+  --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 18px);
 
   --text-2-text-size: clamp(24px, calc(12.118px + 0.6vw), 30px);
 
@@ -56,10 +57,11 @@
   --card-items-scroll-fade: 20px;
 }
 
-@media screen and (min-width: 1650px) {
+@media screen and (min-width: 1500px) {
   :root {
     --max-main-box-width: min(90vw, 1350px);
-    --card-width: 16vw;
+    --card-width: 17vw;
+    --max-main-box-up-margin: 10vh;
   }
 }
 
@@ -67,7 +69,18 @@
   :root {
     --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 17px);
     --max-main-box-width: min(90vw, 1150px);
-    --card-width: 20vw;
+    --card-width: 17vw;
+
+    --max-main-box-bottom-margin: 7vh;
+    --max-main-box-up-margin: 10vh;
+  }
+}
+
+@media screen and (max-width: 1300px) {
+  :root {
+    --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 17px);
+    --max-main-box-width: min(90vw, 1150px);
+    --card-width: 18.5vw;
   }
 }
 
@@ -85,7 +98,6 @@
 
 @media screen and (max-width: 1000px) {
   :root {
-    --card-width: 75vw;
     --card-width: 50vw;
 
     --card-width-one: 75vw;
