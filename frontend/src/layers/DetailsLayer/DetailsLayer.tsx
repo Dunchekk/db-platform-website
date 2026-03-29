@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router";
 
 import cls from "@/layers/DetailsLayer/DetailsLayer.module.css";
@@ -21,8 +21,14 @@ const DetailsLayer = () => {
   const closeLayer = useLayersStore((state) => state.closeLayer);
 
   const object = effectiveObjectId ? objectsById[effectiveObjectId] : undefined;
+  const currentObjectId = effectiveObjectId ?? null;
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [selectedChoise, setSelectedChoise] = useState<string | null>(null);
+  const [selectedChoise, setSelectedChoise] = useState<{
+    objectId: string | null;
+    value: string | null;
+  }>({ objectId: currentObjectId, value: null });
+  const selectedChoiseValue =
+    selectedChoise.objectId === currentObjectId ? selectedChoise.value : null;
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const images = useMemo(() => {
@@ -32,16 +38,11 @@ const DetailsLayer = () => {
     return object.img ? [object.img] : [];
   }, [object]);
 
-  useEffect(() => {
-    if (!object?.choise?.length) {
-      setSelectedChoise(null);
-      return;
-    }
-    setSelectedChoise(object.choise[0]);
-  }, [effectiveObjectId, object?.choise]);
-
   const renderChoise = (items: string[]) => {
-    const active = selectedChoise ?? items[0] ?? null;
+    const active =
+      selectedChoiseValue && items.includes(selectedChoiseValue)
+        ? selectedChoiseValue
+        : items[0] ?? null;
     return (
       <div className={cls.choiseblock}>
         {items.map((c) => {
@@ -52,11 +53,13 @@ const DetailsLayer = () => {
               className={[cls.choiseItem, isActive ? cls.ch : ""].join(" ")}
               role="button"
               tabIndex={0}
-              onClick={() => setSelectedChoise(c)}
+              onClick={() =>
+                setSelectedChoise({ objectId: currentObjectId, value: c })
+              }
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
-                  setSelectedChoise(c);
+                  setSelectedChoise({ objectId: currentObjectId, value: c });
                 }
               }}
             >
