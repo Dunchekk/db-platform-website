@@ -21,5 +21,17 @@ export default [
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
+
+  {
+    files: ["**/*.js", "**/*.cjs"],
+    languageOptions: {
+      globals: globals.node,
+      sourceType: "commonjs",
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-var-requires": "off",
+    },
+  },
   prettier,
 ];
