@@ -1,3 +1,4 @@
+import Admin from "@/admin/Admin";
 import App from "@/app/App";
 import { createBrowserRouter } from "react-router";
 
@@ -14,41 +15,48 @@ function getGithubPagesBasename(): string {
   return `/${segments[0]}`;
 }
 
-const appRouter = createBrowserRouter([
+const appRouter = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <App />,
+    },
+    {
+      path: "/about",
+      element: <App />,
+    },
+    {
+      path: "/checkout",
+      element: <App />,
+    },
+    {
+      path: "/info",
+      element: <App />,
+    },
+    {
+      path: "/info/:section",
+      element: <App />,
+    },
+    {
+      path: "/object/:id",
+      element: <App />,
+    },
+    {
+      path: "/object/:id/checkout",
+      element: <App />,
+    },
+    {
+      path: "/admin",
+      element: <Admin />,
+    },
+    {
+      path: "*",
+      element: <App />,
+    },
+  ],
   {
-    path: "/",
-    element: <App />,
-  },
-  {
-    path: "/about",
-    element: <App />,
-  },
-  {
-    path: "/checkout",
-    element: <App />,
-  },
-  {
-    path: "/info",
-    element: <App />,
-  },
-  {
-    path: "/info/:section",
-    element: <App />,
-  },
-  {
-    path: "/object/:id",
-    element: <App />,
-  },
-  {
-    path: "/object/:id/checkout",
-    element: <App />,
-  },
-  {
-    path: "*",
-    element: <App />,
-  },
-], {
-  basename: getGithubPagesBasename(),
-});
+    basename: getGithubPagesBasename(),
+  }
+);
 
 export default appRouter;
