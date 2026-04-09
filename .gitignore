@@ -36,6 +36,7 @@ coverage/
 
 # cache
 .cache/
+.codex
 
 # webpack
 webpack-stats.json
