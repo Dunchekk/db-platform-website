@@ -11,7 +11,69 @@ datasource db {
   provider = "postgresql"
 }
 
-model Test {
-  id Int @id @default(autoincrement())
-  name String
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String
+  role     Role    @default(USER)
+
+  basket   Basket?
+}
+
+model Basket {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+
+  user   User         @relation(fields: [userId], references: [id])
+  items  BasketItem[]
+}
+
+model BasketItem {
+  id       Int @id @default(autoincrement())
+  basketId Int
+  itemId   Int
+  quantity Int @default(1)
+
+  basket   Basket @relation(fields: [basketId], references: [id])
+  item     Item   @relation(fields: [itemId], references: [id])
+
+  @@unique([basketId, itemId])
+  @@index([basketId])
+  @@index([itemId])
+}
+
+model Item {
+  id          Int          @id @default(autoincrement())
+  name        String
+  price       Int
+
+  basketItems BasketItem[]
+  info        ItemInfo[]
+  images ItemImage[]
+}
+
+model ItemInfo {
+  id          Int    @id @default(autoincrement())
+  itemId      Int
+  title       String
+  description String
+
+  item        Item   @relation(fields: [itemId], references: [id])
+  @@index([itemId])
+}
+
+model ItemImage {
+  id       Int     @id @default(autoincrement())
+  url      String
+  itemId   Int
+  position Int     @default(0)
+
+  item     Item    @relation(fields: [itemId], references: [id])
+
+  @@index([itemId])
 }
