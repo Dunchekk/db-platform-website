@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev --respawn --transpile-only src/server.ts"
+    "start": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "migrate": "npx prisma migrate dev --name init ",
+    "generate": "npx prisma generate",
+    "tcp": "nc -zv 172.27.112.1 5432"
   },
   "author": "dunchek",
   "license": "ISC",
