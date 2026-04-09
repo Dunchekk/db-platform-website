@@ -53,8 +53,18 @@ model Item {
   price       Int
 
   basketItems BasketItem[]
+  points      ItemPoint[]
   info        ItemInfo[]
-  images ItemImage[]
+  images      ItemImage[]
+}
+
+model ItemPoint {
+  id          Int    @id @default(autoincrement())
+  itemId      Int
+  point       String
+
+  item        Item   @relation(fields: [itemId], references: [id])
+  @@index([itemId])
 }
 
 model ItemInfo {
