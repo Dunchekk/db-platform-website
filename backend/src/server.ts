@@ -5,12 +5,14 @@ import cors from "cors";
 import apiRouter from "./routes";
 import errorHandler from "./middleware/ErrorHandlingMiddleware";
 import pageRouter from "./routes/pageRouter";
+import path from "path";
 dotenv.config();
 const PORT = process.env.PORT || 6000;
 
 const app = express();
 app.use(cors()); // миддлвер для корс
 app.use(express.json()); // миддлвер для жсонов
+app.use(express.static(path.resolve(__dirname, "static")));
 app.use("/api", apiRouter);
 app.use("/", pageRouter);
 
