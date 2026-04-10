@@ -1,6 +1,5 @@
 import cls from "@/admin/Admin.module.css";
 import M_Input from "@/components/M_Input/M_Input";
-import Q_Circle from "@/components/Q_Circle/Q_Circle";
 import Q_Cursor from "@/components/Q_Cursor/Q_Cursor";
 import AboutLayer from "@/layers/AboutLayer/AboutLayer";
 import React from "react";
