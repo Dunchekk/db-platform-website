@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { imageController } from "../controllers/imageController";
+import { uploadMiddleware } from "../middleware/UploadMiddleware";
 const imageRouter = Router();
 
 imageRouter.get("/about-images", imageController.getAllFiles); // для получения всех картинок
 
-imageRouter.post("/uploads", imageController.uploadFile); // Загрузить файл на сервер. Обычно возвращает url, fileId или path.
+imageRouter.post("/uploads", uploadMiddleware, imageController.uploadFile); // Загрузить файл на сервер. Обычно возвращает url, fileId или path.
 
 imageRouter.post("/objects/:id/images", imageController.bindFileTo); // Привязать картинку к объекту.
 

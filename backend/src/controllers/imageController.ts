@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 class ImageController {
   async getAllFiles(req: Request, res: Response) {}
 
+  // api/images/uploads...
   async uploadFile(req: Request, res: Response) {}
 
   async bindFileTo(req: Request, res: Response) {}
