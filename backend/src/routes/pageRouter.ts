@@ -1,12 +1,13 @@
-// import { Router } from "express";
-// const router = Router();
+import { Router } from "express";
+import { pageController } from "../controllers/pageController";
+const pageRouter = Router();
 
-// router.get('/')  // для получения приложения
-// router.get('/about')  // для получения приложения
-// router.get('/object/:id')  // для получения приложения
-// router.get('/checkout')  // для получения приложения
-// router.get('/admin')  // для получения приложения
-// router.get('/')  // для получения приложения
-// router.get('/')  // для получения приложения
+pageRouter.get("/", pageController.getApp); // для получения приложения
+pageRouter.get("/about", () => {}); // для получения приложения
+pageRouter.get("/object/:id", () => {}); // для получения приложения
+pageRouter.get("/checkout", () => {}); // для получения приложения
+pageRouter.get("/admin", () => {}); // для получения приложения
+pageRouter.get("/", () => {}); // для получения приложения
+pageRouter.get("/", () => {}); // для получения приложения
 
-// export default router
+export default pageRouter;

@@ -1,15 +1,16 @@
 import { Router } from "express";
+import { itemController } from "../controllers/itemController";
 const itemRouter = Router();
 
-itemRouter.get("/", () => {}); // для получения объектов
+itemRouter.get("/", itemController.getAllItems); // для получения объектов
 
-itemRouter.get("/:id", () => {}); // для получения конкретного объекта
+itemRouter.get("/:id", itemController.getOneItem); // для получения конкретного объекта
 
-itemRouter.post("/", () => {}); // для создания объекта
+itemRouter.post("/", itemController.createItem); // для создания объекта
 
-itemRouter.post("/:id", () => {}); // для изменения объекта
+itemRouter.post("/:id", itemController.changeItem); // для изменения объекта
 
-itemRouter.delete("/:id", () => {}); // для удаления объекта
+itemRouter.delete("/:id", itemController.deleteItem); // для удаления объекта
 
 // api/items/...
 
