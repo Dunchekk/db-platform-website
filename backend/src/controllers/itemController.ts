@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../db";
 import { CreateItemBody, ItemInformation } from "../types/itemTypes";
 import ApiError from "../error/ApiError";
+import { parseIdParam } from "../helpers/parseIdParam";
 
 class ItemController {
   async getAllItems(req: Request, res: Response, next: NextFunction) {
@@ -27,11 +28,8 @@ class ItemController {
   async getOneItem(req: Request, res: Response, next: NextFunction) {
     // GET api/items/:id
     try {
-      const id = Number(req.params.id);
-      if (!Number.isInteger(id)) {
-        next(ApiError.badRequest("Invalid item id"));
-        return;
-      }
+      const id = parseIdParam(req.params.id);
+
       const item = await prisma.item.findUnique({
         where: { id },
         include: {
@@ -112,11 +110,7 @@ class ItemController {
 
   async changeItem(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = Number(req.params.id);
-      if (!Number.isInteger(id)) {
-        next(ApiError.badRequest("Invalid item id"));
-        return;
-      }
+      const id = parseIdParam(req.params.id);
       const { name, price, order, points, info }: CreateItemBody = req.body;
 
       const item = await prisma.$transaction(async (tx) => {
@@ -177,11 +171,7 @@ class ItemController {
   async deleteItem(req: Request, res: Response, next: NextFunction) {
     // DELETE api/items/:id
     try {
-      const id = Number(req.params.id);
-      if (!Number.isInteger(id)) {
-        next(ApiError.badRequest("Invalid item id"));
-        return;
-      }
+      const id = parseIdParam(req.params.id);
 
       await prisma.$transaction(async (tx) => {
         await tx.itemPoint.deleteMany({ where: { itemId: id } });
