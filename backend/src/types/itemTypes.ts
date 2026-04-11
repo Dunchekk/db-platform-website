@@ -19,32 +19,3 @@ export type ItemImage = {
 export type ItemPoint = {
   point: string;
 };
-
-// {
-//   "name": "",
-//   "price": 0,
-//   "order": 0,
-//   "points": ["", "", ""],
-
-//   "info": [
-//     {
-//       "title": ""
-//       "description": ""
-//     },
-//     {
-//       "title": ""
-//       "description": ""
-//     }
-//   ],
-
-//   "images": [
-//     {
-//       "url": ""
-//       "position": 0
-//     },
-//     {
-//       "url": ""
-//       "position": 0
-//     }
-//   ]
-// }

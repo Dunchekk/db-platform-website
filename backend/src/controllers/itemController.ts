@@ -27,15 +27,25 @@ class ItemController {
   async getOneItem(req: Request, res: Response, next: NextFunction) {
     // GET api/items/:id
     try {
-      const { id } = req.params;
+      const id = Number(req.params.id);
+      if (!Number.isInteger(id)) {
+        next(ApiError.badRequest("Invalid item id"));
+        return;
+      }
       const item = await prisma.item.findUnique({
-        where: { id: Number(id) },
+        where: { id },
         include: {
           images: true,
           points: true,
           info: true,
         },
       });
+
+      if (!item) {
+        next(ApiError.notFound("Item not found"));
+        return;
+      }
+
       return res.json(item);
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -102,14 +112,16 @@ class ItemController {
 
   async changeItem(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params;
-      const { name, price, order, points, info } = req.body;
-
-      const itemId = Number(id);
+      const id = Number(req.params.id);
+      if (!Number.isInteger(id)) {
+        next(ApiError.badRequest("Invalid item id"));
+        return;
+      }
+      const { name, price, order, points, info }: CreateItemBody = req.body;
 
       const item = await prisma.$transaction(async (tx) => {
         const updatedItem = await tx.item.update({
-          where: { id: itemId },
+          where: { id },
           data: {
             name,
             price,
@@ -118,18 +130,18 @@ class ItemController {
         });
 
         await tx.itemPoint.deleteMany({
-          where: { itemId },
+          where: { itemId: id },
         });
 
         await tx.itemInfo.deleteMany({
-          where: { itemId },
+          where: { itemId: id },
         });
 
         await Promise.all(
           points.map((p: { point: string }) =>
             tx.itemPoint.create({
               data: {
-                itemId,
+                itemId: id,
                 point: p.point,
               },
             })
@@ -140,7 +152,7 @@ class ItemController {
           info.map((inf: { title: string; description: string }) =>
             tx.itemInfo.create({
               data: {
-                itemId,
+                itemId: id,
                 title: inf.title,
                 description: inf.description,
               },
