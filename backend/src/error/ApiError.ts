@@ -17,6 +17,10 @@ class ApiError extends Error {
   static forbidden(message: string) {
     return new ApiError(403, message);
   }
+
+  static notFound(message: string) {
+    return new ApiError(404, message);
+  }
 }
 
 export default ApiError;
