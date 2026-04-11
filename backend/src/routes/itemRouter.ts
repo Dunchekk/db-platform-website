@@ -8,7 +8,7 @@ itemRouter.get("/:id", itemController.getOneItem); // для получения 
 
 itemRouter.post("/", itemController.createItem); // для создания объекта
 
-itemRouter.post("/:id", itemController.changeItem); // для изменения объекта
+itemRouter.put("/:id", itemController.changeItem); // для изменения объекта
 
 itemRouter.delete("/:id", itemController.deleteItem); // для удаления объекта
 
