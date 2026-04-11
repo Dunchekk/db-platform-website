@@ -37,47 +37,53 @@ class ItemController {
       const { name, price, order, points, info, images }: CreateItemBody =
         req.body;
 
-      // добавляем айтем
-      const item = await prisma.item.create({
-        data: {
-          name,
-          price,
-          order,
-        },
-      });
-      const iId = item.id;
-
-      // к нему добавляем поинты - массив строк
-      points.forEach(async (p: string) => {
-        await prisma.itemPoint.create({
+      const item = await prisma.$transaction(async (tx) => {
+        const createdItem = await tx.item.create({
           data: {
-            point: p,
-            itemId: iId,
+            name,
+            price,
+            order,
           },
         });
-      });
 
-      // к нему добавляем инфо - массив объектов с заголовком и описанием
-      info.forEach(async (inf: ItemInformation) => {
-        await prisma.itemInfo.create({
-          data: {
-            itemId: iId,
-            title: inf.title,
-            description: inf.description,
-          },
-        });
-      });
+        const itemId = createdItem.id;
 
-      // к нему добавляем картинки -- массив объектов с юрл + айди + позицией
-      // ДО НЕГО СДЕЛАТЬ АПЛОУД!
-      images.forEach(async (im: ItemImage) => {
-        await prisma.itemImage.create({
-          data: {
-            itemId: iId,
-            position: Number(im.position),
-            url: im.url,
-          },
-        });
+        await Promise.all(
+          points.map((p: string) =>
+            tx.itemPoint.create({
+              data: {
+                point: p,
+                itemId,
+              },
+            })
+          )
+        );
+
+        await Promise.all(
+          info.map((inf: ItemInformation) =>
+            tx.itemInfo.create({
+              data: {
+                itemId,
+                title: inf.title,
+                description: inf.description,
+              },
+            })
+          )
+        );
+
+        await Promise.all(
+          images.map((im: ItemImage) =>
+            tx.itemImage.create({
+              data: {
+                itemId,
+                position: Number(im.position),
+                url: im.url,
+              },
+            })
+          )
+        );
+
+        return createdItem;
       });
 
       return res.json(item);
