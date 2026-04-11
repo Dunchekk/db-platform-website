@@ -8,28 +8,28 @@ import ApiError from "../error/ApiError";
 class ItemController {
   async getAllItems(req: Request, res: Response) {
     // GET api/items/
-    const items = await prisma.item.findMany();
-    const images = await prisma.itemImage.findMany({
-      where: {
-        position: 1,
-      },
-      select: {
-        itemId: true,
-        url: true, // или url: true
+    const items = await prisma.item.findMany({
+      include: {
+        images: true,
       },
     });
 
-    const imageMap = new Map(images.map((img) => [img.itemId, img.url]));
-
-    const result = items.map((item) => ({
-      ...item,
-      image: imageMap.get(item.id) ?? "",
-    }));
-
-    return res.json(result);
+    return res.json(items);
   }
 
-  async getOneItem(req: Request, res: Response) {}
+  async getOneItem(req: Request, res: Response) {
+    // GET api/items/:id
+    const { id } = req.params;
+    const item = await prisma.item.findUnique({
+      where: { id: Number(id) },
+      include: {
+        images: true,
+        points: true,
+        info: true,
+      },
+    });
+    return res.json(item);
+  }
 
   async createItem(req: Request, res: Response, next: NextFunction) {
     try {
