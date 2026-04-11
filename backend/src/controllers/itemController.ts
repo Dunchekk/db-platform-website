@@ -9,7 +9,24 @@ class ItemController {
   async getAllItems(req: Request, res: Response) {
     // GET api/items/
     const items = await prisma.item.findMany();
-    return res.json(items);
+    const images = await prisma.itemImage.findMany({
+      where: {
+        position: 1,
+      },
+      select: {
+        itemId: true,
+        url: true, // или url: true
+      },
+    });
+
+    const imageMap = new Map(images.map((img) => [img.itemId, img.url]));
+
+    const result = items.map((item) => ({
+      ...item,
+      image: imageMap.get(item.id) ?? "",
+    }));
+
+    return res.json(result);
   }
 
   async getOneItem(req: Request, res: Response) {}
