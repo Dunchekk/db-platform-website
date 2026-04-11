@@ -12,7 +12,7 @@ class ImageController {
     }
 
     try {
-      const url = `/static/uploads/${req.file.filename}`;
+      const url = `/uploads/${req.file.filename}`;
 
       if (!Number(req.params.id)) {
         throw ApiError.badRequest("Params do not have any id!");
