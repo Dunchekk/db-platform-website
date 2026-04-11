@@ -2,9 +2,8 @@ export type CreateItemBody = {
   name: string;
   price: number;
   order: number;
-  points: string[];
+  points: ItemPoint[];
   info: ItemInformation[];
-  images: ItemImage[];
 };
 
 export type ItemInformation = {
@@ -15,6 +14,10 @@ export type ItemInformation = {
 export type ItemImage = {
   url: string;
   position: number;
+};
+
+export type ItemPoint = {
+  point: string;
 };
 
 // {
