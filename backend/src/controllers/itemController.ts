@@ -6,7 +6,6 @@ import ApiError from "../error/ApiError";
 class ItemController {
   async getAllItems(req: Request, res: Response, next: NextFunction) {
     // GET api/items/
-
     try {
       const items = await prisma.item.findMany({
         include: {
@@ -27,7 +26,6 @@ class ItemController {
 
   async getOneItem(req: Request, res: Response, next: NextFunction) {
     // GET api/items/:id
-
     try {
       const { id } = req.params;
       const item = await prisma.item.findUnique({
@@ -164,7 +162,32 @@ class ItemController {
     }
   }
 
-  async deleteItem(req: Request, res: Response) {}
+  async deleteItem(req: Request, res: Response, next: NextFunction) {
+    // DELETE api/items/:id
+    try {
+      const id = Number(req.params.id);
+      if (!Number.isInteger(id)) {
+        next(ApiError.badRequest("Invalid item id"));
+        return;
+      }
+
+      await prisma.$transaction(async (tx) => {
+        await tx.itemPoint.deleteMany({ where: { itemId: id } });
+        await tx.itemInfo.deleteMany({ where: { itemId: id } });
+        await tx.itemImage.deleteMany({ where: { itemId: id } });
+        await tx.item.delete({ where: { id } });
+      });
+
+      return res.json({ message: "Item deleted" });
+    } catch (err) {
+      if (err instanceof Error) {
+        next(ApiError.badRequest(err.message));
+        return;
+      }
+
+      next(ApiError.badRequest("Unknown error"));
+    }
+  }
 }
 
 export const itemController = new ItemController();
