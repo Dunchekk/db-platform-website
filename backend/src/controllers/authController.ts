@@ -36,7 +36,7 @@ class AuthController {
     return res.json({ token });
   }
 
-  async checkAuth(req: Request, res: Response, next: NextFunction) {
+  async checkAuth(req: Request, res: Response) {
     const token = await new SignJWT({ role: "ADMIN" })
       .setProtectedHeader({ alg: "HS256" })
       .setSubject("admin")
