@@ -5,7 +5,7 @@ const itemRouter = Router();
 
 itemRouter.get("/", itemController.getAllItems); // для получения объектов
 
-itemRouter.get("/:id", itemController.getOneItem); // для получения конкретного объекта
+// itemRouter.get("/:id", itemController.getOneItem); // для получения конкретного объекта
 
 itemRouter.post("/", checkRoleMiddleware("ADMIN"), itemController.createItem); // для создания объекта
 

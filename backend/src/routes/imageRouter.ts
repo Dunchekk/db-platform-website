@@ -4,9 +4,9 @@ import { uploadMiddleware } from "../middleware/UploadMiddleware";
 import checkRoleMiddleware from "../middleware/CheckRoleMiddleware";
 const imageRouter = Router();
 
-imageRouter.get("/", imageController.getAllFiles); // для получения всех картинок
+// imageRouter.get("/", imageController.getAllFiles); // для получения всех картинок
 
-imageRouter.get("/:id", imageController.getItemFiles); // для получения картинок конкретного объекта
+// imageRouter.get("/:id", imageController.getItemFiles); // для получения картинок конкретного объекта
 
 imageRouter.post(
   "/:id",
