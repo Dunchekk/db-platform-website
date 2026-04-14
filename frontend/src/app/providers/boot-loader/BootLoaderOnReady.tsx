@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { hideBootLoader } from "@/shared/lib/bootLoader";
+import { hideBootLoader } from "@/app/providers/boot-loader/bootLoader";
 import { useObjects } from "@/shared/objects/objects.context";
 
 const BootLoaderOnReady = (): null => {
