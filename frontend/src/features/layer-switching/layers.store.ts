@@ -1,7 +1,10 @@
 // src/features/layer-switching/model/layers.store.ts
 import { create } from "zustand";
-import type { OverlayLayerId } from "@/shared/types/layers";
-import { DEFAULT_INFO_SECTION, type InfoSectionId } from "@/shared/types/info";
+import type { OverlayLayerId } from "@/shared/types/layers.types";
+import {
+  DEFAULT_INFO_SECTION,
+  type InfoSectionId,
+} from "@/shared/types/info.types";
 
 const LAYER_ORDER: OverlayLayerId[] = [
   "about",
@@ -121,11 +124,11 @@ export const useLayersStore = create<LayersState>((set, get) => ({
 
     set({
       openedLayers: normalized.openedLayers,
-      activeLayer: normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
+      activeLayer:
+        normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
       activeObjectId: normalized.activeObjectId,
       activeInfoSection: normalized.activeInfoSection,
-      lastActiveObjectId:
-        normalized.activeObjectId ?? get().lastActiveObjectId,
+      lastActiveObjectId: normalized.activeObjectId ?? get().lastActiveObjectId,
     });
   },
 
@@ -144,11 +147,11 @@ export const useLayersStore = create<LayersState>((set, get) => ({
 
     set({
       openedLayers: normalized.openedLayers,
-      activeLayer: normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
+      activeLayer:
+        normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
       activeObjectId: normalized.activeObjectId,
       activeInfoSection: normalized.activeInfoSection,
-      lastActiveObjectId:
-        normalized.activeObjectId ?? get().lastActiveObjectId,
+      lastActiveObjectId: normalized.activeObjectId ?? get().lastActiveObjectId,
     });
   },
 
@@ -172,11 +175,11 @@ export const useLayersStore = create<LayersState>((set, get) => ({
 
     set({
       openedLayers: normalized.openedLayers,
-      activeLayer: normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
+      activeLayer:
+        normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
       activeObjectId: normalized.activeObjectId,
       activeInfoSection: normalized.activeInfoSection,
-      lastActiveObjectId:
-        normalized.activeObjectId ?? get().lastActiveObjectId,
+      lastActiveObjectId: normalized.activeObjectId ?? get().lastActiveObjectId,
     });
   },
 
@@ -189,11 +192,11 @@ export const useLayersStore = create<LayersState>((set, get) => ({
 
     set({
       openedLayers: normalized.openedLayers,
-      activeLayer: normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
+      activeLayer:
+        normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
       activeObjectId: normalized.activeObjectId,
       activeInfoSection: normalized.activeInfoSection,
-      lastActiveObjectId:
-        objectId ?? get().lastActiveObjectId,
+      lastActiveObjectId: objectId ?? get().lastActiveObjectId,
     });
   },
 
@@ -210,11 +213,11 @@ export const useLayersStore = create<LayersState>((set, get) => ({
 
     set({
       openedLayers: normalized.openedLayers,
-      activeLayer: normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
+      activeLayer:
+        normalized.openedLayers[normalized.openedLayers.length - 1] ?? null,
       activeObjectId: normalized.activeObjectId,
       activeInfoSection: normalized.activeInfoSection,
-      lastActiveObjectId:
-        activeObjectId ?? get().lastActiveObjectId,
+      lastActiveObjectId: activeObjectId ?? get().lastActiveObjectId,
     });
   },
 

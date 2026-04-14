@@ -8,7 +8,7 @@ import { useLayersStore } from "@/features/layer-switching/layers.store";
 import Q_Circle from "@/components/Q_Circle/Q_Circle";
 import Q_Cursor from "@/components/Q_Cursor/Q_Cursor";
 import cls from "@/app/App.module.css";
-import { isInfoSectionId, type InfoSectionId } from "@/shared/types/info";
+import { isInfoSectionId, type InfoSectionId } from "@/shared/types/info.types";
 import Q_CardButton from "@/components/Q_CardButton/Q_CardButton";
 
 export default function App() {

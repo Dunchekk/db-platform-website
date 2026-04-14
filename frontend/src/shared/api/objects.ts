@@ -1,4 +1,4 @@
-import type { DbObject } from "@/shared/types/object";
+import type { DbObject } from "@/shared/types/object.types";
 import { OBJECTS_URL } from "@/shared/api/endpoints";
 import { requestJson } from "@/shared/api/requestJson";
 

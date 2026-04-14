@@ -1,4 +1,4 @@
-import type { OverlayLayerId } from "@/shared/types/layers";
+import type { OverlayLayerId } from "@/shared/types/layers.types";
 
 export function getLayersByPath(pathname: string): OverlayLayerId[] {
   if (pathname === "/about") {

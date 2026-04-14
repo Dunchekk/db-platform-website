@@ -7,7 +7,10 @@ import M_ConfInfo from "@/components/M_InfoBlocks/M_ConfInfo/M_ConfInfo";
 import M_DelivInfo from "@/components/M_InfoBlocks/M_DelivInfo/M_DelivInfo";
 import M_PublicInfo from "@/components/M_InfoBlocks/M_PublicInfo/M_PublicInfo";
 import Q_InfoButtons from "@/components/Q_InfoButtons/Q_InfoButtons";
-import { DEFAULT_INFO_SECTION, type InfoSectionId } from "@/shared/types/info";
+import {
+  DEFAULT_INFO_SECTION,
+  type InfoSectionId,
+} from "@/shared/types/info.types";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
 
 const InfoLayer = () => {

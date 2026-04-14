@@ -1,10 +1,11 @@
 import React from "react";
 import cls from "@/layers/ObjectsLayer/ObjectsLayer.module.css";
 import M_itemCard from "@/components/M_itemCard/M_itemCard";
-import { DbObject } from "@/shared/types/object";
+import { DbObject } from "@/shared/types/object.types";
 import { useObjects } from "@/shared/objects/objects.context";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
 import Q_InfoButtons from "@/components/Q_InfoButtons/Q_InfoButtons";
+import { useAuth } from "@/features/auth/auth.store";
 
 const PROTOTYPE_ONLY_FIRST_OBJECT_CLICKABLE = true;
 
@@ -19,6 +20,9 @@ const ObjectsLayer = () => {
       : objects.length === 2
         ? cls.twoobj
         : undefined;
+
+  const isAuth = useAuth((state) => state.isAuth);
+  console.log(isAuth);
 
   return (
     <div className={cls.main}>
@@ -35,7 +39,7 @@ const ObjectsLayer = () => {
                 onClick={
                   isClickable
                     ? () => {
-                        setActiveObjectId(obj.id);
+                        setActiveObjectId(String(obj.id));
                         openLayer("details");
                       }
                     : undefined

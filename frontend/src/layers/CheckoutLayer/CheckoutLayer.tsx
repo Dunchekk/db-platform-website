@@ -4,7 +4,7 @@ import cls from "@/layers/CheckoutLayer/CheckoutLayer.module.css";
 import W_CardItemsWrapper from "@/components/W_CardItemsWrapper/W_CardItemsWrapper";
 
 import objects from "@/mocks/objects";
-import { DbObject } from "@/shared/types/object";
+import { DbObject } from "@/shared/types/object.types";
 import M_Input from "@/components/M_Input/M_Input";
 import M_InputCheckbox from "@/components/M_InputCheckbox/M_InputCheckbox";
 
@@ -29,7 +29,7 @@ const CheckoutLayer = () => {
             <W_CardItemsWrapper objects={cardObjects} />
             <div className={cls.prisediv + " " + cls.prisediv1}>
               <span>сумма:</span>{" "}
-              <div className={cls.sum}>{object.prise} ₽</div>
+              <div className={cls.sum}>{object.price} ₽</div>
             </div>
             <div className={cls.prisediv}>
               <span>доставка:</span>{" "}
@@ -47,7 +47,7 @@ const CheckoutLayer = () => {
             <span>итого:</span>{" "}
             <div className={cls.prise}>
               <span>(?)&nbsp;</span>
-              {object.prise} ₽
+              {object.price} ₽
             </div>
           </div>
         </div>

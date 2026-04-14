@@ -1,6 +1,9 @@
 // src/features/layer-switching/model/getPathByState.ts
-import type { OverlayLayerId } from "@/shared/types/layers";
-import { DEFAULT_INFO_SECTION, type InfoSectionId } from "@/shared/types/info";
+import type { OverlayLayerId } from "@/shared/types/layers.types";
+import {
+  DEFAULT_INFO_SECTION,
+  type InfoSectionId,
+} from "@/shared/types/info.types";
 
 type GetPathByStateParams = {
   openedLayers: OverlayLayerId[];
