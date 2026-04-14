@@ -11,6 +11,8 @@ class ItemController {
       const items = await prisma.item.findMany({
         include: {
           images: true,
+          points: true,
+          info: true,
         },
       });
 
@@ -25,35 +27,35 @@ class ItemController {
     }
   }
 
-  async getOneItem(req: Request, res: Response, next: NextFunction) {
-    // GET api/items/:id
-    try {
-      const id = parseIdParam(req.params.id);
+  // async getOneItem(req: Request, res: Response, next: NextFunction) {
+  //   // GET api/items/:id
+  //   try {
+  //     const id = parseIdParam(req.params.id);
 
-      const item = await prisma.item.findUnique({
-        where: { id },
-        include: {
-          images: true,
-          points: true,
-          info: true,
-        },
-      });
+  //     const item = await prisma.item.findUnique({
+  //       where: { id },
+  //       include: {
+  //         images: true,
+  //         points: true,
+  //         info: true,
+  //       },
+  //     });
 
-      if (!item) {
-        next(ApiError.notFound("Item not found"));
-        return;
-      }
+  //     if (!item) {
+  //       next(ApiError.notFound("Item not found"));
+  //       return;
+  //     }
 
-      return res.json(item);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        next(ApiError.badRequest(err.message));
-        return;
-      }
+  //     return res.json(item);
+  //   } catch (err: unknown) {
+  //     if (err instanceof Error) {
+  //       next(ApiError.badRequest(err.message));
+  //       return;
+  //     }
 
-      next(ApiError.badRequest("Unknown error"));
-    }
-  }
+  //     next(ApiError.badRequest("Unknown error"));
+  //   }
+  // }
 
   async createItem(req: Request, res: Response, next: NextFunction) {
     try {

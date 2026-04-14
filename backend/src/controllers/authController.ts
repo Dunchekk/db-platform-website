@@ -36,15 +36,14 @@ class AuthController {
     return res.json({ token });
   }
 
-  async checkAuth(req: Request, res: Response) {
-    const token = await new SignJWT({ role: "ADMIN" })
-      .setProtectedHeader({ alg: "HS256" })
-      .setSubject("admin")
-      .setIssuedAt()
-      .setExpirationTime("2h")
-      .sign(jwtSecret);
+  async checkAuth(req: Request, res: Response, next: NextFunction) {
+    if (!req.user) {
+      return next(ApiError.forbidden("User is not authorized"));
+    }
 
-    return res.json({ token });
+    return res.json({
+      user: req.user,
+    });
   }
 }
 
