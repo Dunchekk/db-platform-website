@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 
 import { LayersStack } from "@/features/layer-switching/LayersStack";
@@ -10,6 +10,11 @@ import Q_Cursor from "@/components/Q_Cursor/Q_Cursor";
 import cls from "@/app/App.module.css";
 import { isInfoSectionId, type InfoSectionId } from "@/shared/types/info.types";
 import Q_CardButton from "@/components/Q_CardButton/Q_CardButton";
+import { check } from "@/shared/api/auth";
+import { useAuth } from "@/features/auth/auth.store";
+import Q_Loader from "@/components/Q_Loader/Q_Loader";
+import { getItems } from "@/shared/api/objects";
+import { useObjects } from "@/features/objects/objects.store";
 
 export default function App() {
   const navigate = useNavigate();
@@ -42,6 +47,30 @@ export default function App() {
     hasHydratedFromRouteRef.current = true;
   }, [pathname, params.id, params.section, setRouteState]);
 
+  const [loading, setLoading] = useState<boolean>(false);
+  const setIsAuth = useAuth((state) => state.setIsAuth);
+  const setObjects = useObjects((state) => state.setObjects);
+
+  useEffect(() => {
+    check()
+      .then(() => {
+        setIsAuth(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  });
+
+  useEffect(() => {
+    getItems()
+      .then((data) => {
+        setObjects(data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [setObjects]);
+
   useEffect(() => {
     if (!hasHydratedFromRouteRef.current) return;
 
@@ -63,6 +92,7 @@ export default function App() {
       <Q_Circle />
       {openedLayers.includes("objects") && <Q_CardButton />}
       <Q_Cursor />
+      {loading ? <Q_Loader /> : null}
     </div>
   );
 }
