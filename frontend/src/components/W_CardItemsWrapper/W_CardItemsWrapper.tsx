@@ -1,7 +1,7 @@
 import React from "react";
 import cls from "@/components/W_CardItemsWrapper/W_CardItemsWrapper.module.css";
 import M_CardItemBox from "@/components/M_CardItemBox/M_CardItemBox";
-import { DbObject } from "@/shared/types/object";
+import { DbObject } from "@/shared/types/object.types";
 
 type Props = {
   objects: DbObject[];

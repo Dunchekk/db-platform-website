@@ -1,6 +1,6 @@
 import cls from "@/components/Q_InfoButtons/Q_InfoButtons.module.css";
 import Q_Button from "../Q_Button/Q_Button";
-import { INFO_SECTIONS } from "@/shared/types/info";
+import { INFO_SECTIONS } from "@/shared/types/info.types";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
 import { useState } from "react";
 
