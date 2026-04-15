@@ -2,7 +2,7 @@ import cls from "@/components/M_itemCard/M_itemCard.module.css";
 // import img from "@/assets/images/bg-items/Frame 29.png";
 
 import React from "react";
-import { DbObject } from "@/shared/types/object";
+import { DbObject } from "@/shared/types/object.types";
 
 type Props = {
   object: DbObject;
@@ -18,11 +18,15 @@ const M_itemCard = ({ object, addClasses }: Props) => {
 
   return (
     <div className={wrapperClassName}>
-      <img src={object.img} alt="img" className={cls.img} />
+      <img
+        src={object.images.find((v) => Number(v.position) === 1).url}
+        alt="img"
+        className={cls.img}
+      />
       <span className={cls.id}>{id}</span>
       <div className={infoClassName}>
         <span>{object.name}</span>
-        <span>{object.prise} ₽</span>
+        <span>{object.price} ₽</span>
       </div>
     </div>
   );
