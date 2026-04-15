@@ -4,4 +4,9 @@ export type AuthState = {
   isAuth: boolean;
   token: string | null;
   setIsAuth: (value: boolean) => void;
+  setToken: (value: string | null) => void;
+};
+
+export type RequestOptions = RequestInit & {
+  isAuth?: boolean;
 };

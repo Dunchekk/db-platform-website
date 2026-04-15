@@ -35,3 +35,22 @@ export type ObjectsState = {
   objects: DbObject[];
   setObjects: (objects: DbObject[]) => void;
 };
+
+// для создания объекта (пока не присвоено айди)
+
+export type payloadDbObject = {
+  name: string;
+  price: number;
+  order: number;
+  points: CreateItemPointPayload[];
+  info: CreateItemInfoPayload[];
+};
+
+type CreateItemPointPayload = {
+  point: string;
+};
+
+type CreateItemInfoPayload = {
+  title: string;
+  description: string;
+};
