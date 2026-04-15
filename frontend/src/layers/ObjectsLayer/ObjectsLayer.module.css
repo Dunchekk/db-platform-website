@@ -30,8 +30,10 @@
 
 .oneobj {
   --card-width: var(--card-width-one);
+  cursor: pointer;
 }
 
 .twoobj {
   --card-width: var(--card-width-two);
+  cursor: pointer;
 }
