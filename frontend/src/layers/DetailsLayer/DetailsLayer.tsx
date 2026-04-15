@@ -3,8 +3,8 @@ import { useParams } from "react-router";
 
 import cls from "@/layers/DetailsLayer/DetailsLayer.module.css";
 import M_ImageSlider from "@/components/M_ImageSlider/M_ImageSlider";
-import { useObjects } from "@/shared/objects/objects.context";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
+import { useObjects } from "@/features/objects/objects.store";
 
 const DetailsLayer = () => {
   const { id } = useParams();
@@ -17,59 +17,24 @@ const DetailsLayer = () => {
   const effectiveObjectId = routeObjectId ?? storeObjectId ?? lastStoreObjectId;
   const isDetailsContext = routeObjectId !== null || isDetailsLayerOpen;
 
-  const { objectsById, isLoading, error } = useObjects();
   const closeLayer = useLayersStore((state) => state.closeLayer);
 
-  const object = effectiveObjectId ? objectsById[effectiveObjectId] : undefined;
-  const currentObjectId = effectiveObjectId ?? null;
+  const object = useObjects((state) => state.objects).find(
+    (v) => v.id === Number(id)
+  );
+
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [selectedChoise, setSelectedChoise] = useState<{
-    objectId: string | null;
-    value: string | null;
-  }>({ objectId: currentObjectId, value: null });
-  const selectedChoiseValue =
-    selectedChoise.objectId === currentObjectId ? selectedChoise.value : null;
+
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const images = useMemo(() => {
     if (!object) return [];
     if (Array.isArray(object.images) && object.images.length > 0)
-      return object.images;
-    return object.img ? [object.img] : [];
+      return [...object.images]
+        .sort((a, b) => a.position - b.position)
+        .map((v) => v.url);
+    return [];
   }, [object]);
-
-  const renderChoise = (items: string[]) => {
-    const active =
-      selectedChoiseValue && items.includes(selectedChoiseValue)
-        ? selectedChoiseValue
-        : items[0] ?? null;
-    return (
-      <div className={cls.choiseblock}>
-        {items.map((c) => {
-          const isActive = active === c;
-          return (
-            <div
-              key={c}
-              className={[cls.choiseItem, isActive ? cls.ch : ""].join(" ")}
-              role="button"
-              tabIndex={0}
-              onClick={() =>
-                setSelectedChoise({ objectId: currentObjectId, value: c })
-              }
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  setSelectedChoise({ objectId: currentObjectId, value: c });
-                }
-              }}
-            >
-              {c}
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
 
   return (
     <div
@@ -94,26 +59,11 @@ const DetailsLayer = () => {
           Х
         </button>
 
-        {isLoading && <div>Loading...</div>}
-        {error && <div>{error}</div>}
-
-        {isDetailsContext && !isLoading && !error && !effectiveObjectId && (
-          <div>Object id not found</div>
-        )}
-        {isDetailsContext &&
-          !isLoading &&
-          !error &&
-          effectiveObjectId &&
-          !object && <div>Object {effectiveObjectId} not found</div>}
-
-        {/* ------------------------------- */}
-
-        {!isLoading && !error && object && (
+        {object && (
           <div className={cls.content}>
             <div className={[cls.header, cls.mobileHeader].join(" ")}>
               <span>{object.name}</span>
-              <span>{object.prise} ₽</span>
-              {renderChoise(object.choise)}
+              <span>{object.price} ₽</span>
               <span className={[cls.tocard, cls.mobileTocard].join(" ")}>
                 + в корзину
               </span>
@@ -129,8 +79,7 @@ const DetailsLayer = () => {
             <div className={cls.info}>
               <div className={[cls.header, cls.desktopHeader].join(" ")}>
                 <span>{object.name}</span>
-                <span>{object.prise} ₽</span>
-                {renderChoise(object.choise)}
+                <span>{object.price} ₽</span>
               </div>
               <span className={cls.desktopOnlyBreaks}>
                 <br />
@@ -139,11 +88,11 @@ const DetailsLayer = () => {
                 <br />
               </span>
               <div>
-                {object.details.properties.map((p, i) => {
-                  if (p.property === "") return <br key={i} />;
+                {object.info.map((info, i) => {
+                  if (info.title === "") return <br key={i} />;
                   return (
                     <div key={i}>
-                      <span>{p.property}</span>: {p.fill}
+                      <span>{info.title}</span>: {info.description}
                       <br />
                     </div>
                   );
@@ -171,8 +120,8 @@ const DetailsLayer = () => {
                 ].join(" ")}
               >
                 <ul className={cls.ul}>
-                  {object.details.points.map((p, i) => {
-                    return <li key={i}>{p}</li>;
+                  {object.points.map((p, i) => {
+                    return <li key={i}>{p.point}</li>;
                   })}
                 </ul>
               </div>
