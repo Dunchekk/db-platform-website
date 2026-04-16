@@ -11,41 +11,12 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
-  USER
-  ADMIN
-}
 
-model User {
-  id          Int        @id @default(autoincrement())
-  email       String     @unique
-  password    String
-  role        Role       @default(USER)
-  createdAt   DateTime   @default(now())
-
-  basket   Basket?
-}
-
-model Basket {
-  id     Int  @id @default(autoincrement())
-  userId Int  @unique
-
-  user   User         @relation(fields: [userId], references: [id])
-  items  BasketItem[]
-}
-
-model BasketItem {
-  id       Int @id @default(autoincrement())
-  basketId Int
-  itemId   Int
-  quantity Int @default(1)
-
-  basket   Basket @relation(fields: [basketId], references: [id])
-  item     Item   @relation(fields: [itemId], references: [id])
-
-  @@unique([basketId, itemId])
-  @@index([basketId])
-  @@index([itemId])
+model Admin {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
 }
 
 model Item {
@@ -54,12 +25,12 @@ model Item {
   updatedAt   DateTime     @updatedAt
   name        String
   price       Int
-  order       Int
+  position    Int
 
-  basketItems BasketItem[]
   points      ItemPoint[]
   info        ItemInfo[]
   images      ItemImage[]
+  orderItems  OrderItem[]
 }
 
 model ItemPoint {
@@ -67,7 +38,7 @@ model ItemPoint {
   itemId      Int
   point       String
 
-  item        Item   @relation(fields: [itemId], references: [id])
+  item        Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
   @@index([itemId])
 }
 
@@ -77,7 +48,7 @@ model ItemInfo {
   title       String
   description String
 
-  item        Item   @relation(fields: [itemId], references: [id])
+  item        Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
   @@index([itemId])
 }
 
@@ -87,7 +58,51 @@ model ItemImage {
   itemId   Int
   position Int     @default(0)
 
-  item     Item    @relation(fields: [itemId], references: [id])
+  item     Item    @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
   @@index([itemId])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+  COMPLETED
+}
+
+model Order {
+  id                 Int         @id @default(autoincrement())
+  status             OrderStatus @default(PENDING)
+
+  firstName          String
+  lastName           String
+  patronymic         String?
+  email              String
+  phone              String
+  telegram           String?
+  deliveryPrice      Int         @default(0)
+
+  comment            String?
+  subtotal           Int
+  total              Int
+
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  items              OrderItem[]
+}
+
+model OrderItem {
+  id          Int    @id @default(autoincrement())
+  orderId     Int
+  itemId      Int?
+  title       String
+  price       Int
+  quantity    Int
+  total       Int
+
+  order       Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  item        Item?  @relation(fields: [itemId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
 }
