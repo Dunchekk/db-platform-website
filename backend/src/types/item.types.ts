@@ -1,7 +1,7 @@
 export type CreateItemBody = {
   name: string;
   price: number;
-  order: number;
+  position: number;
   points: ItemPoint[];
   info: ItemInformation[];
 };
