@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../db";
-import { CreateItemBody, ItemInformation } from "../types/itemTypes";
+import { CreateItemBody, ItemInformation } from "../types/item.types";
 import ApiError from "../error/ApiError";
 import { parseIdParam } from "../helpers/parseIdParam";
 
@@ -27,47 +27,17 @@ class ItemController {
     }
   }
 
-  // async getOneItem(req: Request, res: Response, next: NextFunction) {
-  //   // GET api/items/:id
-  //   try {
-  //     const id = parseIdParam(req.params.id);
-
-  //     const item = await prisma.item.findUnique({
-  //       where: { id },
-  //       include: {
-  //         images: true,
-  //         points: true,
-  //         info: true,
-  //       },
-  //     });
-
-  //     if (!item) {
-  //       next(ApiError.notFound("Item not found"));
-  //       return;
-  //     }
-
-  //     return res.json(item);
-  //   } catch (err: unknown) {
-  //     if (err instanceof Error) {
-  //       next(ApiError.badRequest(err.message));
-  //       return;
-  //     }
-
-  //     next(ApiError.badRequest("Unknown error"));
-  //   }
-  // }
-
   async createItem(req: Request, res: Response, next: NextFunction) {
     try {
       // POST api/items/
-      const { name, price, order, points, info }: CreateItemBody = req.body;
+      const { name, price, position, points, info }: CreateItemBody = req.body;
 
       const item = await prisma.$transaction(async (tx) => {
         const createdItem = await tx.item.create({
           data: {
             name,
             price,
-            order,
+            position,
           },
         });
 
@@ -113,7 +83,7 @@ class ItemController {
   async changeItem(req: Request, res: Response, next: NextFunction) {
     try {
       const id = parseIdParam(req.params.id);
-      const { name, price, order, points, info }: CreateItemBody = req.body;
+      const { name, price, position, points, info }: CreateItemBody = req.body;
 
       const item = await prisma.$transaction(async (tx) => {
         const updatedItem = await tx.item.update({
@@ -121,7 +91,7 @@ class ItemController {
           data: {
             name,
             price,
-            order,
+            position,
           },
         });
 
