@@ -5,6 +5,8 @@ import cls from "@/layers/DetailsLayer/DetailsLayer.module.css";
 import M_ImageSlider from "@/components/molecules/M_ImageSlider/M_ImageSlider";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
 import { useObjects } from "@/features/objects/objects.store";
+import A_Button from "@/components/atoms/A_Button/A_Button";
+import { useCheckoutItems } from "@/features/checkout/checkout.store";
 
 const DetailsLayer = () => {
   const { id } = useParams();
@@ -17,11 +19,16 @@ const DetailsLayer = () => {
   const effectiveObjectId = routeObjectId ?? storeObjectId ?? lastStoreObjectId;
   const isDetailsContext = routeObjectId !== null || isDetailsLayerOpen;
 
+  // добавить изменение "в корзину" если больше 1 объекта
+  // переписать </br>
+
   const closeLayer = useLayersStore((state) => state.closeLayer);
 
   const object = useObjects((state) => state.objects).find(
     (v) => v.id === Number(id)
   );
+
+  const addToCard = useCheckoutItems((state) => state.addItem);
 
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
@@ -125,9 +132,12 @@ const DetailsLayer = () => {
                   })}
                 </ul>
               </div>
-              <span className={[cls.tocard, cls.desktopTocard].join(" ")}>
+              <A_Button
+                onClick={() => addToCard(object.id)}
+                className={[cls.tocard, cls.desktopTocard].join(" ")}
+              >
                 + в корзину
-              </span>
+              </A_Button>
             </div>
           </div>
 
