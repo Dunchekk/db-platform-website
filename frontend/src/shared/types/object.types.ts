@@ -54,3 +54,8 @@ type CreateItemInfoPayload = {
   title: string;
   description: string;
 };
+
+// объект корзины
+export type CartViewObject = DbObject & {
+  quantity: number;
+};
