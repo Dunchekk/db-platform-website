@@ -3,12 +3,11 @@ import cls from "@/layers/CheckoutLayer/CheckoutLayer.module.css";
 import { CartViewObject, DbObject } from "@/shared/types/object.types";
 import { useCheckoutItems } from "@/features/checkout/checkout.store";
 import { useObjects } from "@/features/objects/objects.store";
-import { CheckoutItem } from "@/shared/types/checkout.types";
+import { CheckoutBody, CheckoutItem } from "@/shared/types/checkout.types";
 import O_CheckoutCartSummary from "@/components/organisms/O_CheckoutCartSummary/O_CheckoutCartSummary";
 import O_CheckoutCustomerFields from "@/components/organisms/O_CheckoutCustomerFields/O_CheckoutCustomerFields";
 import O_CheckoutDeliveryFields from "@/components/organisms/O_CheckoutDeliveryFields/O_CheckoutDeliveryFields";
-import { $host } from "@/shared/api";
-import { CHECKOUT_URL } from "@/shared/api/endpoints";
+import { createOrder } from "@/shared/api/checkout";
 
 const CheckoutLayer = () => {
   const allObjects: DbObject[] = useObjects((state) => state.objects);
@@ -39,8 +38,8 @@ const CheckoutLayer = () => {
 
     const formData = new FormData(e.currentTarget);
     const deliveryPrice = 0; // позже записать! мок
-    const payload = {
-      firstNmae: String(formData.get("firstName") ?? ""),
+    const payload: CheckoutBody = {
+      firstName: String(formData.get("firstName") ?? ""),
       lastName: String(formData.get("lastName") ?? ""),
       patronymic: String(formData.get("patronymic") ?? ""),
       email: String(formData.get("email") ?? ""),
@@ -56,17 +55,24 @@ const CheckoutLayer = () => {
       })),
     };
 
-    await $host.post(CHECKOUT_URL, payload);
+    await createOrder(payload);
   };
 
   return (
     <form className={cls.main} onSubmit={handleSubmit}>
       <div className={cls.wrapper}>
-        <O_CheckoutCartSummary cartObjects={cartObjects} subtotal={subtotal} />
+        <O_CheckoutCartSummary
+          className={cls.column}
+          cartObjects={cartObjects}
+          subtotal={subtotal}
+        />
 
-        <O_CheckoutCustomerFields />
+        <O_CheckoutCustomerFields className={cls.column} />
 
-        <O_CheckoutDeliveryFields isCartEmpty={isCartEmpty} />
+        <O_CheckoutDeliveryFields
+          className={cls.column}
+          isCartEmpty={isCartEmpty}
+        />
       </div>
     </form>
   );
