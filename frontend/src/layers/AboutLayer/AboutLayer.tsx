@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router";
 import cls from "@/layers/AboutLayer/AboutLayer.module.css";
-import M_BackButton from "@/components/M_BackButton/M_BackButton";
-import W_ScrollFadeBox from "@/components/W_ScrollFadeBox/W_ScrollFadeBox";
+import M_BackButton from "@/components/molecules/M_BackButton/M_BackButton";
+import W_ScrollFadeBox from "@/components/wrappers/W_ScrollFadeBox/W_ScrollFadeBox";
 
 import frame28 from "@/assets/images/bg-items/bag.png";
 import frame29 from "@/assets/images/bg-items/bag-inside-images/front-full-condensed.png";

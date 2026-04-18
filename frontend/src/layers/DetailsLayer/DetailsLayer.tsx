@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router";
 
 import cls from "@/layers/DetailsLayer/DetailsLayer.module.css";
-import M_ImageSlider from "@/components/M_ImageSlider/M_ImageSlider";
+import M_ImageSlider from "@/components/molecules/M_ImageSlider/M_ImageSlider";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
 import { useObjects } from "@/features/objects/objects.store";
 

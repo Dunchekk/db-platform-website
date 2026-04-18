@@ -1,12 +1,12 @@
 import { useRef } from "react";
 
 import cls from "@/layers/InfoLayer/InfoLayer.module.css";
-import M_ReqInfo from "@/components/M_InfoBlocks/M_ReqInfo/M_ReqInfo";
-import M_ContactInfo from "@/components/M_InfoBlocks/M_ContactInfo/M_ContactInfo";
-import M_ConfInfo from "@/components/M_InfoBlocks/M_ConfInfo/M_ConfInfo";
-import M_DelivInfo from "@/components/M_InfoBlocks/M_DelivInfo/M_DelivInfo";
-import M_PublicInfo from "@/components/M_InfoBlocks/M_PublicInfo/M_PublicInfo";
-import Q_InfoButtons from "@/components/Q_InfoButtons/Q_InfoButtons";
+import M_ReqInfo from "@/components/molecules/M_InfoBlocks/M_ReqInfo/M_ReqInfo";
+import M_ContactInfo from "@/components/molecules/M_InfoBlocks/M_ContactInfo/M_ContactInfo";
+import M_ConfInfo from "@/components/molecules/M_InfoBlocks/M_ConfInfo/M_ConfInfo";
+import M_DelivInfo from "@/components/molecules/M_InfoBlocks/M_DelivInfo/M_DelivInfo";
+import M_PublicInfo from "@/components/molecules/M_InfoBlocks/M_PublicInfo/M_PublicInfo";
+import A_InfoButtons from "@/components/atoms/A_InfoButtons/A_InfoButtons";
 import {
   DEFAULT_INFO_SECTION,
   type InfoSectionId,
@@ -66,7 +66,7 @@ const InfoLayer = () => {
       </div>
 
       <div ref={navRef}>
-        <Q_InfoButtons mode="info" />
+        <A_InfoButtons mode="info" />
       </div>
     </div>
   );

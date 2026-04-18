@@ -1,10 +1,10 @@
 import React from "react";
 import cls from "@/layers/ObjectsLayer/ObjectsLayer.module.css";
-import M_itemCard from "@/components/M_itemCard/M_itemCard";
+import M_itemCard from "@/components/molecules/M_itemCard/M_itemCard";
 import { DbObject } from "@/shared/types/object.types";
 import { useObjects } from "@/features/objects/objects.store";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
-import Q_InfoButtons from "@/components/Q_InfoButtons/Q_InfoButtons";
+import A_InfoButtons from "@/components/atoms/A_InfoButtons/A_InfoButtons";
 import { useAuth } from "@/features/auth/auth.store";
 
 const ObjectsLayer = () => {
@@ -41,7 +41,7 @@ const ObjectsLayer = () => {
           })}
         </div>
       </div>
-      <Q_InfoButtons mode="objects" />
+      <A_InfoButtons mode="objects" />
     </div>
   );
 };

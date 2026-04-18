@@ -5,14 +5,14 @@ import { LayersStack } from "@/features/layer-switching/LayersStack";
 import { getLayersByPath } from "@/features/layer-switching/getLayersByPath";
 import { getPathByState } from "@/features/layer-switching/getPathByState";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
-import Q_Circle from "@/components/Q_Circle/Q_Circle";
-import Q_Cursor from "@/components/Q_Cursor/Q_Cursor";
+import A_Circle from "@/components/atoms/A_Circle/A_Circle";
+import A_Cursor from "@/components/atoms/A_Cursor/A_Cursor";
 import cls from "@/app/App.module.css";
 import { isInfoSectionId, type InfoSectionId } from "@/shared/types/info.types";
-import Q_CardButton from "@/components/Q_CardButton/Q_CardButton";
+import A_CardButton from "@/components/atoms/A_CardButton/A_CardButton";
 import { check } from "@/shared/api/auth";
 import { useAuth } from "@/features/auth/auth.store";
-import Q_Loader from "@/components/Q_Loader/Q_Loader";
+import A_Loader from "@/components/atoms/A_Loader/A_Loader";
 import { getItems } from "@/shared/api/objects";
 import { useObjects } from "@/features/objects/objects.store";
 
@@ -89,10 +89,10 @@ export default function App() {
   return (
     <div className={cls.wrapper}>
       <LayersStack />
-      <Q_Circle />
-      {openedLayers.includes("objects") && <Q_CardButton />}
-      <Q_Cursor />
-      {loading ? <Q_Loader /> : null}
+      <A_Circle />
+      {openedLayers.includes("objects") && <A_CardButton />}
+      <A_Cursor />
+      {loading ? <A_Loader /> : null}
     </div>
   );
 }

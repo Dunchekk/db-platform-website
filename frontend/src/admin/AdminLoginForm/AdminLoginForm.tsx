@@ -1,6 +1,6 @@
-import M_Input from "@/components/M_Input/M_Input";
-import Q_Button from "@/components/Q_Button/Q_Button";
-import cls from "@/admin/AdminLoginForm/ AdminLoginForm.module.css";
+import M_Input from "@/components/molecules/M_Input/M_Input";
+import A_Button from "@/components/atoms/A_Button/A_Button";
+import cls from "@/admin/AdminLoginForm/AdminLoginForm.module.css";
 import { login, logout } from "@/shared/api/auth";
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
@@ -51,8 +51,8 @@ const AdminLoginForm = () => {
         type="password"
         className={cls.input}
       />
-      <Q_Button onClick={() => loginIn()}>войти</Q_Button>
-      <Q_Button onClick={() => loginOut()}>выйти</Q_Button>
+      <A_Button onClick={() => loginIn()}>войти</A_Button>
+      <A_Button onClick={() => loginOut()}>выйти</A_Button>
     </div>
   );
 };
