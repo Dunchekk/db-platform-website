@@ -3,6 +3,15 @@
   cursor: pointer;
 }
 
+.button:disabled {
+  opacity: var(--text-opacity);
+}
+
+.button:disabled:hover {
+  opacity: var(--text-opacity);
+  text-decoration: none;
+}
+
 .button:hover {
   text-decoration: underline;
 }
