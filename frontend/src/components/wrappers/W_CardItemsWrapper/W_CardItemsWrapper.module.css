@@ -1,4 +1,4 @@
-.root {
+.wrapper {
   border-bottom: 1.5px black solid;
   width: calc(calc(var(--max-main-box-width) / 3) - var(--space));
 }

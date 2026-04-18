@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 import cls from "@/components/wrappers/W_CardItemsWrapper/W_CardItemsWrapper.module.css";
 import M_CardItemBox from "@/components/molecules/M_CardItemBox/M_CardItemBox";
 import { CartViewObject } from "@/shared/types/object.types";
@@ -6,9 +6,11 @@ import { CartViewObject } from "@/shared/types/object.types";
 type Props = {
   objects: CartViewObject[];
   className?: string;
-};
+} & ComponentPropsWithoutRef<"div">;
 
-const W_CardItemsWrapper = ({ objects, className }: Props) => {
+// переписать эту логику фейдинга позже
+
+const W_CardItemsWrapper = ({ objects, className, ...rest }: Props) => {
   const listRef = React.useRef<HTMLDivElement | null>(null);
   const scrollable = objects.length > 2;
   const showFades = objects.length >= 3;
@@ -61,7 +63,10 @@ const W_CardItemsWrapper = ({ objects, className }: Props) => {
   }, [recomputeScrollState, scrollable]);
 
   return (
-    <div className={[cls.root, className].filter(Boolean).join(" ")}>
+    <div
+      className={[cls.wrapper, className].filter(Boolean).join(" ")}
+      {...rest}
+    >
       <div
         ref={listRef}
         className={cls.inner}
