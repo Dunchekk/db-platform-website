@@ -1,11 +1,11 @@
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 import cls from "@/components/molecules/M_InfoBlocks/M_ContactInfo/M_ContactInfo.module.css";
 
-type Props = { addClasses: string };
+type Props = { className: string } & ComponentPropsWithoutRef<"div">;
 
-const M_ContactInfo = ({ addClasses }: Props) => {
+const M_ContactInfo = ({ className, ...rest }: Props) => {
   return (
-    <div className={addClasses}>
+    <div className={className} {...rest}>
       <div className={[cls.left, cls.leftTop].join(" ")}>
         <p>&nbsp;&nbsp;DB:</p>
         <p>

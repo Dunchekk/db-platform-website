@@ -1,12 +1,12 @@
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 import cls from "@/components/molecules/M_InfoBlocks/M_DelivInfo/M_DelivInfo.module.css";
 import W_ScrollFadeBox from "@/components/wrappers/W_ScrollFadeBox/W_ScrollFadeBox";
 
-type Props = { addClasses: string };
+type Props = { className: string } & ComponentPropsWithoutRef<"div">;
 
-const M_DelivInfo = ({ addClasses }: Props) => {
+const M_DelivInfo = ({ className, ...rest }: Props) => {
   return (
-    <div className={addClasses}>
+    <div className={className} {...rest}>
       <div className={[cls.left, cls.leftTop].join(" ")}>
         <p>&nbsp;&nbsp;DB:</p>
         <p>

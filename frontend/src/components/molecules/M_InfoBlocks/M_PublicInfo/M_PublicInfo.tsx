@@ -1,12 +1,15 @@
 import cls from "@/components/molecules/M_InfoBlocks/M_PublicInfo/M_PublicInfo.module.css";
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 import W_ScrollFadeBox from "@/components/wrappers/W_ScrollFadeBox/W_ScrollFadeBox";
 
-type Props = { addClasses: string };
+type Props = { className: string } & ComponentPropsWithoutRef<"div">;
 
-const M_PublicInfo = ({ addClasses }: Props) => {
+// поменять css на адекватный вариант (height="var(--info-block-right-height)")
+// переписать <br>, сейчас в тексте не везде где нужно стоят
+
+const M_PublicInfo = ({ className, ...rest }: Props) => {
   return (
-    <div className={addClasses}>
+    <div className={className} {...rest}>
       <div className={[cls.left, cls.leftTop].join(" ")}>
         <p>&nbsp;&nbsp;DB:</p>
         <p>

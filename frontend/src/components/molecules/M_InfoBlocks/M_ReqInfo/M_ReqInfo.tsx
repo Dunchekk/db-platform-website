@@ -1,11 +1,13 @@
 import cls from "@/components/molecules/M_InfoBlocks/M_ReqInfo/M_ReqInfo.module.css";
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 
-type Props = { addClasses: string };
+// поменять моковую информацию во всех инфо блоках
 
-const M_ReqInfo = ({ addClasses }: Props) => {
+type Props = { className: string } & ComponentPropsWithoutRef<"div">;
+
+const M_ReqInfo = ({ className, ...rest }: Props) => {
   return (
-    <div className={addClasses}>
+    <div className={className} {...rest}>
       <div className={[cls.left, cls.leftTop].join(" ")}>
         <p>&nbsp;&nbsp;DB:</p>
         <p>
