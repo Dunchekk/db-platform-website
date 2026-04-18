@@ -56,6 +56,9 @@ export default function App() {
       .then(() => {
         setIsAuth(true);
       })
+      .catch(() => {
+        setIsAuth(false);
+      })
       .finally(() => {
         setLoading(false);
       });
