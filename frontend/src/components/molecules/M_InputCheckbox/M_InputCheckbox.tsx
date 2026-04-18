@@ -1,16 +1,11 @@
 import cls from "@/components/molecules/M_InputCheckbox/M_InputCheckbox.module.css";
 
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 
-type Props = Omit<
-  React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  >,
-  "type"
->;
-
-const M_InputCheckbox = ({ className, ...rest }: Props) => {
+const M_InputCheckbox = ({
+  className,
+  ...rest
+}: ComponentPropsWithoutRef<"input">) => {
   return (
     <input
       {...rest}
