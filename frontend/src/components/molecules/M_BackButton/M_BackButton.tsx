@@ -1,10 +1,11 @@
 import { Link } from "react-router";
 
 import cls from "@/components/molecules/M_BackButton/M_BackButton.module.css";
+import { ComponentPropsWithoutRef } from "react";
 
 type Props = {
   isVisible: boolean;
-};
+} & ComponentPropsWithoutRef<"button">;
 
 const M_BackButton = ({ isVisible }: Props) => {
   return (

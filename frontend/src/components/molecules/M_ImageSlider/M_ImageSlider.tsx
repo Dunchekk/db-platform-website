@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  ComponentPropsWithoutRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import cls from "./M_ImageSlider.module.css";
 
@@ -9,9 +15,9 @@ type Props = {
   images: string[];
   alt: string;
   className?: string;
-};
+} & ComponentPropsWithoutRef<"div">;
 
-const M_ImageSlider = ({ images, alt, className }: Props) => {
+const M_ImageSlider = ({ images, alt, className, ...rest }: Props) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isImageVisible, setIsImageVisible] = useState(true);
   const isAnimatingRef = useRef(false);
@@ -74,7 +80,7 @@ const M_ImageSlider = ({ images, alt, className }: Props) => {
   }, [images.length, safeActiveIndex, transitionTo]);
 
   return (
-    <div className={className}>
+    <div className={className} {...rest}>
       <div
         className={cls.imgwrapper}
         onClick={(event) => {
