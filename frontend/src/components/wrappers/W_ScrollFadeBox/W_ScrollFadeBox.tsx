@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 import cls from "@/components/wrappers/W_ScrollFadeBox/W_ScrollFadeBox.module.css";
 
 type Props = {
@@ -6,9 +6,15 @@ type Props = {
   className?: string;
   height: string;
   fadeSize?: string;
-};
+} & ComponentPropsWithoutRef<"div">;
 
-const W_ScrollFadeBox = ({ children, className, height, fadeSize }: Props) => {
+const W_ScrollFadeBox = ({
+  children,
+  className,
+  height,
+  fadeSize,
+  ...rest
+}: Props) => {
   const boxRef = React.useRef<HTMLDivElement | null>(null);
   const [scrollState, setScrollState] = React.useState(() => ({
     scrollable: false,
@@ -63,7 +69,7 @@ const W_ScrollFadeBox = ({ children, className, height, fadeSize }: Props) => {
   }, [recomputeScrollState]);
 
   return (
-    <div className={[cls.root, className].filter(Boolean).join(" ")}>
+    <div className={[cls.root, className].filter(Boolean).join(" ")} {...rest}>
       <div
         ref={boxRef}
         className={cls.inner}

@@ -2,13 +2,13 @@ import cls from "@/components/atoms/A_InfoButtons/A_InfoButtons.module.css";
 import A_Button from "../A_Button/A_Button";
 import { INFO_SECTIONS } from "@/shared/types/info.types";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
-import { useState } from "react";
+import { ComponentPropsWithoutRef, useState } from "react";
 
 type Props = {
   mode?: "objects" | "info";
-};
+} & ComponentPropsWithoutRef<"div">;
 
-const A_InfoButtons = ({ mode }: Props) => {
+const A_InfoButtons = ({ mode, ...rest }: Props) => {
   const openLayer = useLayersStore((state) => state.openLayer);
   const closeLayer = useLayersStore((state) => state.closeLayer);
   const setActiveInfoSection = useLayersStore(
@@ -39,6 +39,7 @@ const A_InfoButtons = ({ mode }: Props) => {
         effectiveMode === "info" ? cls.infoMode : cls.objectsMode,
         isExpanded ? cls.expanded : "",
       ].join(" ")}
+      {...rest}
     >
       <div className={cls.buttons}>
         {INFO_SECTIONS.map((section) => (
@@ -63,7 +64,7 @@ const A_InfoButtons = ({ mode }: Props) => {
         </button>
       ) : (
         <A_Button
-          addClasses={cls.toggle}
+          className={cls.toggle}
           aria-label="Показать информацию"
           aria-expanded={isExpanded}
           onClick={() => setIsObjectsMenuExpanded((prev) => !prev)}
