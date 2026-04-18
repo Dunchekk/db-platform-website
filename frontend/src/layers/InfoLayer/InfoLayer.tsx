@@ -26,15 +26,15 @@ const InfoLayer = () => {
   const renderBlock = (section: InfoSectionId) => {
     switch (section) {
       case "contacts":
-        return <M_ContactInfo addClasses={cls.block} />;
+        return <M_ContactInfo className={cls.block} />;
       case "delivery":
-        return <M_DelivInfo addClasses={cls.block} />;
+        return <M_DelivInfo className={cls.block} />;
       case "offer":
-        return <M_PublicInfo addClasses={cls.block} />;
+        return <M_PublicInfo className={cls.block} />;
       case "privacy":
-        return <M_ConfInfo addClasses={cls.block} />;
+        return <M_ConfInfo className={cls.block} />;
       case "requisites":
-        return <M_ReqInfo addClasses={cls.block} />;
+        return <M_ReqInfo className={cls.block} />;
       default:
         return null;
     }

@@ -95,6 +95,9 @@ const AboutLayer = () => {
     };
   }, []);
 
+  // разобраться с ассетами (переделать под внешние ссылки и запрос на все картинки)
+  // возможно переделать логику движения (/разобратсья в существующей)
+
   return (
     <div
       className={`${cls.main} ${pathname === "/about" ? cls.aboutRoute : ""}`}
@@ -160,6 +163,8 @@ const AboutLayer = () => {
             </p>
           </div>
         </div>
+
+        {/* убрать все nbsp позже */}
 
         <W_ScrollFadeBox className={cls.mobileScroll} height="100%">
           <p className={cls.mobileText}>
