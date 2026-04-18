@@ -1,4 +1,4 @@
-// import cls from "@/components/organisms/O_CheckoutCartSummary/O_CheckoutCartSummary.module.css";
+import cls from "@/components/organisms/O_CheckoutCartSummary/O_CheckoutCartSummary.module.css";
 
 import React, { ComponentPropsWithoutRef } from "react";
 import W_CardItemsWrapper from "../../wrappers/W_CardItemsWrapper/W_CardItemsWrapper";
@@ -8,41 +8,46 @@ import M_Input from "../../molecules/M_Input/M_Input";
 type Props = {
   cartObjects: CartViewObject[];
   subtotal: number;
+  className?: string;
 } & ComponentPropsWithoutRef<"div">;
 
-const O_CheckoutCartSummary = ({ cartObjects, subtotal, ...props }: Props) => {
+const O_CheckoutCartSummary = ({
+  cartObjects,
+  className,
+  subtotal,
+  ...props
+}: Props) => {
   return (
-    <div className={""} {...props}>
+    <div className={className} {...props}>
       <div>
         заказ:
         <W_CardItemsWrapper objects={cartObjects} />
-        <div className={""}>
-          <span>сумма:</span>
-          <div className={""}>{subtotal} ₽</div>
-        </div>
-        <div className={""}>
-          {/* сюда позже включаем доставку */}
-          <span>доставка:</span>
-          <div className={""}>
-            <span>(?)</span>
-          </div>
-        </div>
-        <M_Input
-          id={"sl"}
-          name="comment"
-          placeholder="комментарий к заказу"
-        ></M_Input>
-        <p className={""}>
-          Оплата проходит через ЮKassa. Данные карт не сохраняем.
-        </p>
       </div>
 
-      <div className={""}>
-        <span>итого:</span>
-        <div className={""}>
-          <span>(?)</span>
-          {subtotal} ₽
+      <div>
+        <div className={cls.prices}>
+          <span>сумма:</span>
+          <span>{subtotal} ₽</span>
         </div>
+        <div className={cls.prices}>
+          <span>доставка:</span>
+          <span>(?)</span> {/* сюда позже включаем доставку */}
+        </div>
+      </div>
+
+      <M_Input
+        id={"comment"}
+        name="comment"
+        placeholder="комментарий к заказу"
+      ></M_Input>
+
+      <p className={cls.opacity}>
+        Оплата проходит через ЮKassa. Данные карт не сохраняем.
+      </p>
+
+      <div className={cls.final}>
+        <span>итого:</span>
+        <span>(?) {subtotal} ₽</span>
       </div>
     </div>
   );
