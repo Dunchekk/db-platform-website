@@ -1,20 +1,19 @@
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 import cls from "@/components/atoms/A_Button/A_Button.module.css";
 
 type Props = {
-  children: string;
+  children: React.ReactNode;
   isActive?: boolean;
-  addClasses?: string;
-} & React.DetailedHTMLProps<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  HTMLButtonElement
->;
+  className?: string;
+} & ComponentPropsWithoutRef<"button">;
 
-const A_Button = ({ children, addClasses, isActive, ...rest }: Props) => {
-  if (!addClasses) addClasses = "";
-  if (isActive) addClasses = [addClasses, cls.active].filter(Boolean).join(" ");
+const A_Button = ({ children, isActive, className, ...rest }: Props) => {
+  if (isActive) className = [className, cls.active].filter(Boolean).join(" ");
   return (
-    <button className={cls.button + " " + addClasses} {...rest}>
+    <button
+      className={[className, cls.button].filter(Boolean).join(" ")}
+      {...rest}
+    >
       {children}
     </button>
   );
