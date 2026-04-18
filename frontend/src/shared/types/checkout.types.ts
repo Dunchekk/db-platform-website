@@ -6,6 +6,9 @@ export type CheckoutBody = {
   phone: string;
   telegram?: string;
   comment?: string;
+  deliveryPrice: number;
+  subtotal: number;
+  total: number;
   items: CheckoutItem[];
 };
 
