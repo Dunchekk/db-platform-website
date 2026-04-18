@@ -1,6 +1,6 @@
 import { RequestOptions } from "../types/auth.types";
 
-const API_URL = process.env.REACT_APP_API_URL ?? "http://localhost:5000/api";
+const API_URL = __API_URL__;
 
 async function request(path: string, options: RequestOptions = {}) {
   const { isAuth = false, headers, ...restOptions } = options; // вынимаем переданные опции

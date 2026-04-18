@@ -23,6 +23,9 @@ export function buildPlugins(params: BuildOptions): Configuration["plugins"] {
     }),
     new DefinePlugin({
       __PLATFORM__: JSON.stringify(params.platform),
+      __API_URL__: JSON.stringify(
+        process.env.BACK_API_URL ?? "http://localhost:5000"
+      ),
     }), // подменяет глобальные переменные на значения которые мы задаем при сборке
   ];
 
