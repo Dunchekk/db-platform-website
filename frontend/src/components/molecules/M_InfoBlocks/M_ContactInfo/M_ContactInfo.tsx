@@ -1,5 +1,5 @@
 import React from "react";
-import cls from "@/components/M_InfoBlocks/M_ContactInfo/M_ContactInfo.module.css";
+import cls from "@/components/molecules/M_InfoBlocks/M_ContactInfo/M_ContactInfo.module.css";
 
 type Props = { addClasses: string };
 

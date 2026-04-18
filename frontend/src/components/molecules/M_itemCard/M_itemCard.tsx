@@ -1,4 +1,4 @@
-import cls from "@/components/M_itemCard/M_itemCard.module.css";
+import cls from "@/components/molecules/M_itemCard/M_itemCard.module.css";
 // import img from "@/assets/images/bg-items/Frame 29.png";
 
 import React from "react";

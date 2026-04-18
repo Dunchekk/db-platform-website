@@ -1,4 +1,4 @@
-import cls from "@/components/M_InfoBlocks/M_ReqInfo/M_ReqInfo.module.css";
+import cls from "@/components/molecules/M_InfoBlocks/M_ReqInfo/M_ReqInfo.module.css";
 import React from "react";
 
 type Props = { addClasses: string };

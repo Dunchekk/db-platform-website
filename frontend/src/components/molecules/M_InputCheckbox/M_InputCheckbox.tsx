@@ -1,4 +1,4 @@
-import cls from "@/components/M_InputCheckbox/M_InputCheckbox.module.css";
+import cls from "@/components/molecules/M_InputCheckbox/M_InputCheckbox.module.css";
 
 import React from "react";
 

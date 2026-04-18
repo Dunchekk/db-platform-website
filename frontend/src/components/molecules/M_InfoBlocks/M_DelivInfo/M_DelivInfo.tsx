@@ -1,6 +1,6 @@
 import React from "react";
-import cls from "@/components/M_InfoBlocks/M_DelivInfo/M_DelivInfo.module.css";
-import W_ScrollFadeBox from "@/components/W_ScrollFadeBox/W_ScrollFadeBox";
+import cls from "@/components/molecules/M_InfoBlocks/M_DelivInfo/M_DelivInfo.module.css";
+import W_ScrollFadeBox from "@/components/wrappers/W_ScrollFadeBox/W_ScrollFadeBox";
 
 type Props = { addClasses: string };
 
