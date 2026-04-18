@@ -7,6 +7,8 @@ import { CheckoutItem } from "@/shared/types/checkout.types";
 import O_CheckoutCartSummary from "@/components/organisms/O_CheckoutCartSummary/O_CheckoutCartSummary";
 import O_CheckoutCustomerFields from "@/components/organisms/O_CheckoutCustomerFields/O_CheckoutCustomerFields";
 import O_CheckoutDeliveryFields from "@/components/organisms/O_CheckoutDeliveryFields/O_CheckoutDeliveryFields";
+import { $host } from "@/shared/api";
+import { CHECKOUT_URL } from "@/shared/api/endpoints";
 
 const CheckoutLayer = () => {
   const allObjects: DbObject[] = useObjects((state) => state.objects);
@@ -22,20 +24,51 @@ const CheckoutLayer = () => {
       };
     });
 
+  const isCartEmpty = cartItems.length === 0;
+
   const subtotal = cartObjects.reduce((sum, object) => {
     return sum + object.price * object.quantity;
   }, 0);
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (isCartEmpty) {
+      return;
+    }
+
+    const formData = new FormData(e.currentTarget);
+    const deliveryPrice = 0; // позже записать! мок
+    const payload = {
+      firstNmae: String(formData.get("firstName") ?? ""),
+      lastName: String(formData.get("lastName") ?? ""),
+      patronymic: String(formData.get("patronymic") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      phone: String(formData.get("phone") ?? ""),
+      telegram: String(formData.get("telegram") ?? ""),
+      comment: String(formData.get("comment") ?? ""),
+      deliveryPrice,
+      subtotal,
+      total: subtotal + deliveryPrice,
+      items: cartItems.map((item) => ({
+        itemId: item.itemId,
+        quantity: item.quantity,
+      })),
+    };
+
+    await $host.post(CHECKOUT_URL, payload);
+  };
+
   return (
-    <div className={cls.main}>
+    <form className={cls.main} onSubmit={handleSubmit}>
       <div className={cls.wrapper}>
         <O_CheckoutCartSummary cartObjects={cartObjects} subtotal={subtotal} />
 
         <O_CheckoutCustomerFields />
 
-        <O_CheckoutDeliveryFields />
+        <O_CheckoutDeliveryFields isCartEmpty={isCartEmpty} />
       </div>
-    </div>
+    </form>
   );
 };
 
