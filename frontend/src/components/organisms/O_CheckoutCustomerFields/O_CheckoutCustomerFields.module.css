@@ -1,0 +1,21 @@
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.columnGapSm {
+  gap: calc(var(--space) / 4);
+}
+
+.p {
+  opacity: var(--text-opacity);
+  margin-top: calc(var(--space) / 1.6);
+}
+
+.columnBetween {
+  justify-content: space-between;
+}
+
+.columnRelative {
+  position: relative;
+}
