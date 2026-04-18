@@ -35,3 +35,12 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.block {
+  display: flex;
+  gap: calc(var(--space) / 2);
+}
+
+.text {
+  transform: translateY(-3px);
+}
