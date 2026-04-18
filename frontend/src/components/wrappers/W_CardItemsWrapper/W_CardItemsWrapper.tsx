@@ -1,15 +1,14 @@
 import React from "react";
-import cls from "@/components/W_CardItemsWrapper/W_CardItemsWrapper.module.css";
-import M_CardItemBox from "@/components/M_CardItemBox/M_CardItemBox";
-import { DbObject } from "@/shared/types/object.types";
+import cls from "@/components/wrappers/W_CardItemsWrapper/W_CardItemsWrapper.module.css";
+import M_CardItemBox from "@/components/molecules/M_CardItemBox/M_CardItemBox";
+import { CartViewObject } from "@/shared/types/object.types";
 
 type Props = {
-  objects: DbObject[];
-  cardInfo?: number;
+  objects: CartViewObject[];
   className?: string;
 };
 
-const W_CardItemsWrapper = ({ objects, cardInfo = 1, className }: Props) => {
+const W_CardItemsWrapper = ({ objects, className }: Props) => {
   const listRef = React.useRef<HTMLDivElement | null>(null);
   const scrollable = objects.length > 2;
   const showFades = objects.length >= 3;
@@ -71,12 +70,8 @@ const W_CardItemsWrapper = ({ objects, cardInfo = 1, className }: Props) => {
         data-at-top={scrollState.atTop ? "true" : "false"}
         data-at-bottom={scrollState.atBottom ? "true" : "false"}
       >
-        {objects.map((object, index) => (
-          <M_CardItemBox
-            key={`${object.id}-${index}`}
-            object={object}
-            cardInfo={cardInfo}
-          />
+        {objects.map((object) => (
+          <M_CardItemBox key={object.id} object={object} />
         ))}
       </div>
     </div>

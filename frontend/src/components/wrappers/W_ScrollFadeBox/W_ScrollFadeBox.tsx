@@ -1,5 +1,5 @@
 import React from "react";
-import cls from "@/components/W_ScrollFadeBox/W_ScrollFadeBox.module.css";
+import cls from "@/components/wrappers/W_ScrollFadeBox/W_ScrollFadeBox.module.css";
 
 type Props = {
   children: React.ReactNode;
@@ -86,4 +86,3 @@ const W_ScrollFadeBox = ({ children, className, height, fadeSize }: Props) => {
 };
 
 export default W_ScrollFadeBox;
-
