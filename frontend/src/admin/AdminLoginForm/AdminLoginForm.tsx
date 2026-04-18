@@ -1,8 +1,8 @@
 import M_Input from "@/components/molecules/M_Input/M_Input";
 import A_Button from "@/components/atoms/A_Button/A_Button";
 import cls from "@/admin/AdminLoginForm/AdminLoginForm.module.css";
-import { login, logout } from "@/shared/api/auth";
-import React, { useState } from "react";
+import { check, login, logout } from "@/shared/api/auth";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/features/auth/auth.store";
 
@@ -12,6 +12,18 @@ const AdminLoginForm = () => {
   const setIsAuth = useAuth((state) => state.setIsAuth);
   const setToken = useAuth((state) => state.setToken);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    check()
+      .then(() => {
+        setIsAuth(true);
+      })
+      .catch(() => {
+        setIsAuth(false);
+      });
+  });
+
+  const isAuth = useAuth((state) => state.isAuth);
 
   const loginIn = async () => {
     try {
@@ -37,22 +49,32 @@ const AdminLoginForm = () => {
 
   return (
     <div className={cls.admin}>
-      <M_Input
-        placeholder="логин"
-        value={email}
-        type="email"
-        onChange={(e) => setLogin(e.target.value)}
-        className={cls.input}
-      />
-      <M_Input
-        placeholder="пароль"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        type="password"
-        className={cls.input}
-      />
-      <A_Button onClick={() => loginIn()}>войти</A_Button>
-      <A_Button onClick={() => loginOut()}>выйти</A_Button>
+      <form>
+        <M_Input
+          placeholder="логин*"
+          value={email}
+          required
+          type="email"
+          onChange={(e) => setLogin(e.target.value)}
+          className={cls.input}
+        />
+        <M_Input
+          placeholder="пароль*"
+          value={password}
+          required
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+          className={cls.input}
+        />
+        <div className={cls.buttons}>
+          <A_Button disabled={isAuth} type="button" onClick={() => loginIn()}>
+            войти
+          </A_Button>
+          <A_Button disabled={!isAuth} type="button" onClick={() => loginOut()}>
+            выйти
+          </A_Button>
+        </div>
+      </form>
     </div>
   );
 };
