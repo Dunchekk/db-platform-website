@@ -1,21 +1,13 @@
-.column {
+.links {
+  cursor: pointer;
+}
+
+.links:hover {
+  text-decoration: underline;
+}
+
+.checkboxes {
   display: flex;
   flex-direction: column;
-}
-
-.columnGapSm {
-  gap: calc(var(--space) / 4);
-}
-
-.p {
-  opacity: var(--text-opacity);
-  margin-top: calc(var(--space) / 1.6);
-}
-
-.columnBetween {
-  justify-content: space-between;
-}
-
-.columnRelative {
-  position: relative;
+  gap: calc(var(--space) * 0.7);
 }
