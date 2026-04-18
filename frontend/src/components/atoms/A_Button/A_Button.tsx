@@ -1,5 +1,5 @@
 import React from "react";
-import cls from "@/components/Q_Button/Q_Button.module.css";
+import cls from "@/components/atoms/A_Button/A_Button.module.css";
 
 type Props = {
   children: string;
@@ -10,7 +10,7 @@ type Props = {
   HTMLButtonElement
 >;
 
-const Q_Button = ({ children, addClasses, isActive, ...rest }: Props) => {
+const A_Button = ({ children, addClasses, isActive, ...rest }: Props) => {
   if (!addClasses) addClasses = "";
   if (isActive) addClasses = [addClasses, cls.active].filter(Boolean).join(" ");
   return (
@@ -20,4 +20,4 @@ const Q_Button = ({ children, addClasses, isActive, ...rest }: Props) => {
   );
 };
 
-export default Q_Button;
+export default A_Button;

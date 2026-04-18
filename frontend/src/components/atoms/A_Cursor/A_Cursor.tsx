@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 
-import cls from "@/components/Q_Cursor/Q_Cursor.module.css";
+import cls from "@/components/atoms/A_Cursor/A_Cursor.module.css";
 
 const CIRCLE_AVOID_GAP_PX = 3;
 
-export default function Q_Cursor() {
+export default function A_Cursor() {
   const cursorRef = useRef<HTMLDivElement | null>(null);
   const dotRef = useRef<HTMLDivElement | null>(null);
   const lastTargetRef = useRef<EventTarget | null>(null);

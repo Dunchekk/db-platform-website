@@ -1,11 +1,11 @@
-import cls from "@/components/Q_Loader/Q_Loader.module.css";
+import cls from "@/components/atoms/A_Loader/A_Loader.module.css";
 
 type Props = {
   className?: string;
   "aria-label"?: string;
 };
 
-const Q_Loader = ({ className, "aria-label": ariaLabel }: Props) => {
+const A_Loader = ({ className, "aria-label": ariaLabel }: Props) => {
   return (
     <div
       className={[cls.loader, className].filter(Boolean).join(" ")}
@@ -20,5 +20,4 @@ const Q_Loader = ({ className, "aria-label": ariaLabel }: Props) => {
   );
 };
 
-export default Q_Loader;
-
+export default A_Loader;

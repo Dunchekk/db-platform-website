@@ -1,7 +1,7 @@
-import cls from "@/components/Q_CardButton/Q_CardButton.module.css";
+import cls from "@/components/atoms/A_CardButton/A_CardButton.module.css";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
 
-const Q_CardButton = () => {
+const A_CardButton = () => {
   const toggleLayer = useLayersStore((state) => state.toggleLayer);
   const isCheckoutOpen = useLayersStore((state) =>
     state.openedLayers.includes("checkout")
@@ -23,4 +23,4 @@ const Q_CardButton = () => {
   );
 };
 
-export default Q_CardButton;
+export default A_CardButton;

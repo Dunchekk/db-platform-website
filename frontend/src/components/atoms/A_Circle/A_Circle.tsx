@@ -1,9 +1,9 @@
-import cls from "@/components/Q_Circle/Q_Circle.module.css";
+import cls from "@/components/atoms/A_Circle/A_Circle.module.css";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
 import { useLocation } from "react-router";
 import { useEffect, useRef, useState } from "react";
 
-const Q_Circle = () => {
+const A_Circle = () => {
   const resetLayers = useLayersStore((state) => state.resetLayers);
   const isInfoLayerOpen = useLayersStore((state) =>
     state.openedLayers.includes("info")
@@ -85,4 +85,4 @@ const Q_Circle = () => {
   );
 };
 
-export default Q_Circle;
+export default A_Circle;
