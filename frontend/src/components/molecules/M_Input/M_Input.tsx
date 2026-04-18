@@ -1,14 +1,11 @@
 import cls from "@/components/molecules/M_Input/M_Input.module.css";
 
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 
 type Props = {
   placeholder?: string;
   id?: string;
-} & React.DetailedHTMLProps<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  HTMLInputElement
->;
+} & ComponentPropsWithoutRef<"input">;
 
 const M_Input = ({ placeholder, id, className, ...rest }: Props) => {
   return (
@@ -16,7 +13,7 @@ const M_Input = ({ placeholder, id, className, ...rest }: Props) => {
       <input
         id={id}
         {...rest}
-        placeholder={placeholder ? " " : undefined}
+        placeholder={placeholder ? " " : null}
         className={[cls.input, className].filter(Boolean).join(" ")}
       />
       {placeholder ? (
