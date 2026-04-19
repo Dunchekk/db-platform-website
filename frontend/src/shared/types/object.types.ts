@@ -38,19 +38,19 @@ export type ObjectsState = {
 
 // для создания объекта (пока не присвоено айди)
 
-export type payloadDbObject = {
+export type PayloadDbObject = {
   name: string;
   price: number;
-  order: number;
+  position: number;
   points: CreateItemPointPayload[];
   info: CreateItemInfoPayload[];
 };
 
-type CreateItemPointPayload = {
+export type CreateItemPointPayload = {
   point: string;
 };
 
-type CreateItemInfoPayload = {
+export type CreateItemInfoPayload = {
   title: string;
   description: string;
 };
