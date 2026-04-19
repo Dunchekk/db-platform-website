@@ -2,7 +2,7 @@ import { $authHost, $host } from ".";
 import {
   DbObject,
   DbObjectImage,
-  payloadDbObject,
+  PayloadDbObject,
 } from "../types/object.types";
 import { IMAGE_UPLOAD_URL, IMAGE_URL, ITEM_URL, ITEMS_URL } from "./endpoints";
 
@@ -12,7 +12,7 @@ export const getItems = async () => {
   return response;
 };
 
-export const createItem = async (item: payloadDbObject) => {
+export const createItem = async (item: PayloadDbObject) => {
   // создать тип
   const response = await $authHost.post(ITEMS_URL, item);
 
