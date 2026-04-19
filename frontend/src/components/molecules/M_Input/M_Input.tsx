@@ -8,12 +8,12 @@ type Props = {
 
 const M_Input = ({ placeholder, id, className, ...rest }: Props) => {
   return (
-    <div className={cls.wrapper}>
+    <div className={[cls.wrapper, className].filter(Boolean).join(" ")}>
       <input
         id={id}
         {...rest}
         placeholder={placeholder ? " " : null}
-        className={[cls.input, className].filter(Boolean).join(" ")}
+        className={cls.input}
       />
       {placeholder ? (
         <label htmlFor={id} className={cls.label}>
