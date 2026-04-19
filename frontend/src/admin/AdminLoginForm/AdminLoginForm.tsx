@@ -27,7 +27,7 @@ const AdminLoginForm = () => {
 
   const loginIn = async () => {
     try {
-      const response = await login(email, password);
+      const response = await login(email.trim(), password.trim());
       console.log(response);
 
       setToken(response.token);
