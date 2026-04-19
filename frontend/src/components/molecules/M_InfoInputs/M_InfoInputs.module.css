@@ -1,0 +1,11 @@
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space);
+  width: 100%;
+}
+
+.ok {
+  transform: translateY(10px);
+}
