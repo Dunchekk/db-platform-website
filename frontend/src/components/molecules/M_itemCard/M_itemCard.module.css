@@ -26,3 +26,7 @@
   align-items: center;
   width: var(--card-width);
 }
+
+.delete {
+  transform: translateY(8px);
+}

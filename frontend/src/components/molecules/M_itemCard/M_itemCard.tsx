@@ -1,6 +1,10 @@
 import cls from "@/components/molecules/M_itemCard/M_itemCard.module.css";
 import React, { ComponentPropsWithoutRef } from "react";
 import { DbObject } from "@/shared/types/object.types";
+import { useAuth } from "@/features/auth/auth.store";
+import A_Button from "@/components/atoms/A_Button/A_Button";
+import { deleteItem, getItems } from "@/shared/api/objects";
+import { useObjects } from "@/features/objects/objects.store";
 
 type Props = {
   object: DbObject;
@@ -14,10 +18,14 @@ const M_itemCard = ({ object, className, ...rest }: Props) => {
   const infoClassName = className ? `${cls.info} ${className}` : cls.info;
   const id = +object.id <= 9 ? "0" + object.id : object.id;
 
+  const isAuth = useAuth((state) => state.isAuth);
+
+  const setObjects = useObjects((state) => state.setObjects);
+
   return (
     <div className={wrapperClassName} {...rest}>
       <img
-        src={object.images.find((v) => Number(v.position) === 1).url}
+        src={object.images.find((v) => Number(v.position) === 1)?.url}
         alt="img"
         className={cls.img}
       />
@@ -25,6 +33,24 @@ const M_itemCard = ({ object, className, ...rest }: Props) => {
       <div className={infoClassName}>
         <span>{object.name}</span>
         <span>{object.price} ₽</span>
+        {isAuth ? (
+          <A_Button
+            onClick={async (e) => {
+              e.stopPropagation();
+
+              try {
+                await deleteItem(object.id);
+                const data = await getItems();
+                setObjects(data);
+              } catch (e) {
+                console.log(e);
+              }
+            }}
+            className={cls.delete}
+          >
+            X удалить
+          </A_Button>
+        ) : null}
       </div>
     </div>
   );
