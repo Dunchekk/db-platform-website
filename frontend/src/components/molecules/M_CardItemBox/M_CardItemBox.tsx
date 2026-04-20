@@ -23,7 +23,7 @@ const M_CardItemBox = ({ object }: Props) => {
         <div className={cls.left}>
           <div className={cls.innerleft}>
             <span>
-              {object.name} ({object.order})
+              {object.name} ({object.position})
             </span>
           </div>
           <div>
