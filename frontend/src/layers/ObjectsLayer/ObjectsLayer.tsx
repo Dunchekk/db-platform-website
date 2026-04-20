@@ -49,6 +49,7 @@ const ObjectsLayer = () => {
               <M_CreateItemModal
                 hidden={!isModuleOpen}
                 setIsModuleOpen={setIsModuleOpen}
+                key={"create"}
               />
             </div>
           ) : null}
