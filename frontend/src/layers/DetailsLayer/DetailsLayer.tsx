@@ -7,6 +7,8 @@ import { useLayersStore } from "@/features/layer-switching/layers.store";
 import { useObjects } from "@/features/objects/objects.store";
 import A_Button from "@/components/atoms/A_Button/A_Button";
 import { useCheckoutItems } from "@/features/checkout/checkout.store";
+import { useAuth } from "@/features/auth/auth.store";
+import M_CreateItemModal from "@/components/molecules/M_CreateItemModal/M_CreateItemModal";
 
 const DetailsLayer = () => {
   const { id } = useParams();
@@ -18,20 +20,18 @@ const DetailsLayer = () => {
   const lastStoreObjectId = useLayersStore((state) => state.lastActiveObjectId);
   const effectiveObjectId = routeObjectId ?? storeObjectId ?? lastStoreObjectId;
   const isDetailsContext = routeObjectId !== null || isDetailsLayerOpen;
+  const isAuth = useAuth((state) => state.isAuth);
+  const [isModelOpen, openModal] = useState<boolean>(false);
 
   // добавить изменение "в корзину" если больше 1 объекта
   // переписать </br>
 
   const closeLayer = useLayersStore((state) => state.closeLayer);
-
   const object = useObjects((state) => state.objects).find(
     (v) => v.id === Number(id)
   );
-
   const addToCard = useCheckoutItems((state) => state.addItem);
-
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const images = useMemo(() => {
@@ -132,17 +132,35 @@ const DetailsLayer = () => {
                   })}
                 </ul>
               </div>
-              <A_Button
-                onClick={() => addToCard(object.id)}
-                className={[cls.tocard, cls.desktopTocard].join(" ")}
-              >
-                + в корзину
-              </A_Button>
+              {!isAuth ? (
+                <A_Button
+                  onClick={() => addToCard(object.id)}
+                  className={[cls.tocard, cls.desktopTocard].join(" ")}
+                >
+                  + в корзину
+                </A_Button>
+              ) : (
+                <A_Button
+                  onClick={() => openModal(true)}
+                  className={[cls.tocard, cls.desktopTocard].join(" ")}
+                >
+                  изменить
+                </A_Button>
+              )}
             </div>
           </div>
 
           /* ------------------- */
         )}
+        {isAuth && object ? (
+          <M_CreateItemModal
+            className={cls.modal}
+            objectId={Number(effectiveObjectId)}
+            hidden={!isModelOpen}
+            key={object.id}
+            setIsModuleOpen={openModal}
+          />
+        ) : null}
       </div>
     </div>
   );

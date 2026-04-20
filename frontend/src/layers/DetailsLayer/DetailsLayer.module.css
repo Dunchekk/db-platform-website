@@ -11,7 +11,7 @@
   height: 100vh;
   padding-top: var(--max-main-box-up-margin);
   padding-bottom: var(--max-main-box-up-margin);
-  overflow: auto;
+  /* overflow: auto; */
   position: relative;
 }
 
@@ -123,6 +123,11 @@
 
 .desktopOnlyBreaks {
   display: inline;
+}
+
+.modal {
+  /* transform: translateX(var(--bleed)); */
+  z-index: 1000;
 }
 
 @media screen and (max-width: 1000px) {
