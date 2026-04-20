@@ -24,7 +24,7 @@ export type DbObject = {
   updatedAt: string;
   name: string;
   price: number;
-  order: number;
+  position: number;
   images: DbObjectImage[];
   points: DbObjectPoint[];
   info: DbObjectInfo[];
