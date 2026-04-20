@@ -1,9 +1,5 @@
 import { $authHost, $host } from ".";
-import {
-  DbObject,
-  DbObjectImage,
-  PayloadDbObject,
-} from "../types/object.types";
+import { DbObjectImage, PayloadDbObject } from "../types/object.types";
 import { IMAGE_UPLOAD_URL, IMAGE_URL, ITEM_URL, ITEMS_URL } from "./endpoints";
 
 export const getItems = async () => {
@@ -19,8 +15,8 @@ export const createItem = async (item: PayloadDbObject) => {
   return response;
 };
 
-export const changeItem = async (item: DbObject) => {
-  const response = await $authHost.put(ITEM_URL(item.id), item);
+export const changeItem = async (itemId: number, item: PayloadDbObject) => {
+  const response = await $authHost.put(ITEM_URL(itemId), item);
 
   return response;
 };
