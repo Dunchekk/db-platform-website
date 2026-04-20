@@ -1,5 +1,5 @@
 import React, { ComponentPropsWithRef, useState } from "react";
-import cls from "@/components/molecules/M_CreateItemModal/M_CreateItemModal.module.css";
+import cls from "@/components/molecules/M_ItemModal/M_ItemModal.module.css";
 import M_Input from "../M_Input/M_Input";
 import M_InfoInputs from "../M_InfoInputs/M_InfoInputs";
 import A_Button from "@/components/atoms/A_Button/A_Button";
@@ -14,7 +14,7 @@ type Props = {
   setIsModuleOpen: (boolean: boolean) => void;
 } & ComponentPropsWithRef<"div">;
 
-const M_CreateItemModal = ({
+const M_ItemModal = ({
   className,
   objectId,
   hidden,
@@ -205,4 +205,4 @@ const M_CreateItemModal = ({
   );
 };
 
-export default M_CreateItemModal;
+export default M_ItemModal;
