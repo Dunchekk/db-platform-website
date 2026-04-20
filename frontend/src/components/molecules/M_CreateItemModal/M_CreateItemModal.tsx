@@ -3,27 +3,49 @@ import cls from "@/components/molecules/M_CreateItemModal/M_CreateItemModal.modu
 import M_Input from "../M_Input/M_Input";
 import M_InfoInputs from "../M_InfoInputs/M_InfoInputs";
 import A_Button from "@/components/atoms/A_Button/A_Button";
-import { createItem } from "@/shared/api/objects";
-import {
-  CreateItemInfoPayload,
-  PayloadDbObject,
-} from "@/shared/types/object.types";
+import { changeItem, createItem, getItems } from "@/shared/api/objects";
+import { PayloadDbObject } from "@/shared/types/object.types";
+import { useObjects } from "@/features/objects/objects.store";
 
 type Props = {
   className?: string;
   hidden: boolean;
+  objectId?: number;
   setIsModuleOpen: (boolean: boolean) => void;
 } & ComponentPropsWithRef<"div">;
 
-const M_CreateItemModal = ({ className, hidden, setIsModuleOpen }: Props) => {
+const M_CreateItemModal = ({
+  className,
+  objectId,
+  hidden,
+  setIsModuleOpen,
+}: Props) => {
   if (hidden) {
     className = [className, cls.hidden].filter(Boolean).join(" ");
   }
 
-  const [points, setPoints] = useState<string[]>([]);
+  const obj = useObjects((state) => state.objects).find(
+    (v) => v.id === Number(objectId)
+  );
+  const isChange = Boolean(objectId);
+  const setObjects = useObjects((state) => state.setObjects);
+
+  const initialName = obj?.name ?? "";
+  const initialPrice = obj ? String(obj.price) : "";
+  const initialPosition = obj ? String(obj.position) : "";
+  const initialPoints = obj ? obj.points.map((p) => p.point) : [];
+  const initialInfo = obj
+    ? obj.info.map(({ title, description }) => ({ title, description }))
+    : [];
+
+  const [name, setName] = useState(initialName);
+  const [price, setPrice] = useState(initialPrice);
+  const [position, setPosition] = useState(initialPosition);
+  const [points, setPoints] = useState(initialPoints);
+  const [info, setInfo] = useState(initialInfo);
   const [point, setPoint] = useState<string>("");
 
-  const [info, setInfo] = useState<CreateItemInfoPayload[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const deleteInfo = (index: number) => {
     setInfo((prev) => prev.filter((_, i) => i !== index));
@@ -49,22 +71,21 @@ const M_CreateItemModal = ({ className, hidden, setIsModuleOpen }: Props) => {
     setPoints(newPoints);
   };
 
-  const createObject = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
 
-    const name = String(formData.get("name") ?? "").trim();
-    const price = Number(formData.get("price"));
-    const position = Number(formData.get("position"));
+    const pName = String(name).trim();
+    const pPrice = Number(price);
+    const pPosition = Number(position);
 
-    if (!name || !Number.isInteger(price) || !Number.isInteger(position)) {
+    if (!pName || !Number.isInteger(pPrice) || !Number.isInteger(pPosition)) {
       return;
     }
 
     const payload: PayloadDbObject = {
-      name: String(formData.get("name") ?? ""),
-      price: price,
-      position: position,
+      name: pName,
+      price: pPrice,
+      position: pPosition,
 
       points: points.map((point) => ({
         point,
@@ -73,29 +94,60 @@ const M_CreateItemModal = ({ className, hidden, setIsModuleOpen }: Props) => {
       info,
     };
 
-    await createItem(payload); // написать обработку ошибок, очиску при успехеы
+    setIsSubmitting(true);
+
+    try {
+      if (isChange) {
+        if (!obj) throw Error("No object selected");
+
+        await changeItem(obj.id, payload);
+      } else {
+        await createItem(payload);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsSubmitting(false); // написать обработку ошибок, очиску при успехеы
+      setIsModuleOpen(false);
+      const data = await getItems();
+      setObjects(data);
+    }
   };
 
   return (
     <div className={[cls.wrapper, className].filter(Boolean).join(" ")}>
-      <form className={cls.form} onSubmit={createObject}>
+      <form className={cls.form} onSubmit={handleSubmit}>
         <A_Button type="button" onClick={() => setIsModuleOpen(false)}>
           X
         </A_Button>
         <div className={cls.formwrapper}>
           <div className={cls.column1}>
-            <span>Об объекте:</span>
-            <M_Input placeholder="название" name="name" />
-            <M_Input placeholder="цена (₽)" name="price" />
-            <M_Input placeholder="порядок" name="position" />
+            <span>об объекте:</span>
+            <M_Input
+              placeholder="название"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <M_Input
+              placeholder="цена (₽)"
+              value={price}
+              type="number"
+              onChange={(e) => setPrice(e.target.value)}
+            />
+            <M_Input
+              placeholder="порядок"
+              value={position}
+              type="number"
+              onChange={(e) => setPosition(e.target.value)}
+            />
           </div>
 
           <div className={cls.column2}>
-            <span>Характеристики:</span>
+            <span>характеристики:</span>
             <div>
               {info.map((inf, i) => {
                 return (
-                  <div key={i}>
+                  <div key={`${i}${inf.title}`}>
                     <span>{inf.title}</span>: <span>{inf.description}</span>
                     {"  "}
                     <A_Button type="button" onClick={() => deleteInfo(i)}>
@@ -109,18 +161,20 @@ const M_CreateItemModal = ({ className, hidden, setIsModuleOpen }: Props) => {
           </div>
 
           <div className={cls.column3}>
-            <span>Дополнительно:</span>
-            {points.map((point, i) => {
-              return (
-                <div key={i}>
-                  <span>{point}</span>
-                  {"  "}
-                  <A_Button type="button" onClick={() => deletePoint(i)}>
-                    —
-                  </A_Button>
-                </div>
-              );
-            })}
+            <span>дополнительно:</span>
+            <div>
+              {points.map((point, i) => {
+                return (
+                  <div key={`${i}${point}`}>
+                    <span>{point}</span>
+                    {"  "}
+                    <A_Button type="button" onClick={() => deletePoint(i)}>
+                      —
+                    </A_Button>
+                  </div>
+                );
+              })}
+            </div>
             <div className={cls.points}>
               <M_Input
                 placeholder="особенность"
@@ -143,8 +197,8 @@ const M_CreateItemModal = ({ className, hidden, setIsModuleOpen }: Props) => {
             <div></div>
           </div>
         </div>
-        <A_Button className={cls.submit} type="submit">
-          Создать объект
+        <A_Button className={cls.submit} type="submit" disabled={isSubmitting}>
+          {isChange ? "изменить объект" : "создать объект"}
         </A_Button>
       </form>
     </div>
