@@ -22,9 +22,9 @@ imageRouter.delete(
 ); // Удалить картинку у объекта.
 
 imageRouter.patch(
-  "/:id/:imageId",
+  "/:id",
   checkRoleMiddleware("ADMIN"),
-  imageController.changeFile
+  imageController.swapFiles
 ); // Например, поменять порядок, сделать главной и т.п.
 
 // api/images/...
