@@ -7,7 +7,7 @@ import { useLayersStore } from "@/features/layer-switching/layers.store";
 import A_InfoButtons from "@/components/atoms/A_InfoButtons/A_InfoButtons";
 import { useAuth } from "@/features/auth/auth.store";
 import A_Button from "@/components/atoms/A_Button/A_Button";
-import M_CreateItemModal from "@/components/molecules/M_CreateItemModal/M_CreateItemModal";
+import M_ItemModal from "@/components/molecules/M_ItemModal/M_ItemModal";
 
 const ObjectsLayer = () => {
   const openLayer = useLayersStore((state) => state.openLayer);
@@ -46,7 +46,7 @@ const ObjectsLayer = () => {
           {isAuth ? (
             <div>
               <A_Button onClick={() => setIsModuleOpen(true)}>+</A_Button>
-              <M_CreateItemModal
+              <M_ItemModal
                 hidden={!isModuleOpen}
                 setIsModuleOpen={setIsModuleOpen}
                 key={"create"}
