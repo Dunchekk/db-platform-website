@@ -45,11 +45,11 @@ export const deleteItemFile = async (
   return response;
 };
 
-export const changeItemFile = async (image: DbObjectImage) => {
-  const response = await $authHost.patch(
-    IMAGE_URL(image.itemId, image.id),
-    image
-  );
+export const swapItemsFile = async (
+  images: DbObjectImage[],
+  itemId: number
+) => {
+  const response = await $authHost.patch(IMAGE_UPLOAD_URL(itemId), images);
 
   return response;
 };
