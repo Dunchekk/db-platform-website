@@ -19,6 +19,6 @@ export const CHECKOUT_URL = "/api/checkout";
 
 // ITEMS_URL для GET /items и POST /items
 // ITEM_URL(id) для PUT /items/:id и DELETE /items/:id
-// IMAGE_UPLOAD_URL(itemId) для POST /images/:id
-// IMAGE_URL(itemId, imageId) для DELETE и PATCH одной картинки
+// IMAGE_UPLOAD_URL(itemId) для POST /images/:id и для PATCH двух картинок
+// IMAGE_URL(itemId, imageId) для DELETE одной картинки
 // CHECKOUT_URL отдельно
