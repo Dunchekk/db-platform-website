@@ -1,0 +1,36 @@
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  left: calc(var(--bleed) * -1);
+
+  top: 0;
+
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  backdrop-filter: blur(var(--blur-bg));
+  z-index: 100;
+}
+
+.hidden {
+  display: none;
+}
+
+.imgwrapper {
+  display: flex;
+  gap: var(--space);
+}
+
+.main {
+  width: var(--max-main-box-width);
+  padding-top: var(--max-main-box-up-margin);
+  padding-bottom: var(--max-main-box-up-margin);
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+}
