@@ -130,6 +130,11 @@
   z-index: 1000;
 }
 
+.photo {
+  position: absolute;
+  bottom: var(--max-main-box-up-margin);
+}
+
 @media screen and (max-width: 1000px) {
   .content {
     display: flex;

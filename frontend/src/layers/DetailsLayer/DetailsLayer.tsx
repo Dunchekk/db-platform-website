@@ -8,7 +8,8 @@ import { useObjects } from "@/features/objects/objects.store";
 import A_Button from "@/components/atoms/A_Button/A_Button";
 import { useCheckoutItems } from "@/features/checkout/checkout.store";
 import { useAuth } from "@/features/auth/auth.store";
-import M_CreateItemModal from "@/components/molecules/M_CreateItemModal/M_CreateItemModal";
+import M_ItemModal from "@/components/molecules/M_ItemModal/M_ItemModal";
+import M_PhotoesModal from "@/components/molecules/M_PhotoesModal/M_PhotoesModal";
 
 const DetailsLayer = () => {
   const { id } = useParams();
@@ -21,7 +22,10 @@ const DetailsLayer = () => {
   const effectiveObjectId = routeObjectId ?? storeObjectId ?? lastStoreObjectId;
   const isDetailsContext = routeObjectId !== null || isDetailsLayerOpen;
   const isAuth = useAuth((state) => state.isAuth);
-  const [isModelOpen, openModal] = useState<boolean>(false);
+  const [isChangeObjectModalOpen, openChangeObjectModal] =
+    useState<boolean>(false);
+  const [isChangePhotoesModalOpen, openChangePhotoesModal] =
+    useState<boolean>(false);
 
   // добавить изменение "в корзину" если больше 1 объекта
   // переписать </br>
@@ -42,6 +46,8 @@ const DetailsLayer = () => {
         .map((v) => v.url);
     return [];
   }, [object]);
+
+  console.log(isChangePhotoesModalOpen); //убрать
 
   return (
     <div
@@ -82,6 +88,15 @@ const DetailsLayer = () => {
               images={images}
               alt={object.name}
             />
+
+            {isAuth ? (
+              <A_Button
+                onClick={() => openChangePhotoesModal(true)}
+                className={[cls.photo].join(" ")}
+              >
+                изменить фото
+              </A_Button>
+            ) : null}
 
             <div className={cls.info}>
               <div className={[cls.header, cls.desktopHeader].join(" ")}>
@@ -141,7 +156,7 @@ const DetailsLayer = () => {
                 </A_Button>
               ) : (
                 <A_Button
-                  onClick={() => openModal(true)}
+                  onClick={() => openChangeObjectModal(true)}
                   className={[cls.tocard, cls.desktopTocard].join(" ")}
                 >
                   изменить
@@ -153,12 +168,22 @@ const DetailsLayer = () => {
           /* ------------------- */
         )}
         {isAuth && object ? (
-          <M_CreateItemModal
+          <M_ItemModal
             className={cls.modal}
             objectId={Number(effectiveObjectId)}
-            hidden={!isModelOpen}
+            hidden={!isChangeObjectModalOpen}
             key={object.id}
-            setIsModuleOpen={openModal}
+            setIsModuleOpen={openChangeObjectModal}
+          />
+        ) : null}
+
+        {isAuth && object ? (
+          <M_PhotoesModal
+            className={cls.modal}
+            objectId={Number(effectiveObjectId)}
+            hidden={!isChangePhotoesModalOpen}
+            key={object.id}
+            setIsModuleOpen={openChangePhotoesModal}
           />
         ) : null}
       </div>
