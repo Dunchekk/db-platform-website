@@ -27,13 +27,21 @@ const M_PhotoesModal = ({
   if (hidden) {
     className = [className, cls.hidden].filter(Boolean).join(" ");
   }
+  const API_URL = __API_URL__;
 
   const object = useObjects((state) => state.objects).find(
     (o) => o.id === objectId
   );
   const images = object
-    ? [...object.images].sort((a, b) => a.position - b.position)
+    ? [...object.images]
+        .sort((a, b) => a.position - b.position)
+        .map((image) => ({
+          ...image,
+          url: API_URL + image.url,
+        }))
     : [];
+
+  console.log(images);
 
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
