@@ -118,8 +118,11 @@ const M_PhotoesModal = ({
   };
 
   return (
-    <div className={[cls.wrapper, className].filter(Boolean).join(" ")}>
-      <div className={cls.main}>
+    <div
+      className={[cls.wrapper, className].filter(Boolean).join(" ")}
+      onClick={() => setIsModuleOpen(false)}
+    >
+      <div className={cls.main} onClick={(e) => e.stopPropagation()}>
         <A_Button type="button" onClick={() => setIsModuleOpen(false)}>
           X
         </A_Button>
@@ -128,7 +131,7 @@ const M_PhotoesModal = ({
           {images.map((image, i) => {
             return (
               <div className={cls.image} key={image.url}>
-                <img src={image.url} alt="image" />
+                <img src={image.url} alt="image" className={cls.imgsrc} />
                 <div className={cls.navigation}>
                   <A_Button
                     type="button"
@@ -158,13 +161,18 @@ const M_PhotoesModal = ({
           })}
 
           <div className={cls.image}>
-            <M_InputFile file={file} onChangeFile={setFile} accept="image/*" />
+            <M_InputFile
+              className={cls.input}
+              file={file}
+              onChangeFile={setFile}
+              accept="image/*"
+            />
             <A_Button
               disabled={!file || isSubmitting}
               type="button"
               onClick={() => addImage()}
             >
-              +
+              добавить
             </A_Button>
           </div>
         </div>

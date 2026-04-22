@@ -6,7 +6,7 @@
 
   top: 0;
 
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -22,15 +22,37 @@
 .imgwrapper {
   display: flex;
   gap: var(--space);
+  flex-wrap: wrap;
 }
 
 .main {
   width: var(--max-main-box-width);
   padding-top: var(--max-main-box-up-margin);
   padding-bottom: var(--max-main-box-up-margin);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .navigation {
   display: flex;
+  gap: var(--space);
+}
+
+.image {
+  width: 15vw;
+  display: flex;
+  flex-direction: column;
   justify-content: space-between;
+  align-items: center;
+}
+
+.imgsrc {
+  height: 18vw;
+}
+
+.input {
+  width: 15vw;
+  height: 18vw;
 }
