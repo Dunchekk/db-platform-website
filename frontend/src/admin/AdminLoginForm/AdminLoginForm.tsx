@@ -21,7 +21,7 @@ const AdminLoginForm = () => {
       .catch(() => {
         setIsAuth(false);
       });
-  });
+  }, [setIsAuth]);
 
   const isAuth = useAuth((state) => state.isAuth);
 
