@@ -38,14 +38,16 @@ const DetailsLayer = () => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
+  const API_URL = __API_URL__;
+
   const images = useMemo(() => {
     if (!object) return [];
     if (Array.isArray(object.images) && object.images.length > 0)
       return [...object.images]
         .sort((a, b) => a.position - b.position)
-        .map((v) => v.url);
+        .map((v) => API_URL + v.url);
     return [];
-  }, [object]);
+  }, [object, API_URL]);
 
   console.log(isChangePhotoesModalOpen); //убрать
 
