@@ -19,13 +19,14 @@ const M_itemCard = ({ object, className, ...rest }: Props) => {
   const id = +object.id <= 9 ? "0" + object.id : object.id;
 
   const isAuth = useAuth((state) => state.isAuth);
+  const API_URL = __API_URL__;
 
   const setObjects = useObjects((state) => state.setObjects);
 
   return (
     <div className={wrapperClassName} {...rest}>
       <img
-        src={object.images.find((v) => Number(v.position) === 1)?.url}
+        src={API_URL + object.images.find((v) => Number(v.position) === 1)?.url}
         alt="img"
         className={cls.img}
       />
