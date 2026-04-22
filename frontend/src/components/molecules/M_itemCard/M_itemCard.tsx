@@ -16,7 +16,7 @@ const M_itemCard = ({ object, className, ...rest }: Props) => {
     ? `${cls.wrapper} ${className}`
     : cls.wrapper;
   const infoClassName = className ? `${cls.info} ${className}` : cls.info;
-  const id = +object.id <= 9 ? "0" + object.id : object.id;
+  const id = +object.id <= 9 ? "0" + object.position : object.position;
 
   const isAuth = useAuth((state) => state.isAuth);
   const API_URL = __API_URL__;
