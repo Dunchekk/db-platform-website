@@ -10,7 +10,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
+  padding-left: var(--bleed);
+  padding-right: var(--bleed);
   backdrop-filter: blur(var(--blur-bg));
   z-index: 100;
 }
@@ -21,8 +22,8 @@
 
 .form {
   width: 100%;
-  padding-left: var(--bleed);
-  padding-right: var(--bleed);
+  /* padding-left: var(--bleed);
+  padding-right: var(--bleed); */
   display: flex;
 
   flex-direction: column;

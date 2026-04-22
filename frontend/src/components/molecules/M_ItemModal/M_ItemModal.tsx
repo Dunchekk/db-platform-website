@@ -115,8 +115,15 @@ const M_ItemModal = ({
   };
 
   return (
-    <div className={[cls.wrapper, className].filter(Boolean).join(" ")}>
-      <form className={cls.form} onSubmit={handleSubmit}>
+    <div
+      className={[cls.wrapper, className].filter(Boolean).join(" ")}
+      onClick={() => setIsModuleOpen(false)}
+    >
+      <form
+        className={cls.form}
+        onSubmit={handleSubmit}
+        onClick={(e) => e.stopPropagation()}
+      >
         <A_Button type="button" onClick={() => setIsModuleOpen(false)}>
           X
         </A_Button>
