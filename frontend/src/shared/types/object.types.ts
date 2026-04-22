@@ -33,7 +33,9 @@ export type DbObject = {
 export type ObjectsState = {
   // для стора объектов
   objects: DbObject[];
+  isObjectsReady: boolean;
   setObjects: (objects: DbObject[]) => void;
+  setObjectsReady: (bool: boolean) => void;
 };
 
 // для создания объекта (пока не присвоено айди)
