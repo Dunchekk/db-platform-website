@@ -46,7 +46,6 @@ const O_CheckoutCustomerFields = ({
         <M_Input
           id={"телеграмм"}
           name="telegram"
-          required
           placeholder="телеграмм (@example)"
         ></M_Input>
       </div>

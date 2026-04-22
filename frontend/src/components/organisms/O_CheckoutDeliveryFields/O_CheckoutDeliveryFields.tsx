@@ -20,10 +20,10 @@ const O_CheckoutDeliveryFields = ({
       <M_Input placeholder="город*" />
 
       <div>
-        <M_InputCheckbox required id="cdek1">
+        <M_InputCheckbox id="cdek1">
           <label htmlFor="cdek1">СДЕК до ПВЗ от 3 дней (400 ₽)</label>
         </M_InputCheckbox>
-        <M_InputCheckbox required id="cdek2">
+        <M_InputCheckbox id="cdek2">
           <label htmlFor="cdek2">СДЕК курьером от 2 дней (780 ₽)</label>
         </M_InputCheckbox>
       </div>
