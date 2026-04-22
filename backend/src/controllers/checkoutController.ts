@@ -1,10 +1,10 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../db";
 import ApiError from "../error/ApiError";
 import { ReqOrderBody } from "../types/checkout.types";
 
 class CheckoutController {
-  async createOrder(req: Request, res: Response) {
+  async createOrder(req: Request, res: Response, next: NextFunction) {
     try {
       const {
         firstName,
@@ -99,10 +99,11 @@ class CheckoutController {
       // отправить подтверждение на имейл (?)
     } catch (e) {
       if (e instanceof ApiError) {
-        res.json(e);
+        next(ApiError.badRequest(e.message));
       }
       if (e instanceof Error) {
         console.log(e);
+        next(ApiError.badRequest(e.message));
       }
 
       // сделать эрроры посильнее
