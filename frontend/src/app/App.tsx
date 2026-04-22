@@ -51,6 +51,9 @@ export default function App() {
   const setIsAuth = useAuth((state) => state.setIsAuth);
   const setObjects = useObjects((state) => state.setObjects);
 
+  const setIsAuthChecked = useAuth((state) => state.setIsAuthChecked);
+  const setObjectsReady = useObjects((state) => state.setObjectsReady);
+
   useEffect(() => {
     check()
       .then(() => {
@@ -61,8 +64,9 @@ export default function App() {
       })
       .finally(() => {
         setLoading(false);
+        setIsAuthChecked(true);
       });
-  });
+  }, [setIsAuth, setIsAuthChecked]);
 
   useEffect(() => {
     getItems()
@@ -71,8 +75,11 @@ export default function App() {
       })
       .catch((err) => {
         console.error(err);
+      })
+      .finally(() => {
+        setObjectsReady(true);
       });
-  }, [setObjects]);
+  }, [setObjects, setObjectsReady]);
 
   useEffect(() => {
     if (!hasHydratedFromRouteRef.current) return;
