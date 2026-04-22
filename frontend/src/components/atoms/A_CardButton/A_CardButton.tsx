@@ -1,4 +1,5 @@
 import cls from "@/components/atoms/A_CardButton/A_CardButton.module.css";
+import { useCheckoutItems } from "@/features/checkout/checkout.store";
 import { useLayersStore } from "@/features/layer-switching/layers.store";
 
 const A_CardButton = () => {
@@ -7,7 +8,9 @@ const A_CardButton = () => {
     state.openedLayers.includes("checkout")
   );
 
-  const count = 0;
+  const totalQuantity = useCheckoutItems((state) =>
+    state.items.reduce((sum, item) => sum + item.quantity, 0)
+  );
 
   return (
     <button
@@ -18,7 +21,7 @@ const A_CardButton = () => {
       aria-expanded={isCheckoutOpen}
     >
       <span className={cls.icon} aria-hidden="true" />
-      <span className={cls.count}>({count})</span>
+      <span className={cls.count}>({totalQuantity})</span>
     </button>
   );
 };
