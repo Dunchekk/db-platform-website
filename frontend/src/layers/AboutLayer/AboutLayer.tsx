@@ -3,12 +3,7 @@ import { useLocation } from "react-router";
 import cls from "@/layers/AboutLayer/AboutLayer.module.css";
 import M_BackButton from "@/components/molecules/M_BackButton/M_BackButton";
 import W_ScrollFadeBox from "@/components/wrappers/W_ScrollFadeBox/W_ScrollFadeBox";
-
-import frame28 from "@/assets/images/bg-items/bag.png";
-import frame29 from "@/assets/images/bg-items/bag-inside-images/front-full-condensed.png";
-import frame30 from "@/assets/images/bg-items/bag-inside-images/front-full.png";
-import frame31 from "@/assets/images/bg-items/bag-inside-images/front-untighth.png";
-import frame32 from "@/assets/images/bg-items/bag-inside-images/side1.png";
+import { useObjects } from "@/features/objects/objects.store";
 
 const AboutLayer = () => {
   const { pathname } = useLocation();
@@ -20,6 +15,16 @@ const AboutLayer = () => {
   const directionRef = useRef<-1 | 1>(-1);
   const offsetRef = useRef(0);
   const boundsRef = useRef({ min: 0, max: 0 });
+
+  const API_URL = __API_URL__;
+
+  const images: string[] = useObjects((state) => state.objects).flatMap((obj) =>
+    obj.images.map((img) =>
+      img.url.startsWith("http") ? img.url : API_URL + img.url
+    )
+  );
+
+  console.log(images);
 
   useEffect(() => {
     const viewport = viewportRef.current;
@@ -105,7 +110,7 @@ const AboutLayer = () => {
       <M_BackButton isVisible={pathname === "/about"} />
       <div className={cls.imgs} ref={viewportRef} aria-hidden="true">
         <div className={cls.imgTrack} ref={trackRef}>
-          {[frame28, frame29, frame30, frame31, frame32].map((src) => (
+          {images.map((src) => (
             <img key={src} className={cls.img} src={src} alt="" />
           ))}
         </div>
