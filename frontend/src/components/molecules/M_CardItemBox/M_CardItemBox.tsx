@@ -12,25 +12,28 @@ type Props = {
 const M_CardItemBox = ({ object }: Props) => {
   const decreaseItem = useCheckoutItems((state) => state.decreaseItem);
   const addItem = useCheckoutItems((state) => state.addItem);
+  const API_URL = __API_URL__;
+  const position =
+    object.position <= 9 ? "0" + `${object.position}` : object.position;
 
   const image = object.images.find((image) => image.position === 1);
   return (
     <div className={cls.wrapper}>
       <div className={cls.img}>
-        <img src={image.url} alt="cardImage" />
+        <img className={cls.image} src={API_URL + image.url} alt="cardImage" />
       </div>
       <div className={cls.info}>
         <div className={cls.left}>
           <div className={cls.innerleft}>
             <span>
-              {object.name} ({object.position})
+              {object.name} ({position})
             </span>
           </div>
-          <div>
+          <div className={cls.buttons}>
             <A_Button type="button" onClick={() => decreaseItem(object.id)}>
               —
             </A_Button>
-            {object.quantity}
+            <span>{object.quantity}</span>
             <A_Button type="button" onClick={() => addItem(object.id)}>
               +
             </A_Button>
