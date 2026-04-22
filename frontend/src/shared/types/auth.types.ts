@@ -3,6 +3,8 @@
 export type AuthState = {
   isAuth: boolean;
   token: string | null;
+  isAuthChecked: boolean;
+  setIsAuthChecked: (value: boolean) => void;
   setIsAuth: (value: boolean) => void;
   setToken: (value: string | null) => void;
 };

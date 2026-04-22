@@ -6,6 +6,8 @@ import { AuthState } from "../../shared/types/auth.types";
 export const useAuth = create<AuthState>((set) => ({
   isAuth: false,
   token: null,
+  isAuthChecked: false,
+  setIsAuthChecked: (bool: boolean) => set({ isAuthChecked: bool }),
   setIsAuth: (bool: boolean) => set({ isAuth: bool }),
   setToken: (tok: string | null) => set({ token: tok }),
 }));
