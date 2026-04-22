@@ -2,6 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
 .input {
@@ -9,4 +10,12 @@
   width: 0;
   height: 0;
   visibility: hidden;
+}
+
+.active {
+  text-decoration: none;
+}
+
+.wrapper:hover .active {
+  text-decoration: underline;
 }

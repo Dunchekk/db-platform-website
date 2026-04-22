@@ -22,6 +22,7 @@ const M_InputFile = ({ className, file, onChangeFile, ...rest }: Props) => {
         className={cls.input}
         onChange={(e) => onChangeFile(e.target.files?.[0] ?? null)}
       />
+      <span className={cls.active}>{"+"}</span>
 
       <span>{file ? file.name : "Файл не выбран"}</span>
     </div>
