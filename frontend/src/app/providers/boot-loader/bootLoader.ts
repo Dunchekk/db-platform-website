@@ -18,4 +18,3 @@ export function hideBootLoader(): void {
   el.addEventListener("transitionend", remove);
   window.setTimeout(remove, 600);
 }
-

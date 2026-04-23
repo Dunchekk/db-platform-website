@@ -8,12 +8,18 @@ const BootLoaderOnReady = (): null => {
   const hasHiddenRef = useRef(false); // если loader уже скрывали, второй раз не пытаться;
   const isAuthChecked = useAuth((state) => state.isAuthChecked);
   const isObjectsReady = useObjects((state) => state.isObjectsReady);
+  const pathname = window.location.pathname;
 
   useEffect(() => {
-    if (hasHiddenRef.current || !isAuthChecked || !isObjectsReady) return;
+    if (
+      (hasHiddenRef.current || !isAuthChecked || !isObjectsReady) &&
+      !pathname.startsWith("/admin")
+    )
+      return;
+
     hasHiddenRef.current = true;
     hideBootLoader();
-  }, [isAuthChecked, isObjectsReady]);
+  }, [isAuthChecked, isObjectsReady, pathname]);
 
   return null;
 };
