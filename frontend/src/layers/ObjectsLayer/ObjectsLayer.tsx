@@ -8,6 +8,7 @@ import A_InfoButtons from "@/components/atoms/A_InfoButtons/A_InfoButtons";
 import { useAuth } from "@/features/auth/auth.store";
 import A_Button from "@/components/atoms/A_Button/A_Button";
 import M_ItemModal from "@/components/molecules/M_ItemModal/M_ItemModal";
+import A_Toast from "@/components/atoms/A_Toast/A_Toast";
 
 const ObjectsLayer = () => {
   const openLayer = useLayersStore((state) => state.openLayer);
@@ -23,7 +24,18 @@ const ObjectsLayer = () => {
         : undefined;
 
   const isAuth = useAuth((state) => state.isAuth);
-  console.log(isAuth);
+
+  const [toast, setToast] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"error" | "success" | "default">(
+    "default"
+  );
+  const showToast = (
+    message: string,
+    type: "error" | "success" | "default"
+  ) => {
+    setToast(message);
+    setToastType(type);
+  };
 
   return (
     <div className={cls.main}>
@@ -38,7 +50,11 @@ const ObjectsLayer = () => {
                   openLayer("details");
                 }}
               >
-                <M_itemCard className={wrapperClasses} object={obj} />
+                <M_itemCard
+                  showToast={showToast}
+                  className={wrapperClasses}
+                  object={obj}
+                />
               </div>
             );
           })}
@@ -48,6 +64,7 @@ const ObjectsLayer = () => {
               <A_Button onClick={() => setIsModuleOpen(true)}>+</A_Button>
               <M_ItemModal
                 hidden={!isModuleOpen}
+                showToast={showToast}
                 setIsModuleOpen={setIsModuleOpen}
                 key={"create"}
               />
@@ -56,6 +73,13 @@ const ObjectsLayer = () => {
         </div>
       </div>
       <A_InfoButtons mode="objects" />
+      {toast ? (
+        <A_Toast
+          type={toastType}
+          message={toast}
+          onClose={() => setToast(null)}
+        />
+      ) : null}
     </div>
   );
 };
