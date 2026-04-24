@@ -1,4 +1,4 @@
-import React, { ComponentPropsWithRef, useState } from "react";
+import React, { ComponentPropsWithRef, useEffect, useState } from "react";
 import cls from "@/components/molecules/M_PhotoesModal/M_PhotoesModal.module.css";
 import { useObjects } from "@/features/objects/objects.store";
 import A_Button from "@/components/atoms/A_Button/A_Button";
@@ -10,6 +10,7 @@ import {
 } from "@/shared/api/objects";
 import M_InputFile from "../M_InputFile/M_InputFile";
 import { DbObjectImage } from "@/shared/types/object.types";
+import A_Toast from "@/components/atoms/A_Toast/A_Toast";
 
 type Props = {
   className?: string;
@@ -47,13 +48,36 @@ const M_PhotoesModal = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const setObjects = useObjects((state) => state.setObjects);
 
+  const [toast, setToast] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"error" | "success" | "default">(
+    "default"
+  );
+  const showToast = (
+    message: string,
+    type: "error" | "success" | "default"
+  ) => {
+    setToast(message);
+    setToastType(type);
+  };
+
+  useEffect(() => {
+    // убираем файл по закрытой модалке
+    if (hidden) {
+      setFile(null);
+    }
+  }, [hidden]);
+
   const deleteImage = async (itemId: number, imageId: number) => {
     setIsSubmitting(true);
     try {
       await deleteItemFile(itemId, imageId);
       const data = await getItems();
       setObjects(data);
+      showToast("картинка удалена", "default");
     } catch (e) {
+      if (e instanceof Error) {
+        showToast(`не удалось удалить картинку: ${e.message}`, "error");
+      }
       console.log(e);
     } finally {
       setIsSubmitting(false);
@@ -69,11 +93,13 @@ const M_PhotoesModal = ({
 
     try {
       await uploadItemFile(objectId, file);
+      showToast("картинка добавлена", "success");
       setFile(null);
       const data = await getItems();
       setObjects(data);
     } catch (e) {
       console.log(e);
+      showToast(`не удалось загрузить картинку: ${e.message}`, "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -100,6 +126,7 @@ const M_PhotoesModal = ({
 
     if (!image1 || !image2) {
       console.log("No item found");
+      showToast(`картинка не найдена`, "error");
       return;
     }
 
@@ -112,6 +139,7 @@ const M_PhotoesModal = ({
       setObjects(data);
     } catch (e) {
       console.log(e);
+      showToast(`не удалось переместить картинку: ${e.message}`, "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -177,6 +205,13 @@ const M_PhotoesModal = ({
           </div>
         </div>
       </div>
+      {toast ? (
+        <A_Toast
+          type={toastType}
+          message={toast}
+          onClose={() => setToast(null)}
+        />
+      ) : null}
     </div>
   );
 };
