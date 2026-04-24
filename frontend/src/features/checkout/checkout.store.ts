@@ -1,11 +1,14 @@
 import { create } from "zustand";
-import { CheckoutItemsStore } from "@/shared/types/checkout.types";
+import {
+  CheckoutItem,
+  CheckoutItemsStore,
+} from "@/shared/types/checkout.types";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 export const useCheckoutItems = create<CheckoutItemsStore>()(
   persist(
     (set, get) => ({
-      items: [],
+      items: [] as CheckoutItem[],
       addItem: (itemId) => {
         const items = get().items;
         const existing = items.find((item) => item.itemId === itemId);
