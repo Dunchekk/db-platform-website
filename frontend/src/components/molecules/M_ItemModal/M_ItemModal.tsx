@@ -11,11 +11,13 @@ type Props = {
   className?: string;
   hidden: boolean;
   objectId?: number;
+  showToast: (message: string, type: "error" | "success" | "default") => void;
   setIsModuleOpen: (boolean: boolean) => void;
 } & ComponentPropsWithRef<"div">;
 
 const M_ItemModal = ({
   className,
+  showToast,
   objectId,
   hidden,
   setIsModuleOpen,
@@ -46,6 +48,15 @@ const M_ItemModal = ({
   const [point, setPoint] = useState<string>("");
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  const clearInputs = () => {
+    setName("");
+    setPrice("");
+    setPosition("");
+    setPoints([]);
+    setInfo([]);
+    setPoint("");
+  };
 
   const deleteInfo = (index: number) => {
     setInfo((prev) => prev.filter((_, i) => i !== index));
@@ -79,6 +90,7 @@ const M_ItemModal = ({
     const pPosition = Number(position);
 
     if (!pName || !Number.isInteger(pPrice) || !Number.isInteger(pPosition)) {
+      showToast("не все обязательные поля заполнены", "error");
       return;
     }
 
@@ -98,19 +110,31 @@ const M_ItemModal = ({
 
     try {
       if (isChange) {
-        if (!obj) throw Error("No object selected");
+        if (!obj) {
+          showToast("ни один объект не выделен", "error");
+          throw Error("No object selected");
+        }
 
         await changeItem(obj.id, payload);
+        showToast("объект изменён!", "success");
+        const data = await getItems();
+        setObjects(data);
+        setIsModuleOpen(false);
       } else {
         await createItem(payload);
+        showToast("объект добавлен!", "success");
+        clearInputs();
+        const data = await getItems();
+        setObjects(data);
+        setIsModuleOpen(false);
       }
     } catch (e) {
+      if (e instanceof Error) {
+        showToast(`ошибка сохранения: ${e.message}`, "error");
+      }
       console.log(e);
     } finally {
-      setIsSubmitting(false); // написать обработку ошибок, очиску при успехеы
-      setIsModuleOpen(false);
-      const data = await getItems();
-      setObjects(data);
+      setIsSubmitting(false);
     }
   };
 
