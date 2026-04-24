@@ -9,9 +9,10 @@ import { useObjects } from "@/features/objects/objects.store";
 type Props = {
   object: DbObject;
   className?: string;
+  showToast: (message: string, type: "error" | "success" | "default") => void;
 } & ComponentPropsWithoutRef<"div">;
 
-const M_itemCard = ({ object, className, ...rest }: Props) => {
+const M_itemCard = ({ object, className, showToast, ...rest }: Props) => {
   const wrapperClassName = className
     ? `${cls.wrapper} ${className}`
     : cls.wrapper;
@@ -41,9 +42,14 @@ const M_itemCard = ({ object, className, ...rest }: Props) => {
 
               try {
                 await deleteItem(object.id);
+                showToast("объект удалён", "default");
+
                 const data = await getItems();
                 setObjects(data);
               } catch (e) {
+                if (e instanceof Error) {
+                  showToast(`не удалось удалить объект: ${e.message}`, "error");
+                }
                 console.log(e);
               }
             }}
