@@ -1,0 +1,27 @@
+.wrapper {
+  padding: var(--space);
+  padding-inline: var(--space-3);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+
+  position: absolute;
+  bottom: var(--max-main-box-bottom-margin);
+  margin-left: 50vw;
+  transform: translateX(-50%);
+  transition: 300ms;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.open {
+  opacity: 1;
+  transform: translateY(0px) translateX(-50%);
+}
+
+.hidden {
+  opacity: 0;
+  transform: translateY(10px) translateX(-50%);
+}
