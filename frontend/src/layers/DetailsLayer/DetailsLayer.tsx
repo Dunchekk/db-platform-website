@@ -10,6 +10,7 @@ import { useCheckoutItems } from "@/features/checkout/checkout.store";
 import { useAuth } from "@/features/auth/auth.store";
 import M_ItemModal from "@/components/molecules/M_ItemModal/M_ItemModal";
 import M_PhotoesModal from "@/components/molecules/M_PhotoesModal/M_PhotoesModal";
+import A_Toast from "@/components/atoms/A_Toast/A_Toast";
 
 const DetailsLayer = () => {
   const { id } = useParams();
@@ -37,6 +38,20 @@ const DetailsLayer = () => {
   const addToCard = useCheckoutItems((state) => state.addItem);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  // toast
+  const [toast, setToast] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"error" | "success" | "default">(
+    "default"
+  );
+  const showToast = (
+    message: string,
+    type: "error" | "success" | "default"
+  ) => {
+    setToast(message);
+    setToastType(type);
+  };
+  // toast
 
   const API_URL = __API_URL__;
 
@@ -173,6 +188,7 @@ const DetailsLayer = () => {
           <M_ItemModal
             className={cls.modal}
             objectId={Number(effectiveObjectId)}
+            showToast={showToast}
             hidden={!isChangeObjectModalOpen}
             key={object.id}
             setIsModuleOpen={openChangeObjectModal}
@@ -189,6 +205,13 @@ const DetailsLayer = () => {
           />
         ) : null}
       </div>
+      {toast ? (
+        <A_Toast
+          type={toastType}
+          message={toast}
+          onClose={() => setToast(null)}
+        />
+      ) : null}
     </div>
   );
 };
