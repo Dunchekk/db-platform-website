@@ -15,6 +15,7 @@ import { useAuth } from "@/features/auth/auth.store";
 import A_Loader from "@/components/atoms/A_Loader/A_Loader";
 import { getItems } from "@/shared/api/objects";
 import { useObjects } from "@/features/objects/objects.store";
+import A_Toast from "@/components/atoms/A_Toast/A_Toast";
 
 export default function App() {
   const navigate = useNavigate();
@@ -54,10 +55,23 @@ export default function App() {
   const setIsAuthChecked = useAuth((state) => state.setIsAuthChecked);
   const setObjectsReady = useObjects((state) => state.setObjectsReady);
 
+  const [toast, setToast] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"error" | "success" | "default">(
+    "default"
+  );
+  const showToast = (
+    message: string,
+    type: "error" | "success" | "default"
+  ) => {
+    setToast(message);
+    setToastType(type);
+  };
+
   useEffect(() => {
     check()
       .then(() => {
         setIsAuth(true);
+        showToast("успешно авторизованы", "success");
       })
       .catch(() => {
         setIsAuth(false);
@@ -75,6 +89,7 @@ export default function App() {
       })
       .catch((err) => {
         console.error(err);
+        showToast("не удалось загрузить объекты", "error");
       })
       .finally(() => {
         setObjectsReady(true);
@@ -103,6 +118,13 @@ export default function App() {
       {openedLayers.includes("objects") && <A_CardButton />}
       <A_Cursor />
       {loading ? <A_Loader /> : null}
+      {toast ? (
+        <A_Toast
+          type={toastType}
+          message={toast}
+          onClose={() => setToast(null)}
+        />
+      ) : null}
     </div>
   );
 }
