@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import cls from "@/layers/CheckoutLayer/CheckoutLayer.module.css";
 import { CartViewObject, DbObject } from "@/shared/types/object.types";
 import { useCheckoutItems } from "@/features/checkout/checkout.store";
@@ -8,10 +8,12 @@ import O_CheckoutCartSummary from "@/components/organisms/O_CheckoutCartSummary/
 import O_CheckoutCustomerFields from "@/components/organisms/O_CheckoutCustomerFields/O_CheckoutCustomerFields";
 import O_CheckoutDeliveryFields from "@/components/organisms/O_CheckoutDeliveryFields/O_CheckoutDeliveryFields";
 import { createOrder } from "@/shared/api/checkout";
+import A_Toast from "@/components/atoms/A_Toast/A_Toast";
 
 const CheckoutLayer = () => {
   const allObjects: DbObject[] = useObjects((state) => state.objects);
   const cartItems: CheckoutItem[] = useCheckoutItems((state) => state.items);
+  const clearItems = useCheckoutItems((state) => state.clearItems);
 
   const cartObjects: CartViewObject[] = allObjects
     .filter((object) => cartItems.some((item) => item.itemId === object.id))
@@ -23,6 +25,20 @@ const CheckoutLayer = () => {
       };
     });
 
+  // toast ↓
+  const [toast, setToast] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"error" | "success" | "default">(
+    "default"
+  );
+  const showToast = (
+    message: string,
+    type: "error" | "success" | "default"
+  ) => {
+    setToast(message);
+    setToastType(type);
+  };
+  // toast ↑
+
   const isCartEmpty = cartItems.length === 0;
 
   const subtotal = cartObjects.reduce((sum, object) => {
@@ -33,10 +49,11 @@ const CheckoutLayer = () => {
     e.preventDefault();
 
     if (isCartEmpty) {
+      showToast("добавьте что-нибудь в корзину", "error");
       return;
     }
-
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const deliveryPrice = 0; // позже записать! мок
     const payload: CheckoutBody = {
       firstName: String(formData.get("firstName") ?? ""),
@@ -55,7 +72,18 @@ const CheckoutLayer = () => {
       })),
     };
 
-    await createOrder(payload);
+    try {
+      await createOrder(payload);
+      showToast("заказ успешно создан!", "success");
+      form.reset();
+      clearItems();
+      // showToast("----", "success"); // тут инфа о том куда приедет заказ + сделать рассылку на почту
+    } catch (e) {
+      if (e instanceof Error) {
+        showToast(`не получилось создать заказ: ${e.message}`, "error");
+      }
+      console.log(e);
+    }
   };
 
   return (
@@ -74,6 +102,13 @@ const CheckoutLayer = () => {
           isCartEmpty={isCartEmpty}
         />
       </div>
+      {toast ? (
+        <A_Toast
+          type={toastType}
+          message={toast}
+          onClose={() => setToast(null)}
+        />
+      ) : null}
     </form>
   );
 };
