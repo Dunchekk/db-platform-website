@@ -7,11 +7,13 @@ import A_Button from "../../atoms/A_Button/A_Button";
 
 type Props = {
   isCartEmpty: boolean;
+  showToast: (message: string, type: "default" | "success" | "error") => void;
 } & ComponentPropsWithoutRef<"div">;
 
 const O_CheckoutDeliveryFields = ({
   isCartEmpty,
   className,
+  showToast,
   ...props
 }: Props) => {
   return (
@@ -45,9 +47,17 @@ const O_CheckoutDeliveryFields = ({
         <span>сроки: ~от 2 до 5 дней</span>
       </div>
 
-      <A_Button className={cls.submit} type="submit" disabled={isCartEmpty}>
-        {"————> оформить заказ"}
-      </A_Button>
+      <span
+        onMouseEnter={() => {
+          if (isCartEmpty) {
+            showToast("добавтье что-то в корзину", "default");
+          }
+        }}
+      >
+        <A_Button className={cls.submit} type="submit" disabled={isCartEmpty}>
+          {"————> оформить заказ"}
+        </A_Button>
+      </span>
     </div>
   );
 };

@@ -100,6 +100,7 @@ const CheckoutLayer = () => {
         <O_CheckoutDeliveryFields
           className={cls.column}
           isCartEmpty={isCartEmpty}
+          showToast={showToast}
         />
       </div>
       {toast ? (
