@@ -135,6 +135,14 @@
   bottom: var(--max-main-box-up-margin);
 }
 
+.buttons {
+  display: flex;
+  gap: var(--space);
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 @media screen and (max-width: 1000px) {
   .content {
     display: flex;

@@ -35,7 +35,14 @@ const DetailsLayer = () => {
   const object = useObjects((state) => state.objects).find(
     (v) => v.id === Number(id)
   );
+
+  const thisItemInCheckout = useCheckoutItems((s) => s.items).find(
+    (i) => i.itemId === Number(id)
+  );
+  const hasCheckoutItem = Boolean(thisItemInCheckout);
+
   const addToCard = useCheckoutItems((state) => state.addItem);
+  const decreaseItem = useCheckoutItems((state) => state.decreaseItem);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -165,12 +172,32 @@ const DetailsLayer = () => {
                 </ul>
               </div>
               {!isAuth ? (
-                <A_Button
-                  onClick={() => addToCard(object.id)}
-                  className={[cls.tocard, cls.desktopTocard].join(" ")}
-                >
-                  + в корзину
-                </A_Button>
+                <>
+                  {hasCheckoutItem ? (
+                    <div className={cls.buttons}>
+                      <A_Button
+                        type="button"
+                        onClick={() => decreaseItem(thisItemInCheckout.itemId)}
+                      >
+                        —
+                      </A_Button>
+                      <span>{thisItemInCheckout.quantity}</span>
+                      <A_Button
+                        type="button"
+                        onClick={() => addToCard(thisItemInCheckout.itemId)}
+                      >
+                        +
+                      </A_Button>
+                    </div>
+                  ) : (
+                    <A_Button
+                      onClick={() => addToCard(object.id)}
+                      className={[cls.tocard, cls.desktopTocard].join(" ")}
+                    >
+                      + в корзину
+                    </A_Button>
+                  )}
+                </>
               ) : (
                 <A_Button
                   onClick={() => openChangeObjectModal(true)}
