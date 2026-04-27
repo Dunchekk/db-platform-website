@@ -50,7 +50,7 @@ const O_CheckoutDeliveryFields = ({
       <span
         onMouseEnter={() => {
           if (isCartEmpty) {
-            showToast("добавтье что-то в корзину", "default");
+            showToast("добавте что-то в корзину", "default");
           }
         }}
       >
