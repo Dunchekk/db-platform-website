@@ -1,0 +1,70 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:17
+
+    container_name: db_platform_postgres
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+
+    container_name: db_platform_backend
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    # В нём должны быть DATABASE_URL, PORT, JWT_SECRET и прочее
+    env_file:
+      - ./backend/.env
+
+    ports:
+      - "127.0.0.1:5000:5000"
+
+    # Подключаем volume для загружаемых файлов
+    volumes:
+      - backend_uploads:/app/dist/src/static/uploads
+
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+
+      args:
+        BACK_API_URL: ${BACK_API_URL}
+
+    container_name: db_platform_frontend
+
+    #контейнер внутри слушает 80
+    # снаружи на сервере он доступен на 3000
+    ports:
+      - "127.0.0.1:3000:80"
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+  backend_uploads:
