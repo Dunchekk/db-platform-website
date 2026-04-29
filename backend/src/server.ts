@@ -20,7 +20,6 @@ app.use(errorHandler);
 const start = async () => {
   try {
     checkDb(prisma);
-    console.log(process.env.DATABASE_URL);
     app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
   } catch (e) {
     console.log(e);
