@@ -12,6 +12,8 @@ COPY prisma ./prisma
 
 COPY src ./src
 
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
 
 RUN npx prisma generate
 

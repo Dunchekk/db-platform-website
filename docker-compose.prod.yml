@@ -23,6 +23,8 @@ services:
   backend:
     build:
       context: ./backend
+      args:
+        DATABASE_URL: ${DATABASE_URL}
 
     container_name: db_platform_backend
 
