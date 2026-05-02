@@ -37,6 +37,8 @@ COPY --from=build /app/node_modules ./node_modules
 
 COPY --from=build /app/prisma ./prisma
 
+COPY --from=build /app/prisma.config.ts ./prisma.config.ts
+
 COPY --from=build /app/dist ./dist
 
 EXPOSE 5000
