@@ -6,7 +6,7 @@ import apiRouter from "./routes";
 import errorHandler from "./middleware/ErrorHandlingMiddleware";
 import path from "path";
 dotenv.config();
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 app.use(cors()); // миддлвер для корс
