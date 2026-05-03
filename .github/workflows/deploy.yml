@@ -1,0 +1,45 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy production
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy on VPS
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            set -e
+
+            cd /opt/db-platform
+
+            echo "Pull latest code"
+            git pull --ff-only origin main
+
+            echo "Build backend without BuildKit"
+            DOCKER_BUILDKIT=0 COMPOSE_DOCKER_CLI_BUILD=0 docker compose --env-file .env -f docker-compose.prod.yml build backend
+
+            echo "Build frontend without BuildKit"
+            DOCKER_BUILDKIT=0 COMPOSE_DOCKER_CLI_BUILD=0 docker compose --env-file .env -f docker-compose.prod.yml build frontend
+
+            echo "Run Prisma migrations"
+            docker compose --env-file .env -f docker-compose.prod.yml run --rm backend npx prisma migrate deploy
+
+            echo "Start containers"
+            docker compose --env-file .env -f docker-compose.prod.yml up -d
+
+            echo "Cleanup unused Docker images"
+            docker image prune -f
+
+            echo "Health check"
+            curl -f https://db-platform.ru
