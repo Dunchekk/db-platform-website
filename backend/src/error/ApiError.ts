@@ -1,7 +1,7 @@
 class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
-    super();
+    super(message);
     this.status = status;
     this.message = message;
   }
@@ -10,8 +10,8 @@ class ApiError extends Error {
     return new ApiError(400, message);
   }
 
-  static internal(message: string) {
-    return new ApiError(500, message);
+  static unauthorized(message: string) {
+    return new ApiError(401, message);
   }
 
   static forbidden(message: string) {
@@ -20,6 +20,18 @@ class ApiError extends Error {
 
   static notFound(message: string) {
     return new ApiError(404, message);
+  }
+
+  static internal(message: string) {
+    return new ApiError(500, message);
+  }
+
+  static badGateway(message: string) {
+    return new ApiError(502, message);
+  }
+
+  static serviceUnavailable(message: string) {
+    return new ApiError(503, message);
   }
 }
 
