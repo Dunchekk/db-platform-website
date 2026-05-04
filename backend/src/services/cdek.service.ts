@@ -44,15 +44,23 @@ export async function getCdekToken(): Promise<string> {
   cachedToken = data.access_token;
   tokenExpiresAt = Date.now() + (data.expires_in - 60) * 1000;
 
+  // console.log(cachedToken);
+
   return cachedToken;
 }
 
 export async function suggestCdekCities(query: string) {
   const token = await getCdekToken();
 
+  const normalizedQuery = query.trim();
+
+  if (normalizedQuery.length < 2) {
+    throw ApiError.badRequest("City query must contain at least 2 characters");
+  }
+
   const params = new URLSearchParams({
-    name: query,
-    country_code: cdekConfig.countryCode || "RU",
+    name: normalizedQuery,
+    country_code: cdekConfig.countryCode,
   });
 
   const response = await fetch(
@@ -62,13 +70,14 @@ export async function suggestCdekCities(query: string) {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
     }
   );
 
   if (!response.ok) {
     const text = await response.text();
-    throw new ApiError(response.status, `CDEK suggest cities failed: ${text}`);
+    throw ApiError.badGateway(`Failed to load cities from CDEK: ${text}`);
   }
 
   return response.json() as Promise<CdekSuggestedCityDto[]>;
