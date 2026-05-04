@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { URLSearchParams } from "node:url";
-import { CdekTokenResponse } from "../types/cdek.types";
+import { CdekSuggestedCityDto, CdekTokenResponse } from "../types/cdek.types";
 import ApiError from "../error/ApiError";
 import { requiredEnv } from "../helpers/requiredEnv";
 
@@ -45,4 +45,31 @@ export async function getCdekToken(): Promise<string> {
   tokenExpiresAt = Date.now() + (data.expires_in - 60) * 1000;
 
   return cachedToken;
+}
+
+export async function suggestCdekCities(query: string) {
+  const token = await getCdekToken();
+
+  const params = new URLSearchParams({
+    name: query,
+    country_code: cdekConfig.countryCode || "RU",
+  });
+
+  const response = await fetch(
+    `${cdekConfig.baseUrl}/location/suggest/cities?${params}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new ApiError(response.status, `CDEK suggest cities failed: ${text}`);
+  }
+
+  return response.json() as Promise<CdekSuggestedCityDto[]>;
 }
