@@ -10,3 +10,62 @@
   position: absolute;
   bottom: 0;
 }
+
+.list {
+  background: rgba(255, 255, 255, 0.3);
+  overflow-y: auto;
+  border-bottom: 1.5px solid black;
+  scroll-behavior: auto;
+  animation: list 500ms ease 1;
+  /* padding: calc(var(--space) / 2); */
+  /* height: 10vw; */
+}
+
+.list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 10px;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 10px;
+}
+
+.list::-webkit-scrollbar-thumb:hover {
+  background: rgba(39, 39, 39, 0.7);
+}
+
+.ul {
+  display: flex;
+  flex-direction: column;
+}
+
+.li::before {
+  display: none;
+}
+
+.li {
+  padding: calc(var(--space) / 2);
+  cursor: pointer;
+  transition: all 300ms;
+  background: rgba(255, 255, 255, 0);
+}
+
+.li:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes list {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  100% {
+    height: 100%;
+    opacity: 100%;
+  }
+}
