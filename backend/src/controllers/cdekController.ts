@@ -22,12 +22,17 @@ class CdekController {
 
       return res.json(normalized);
     } catch (e) {
-      if (e instanceof Error) {
-        next(ApiError.badRequest(e.message));
+      if (e instanceof ApiError) {
+        next(e);
         return;
       }
 
-      next(ApiError.badRequest("Unknown error"));
+      if (e instanceof Error) {
+        next(ApiError.internal(e.message));
+        return;
+      }
+
+      next(ApiError.internal("Unknown error"));
     }
   }
 }
