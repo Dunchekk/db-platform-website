@@ -17,7 +17,9 @@ export const IMAGE_URL = (
 
 export const CHECKOUT_URL = "/api/checkout";
 
+// CDEK
 export const CDEK_GET_CITIES_URL = "/api/cdek/cities";
+export const CDEK_GET_OFFICES_URL = "/api/cdek/delivery-points";
 
 // ITEMS_URL для GET /items и POST /items
 // ITEM_URL(id) для PUT /items/:id и DELETE /items/:id
@@ -26,3 +28,4 @@ export const CDEK_GET_CITIES_URL = "/api/cdek/cities";
 // CHECKOUT_URL отдельно
 
 // GET /api/cdek/cities?query=мос
+// GET /api/cdek/delivery-points?city_code=44
