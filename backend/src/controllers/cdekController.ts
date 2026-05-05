@@ -64,7 +64,6 @@ class CdekController {
         phones: office.phones,
         type: office.type, // PVZ — склад СДЭК, POSTAMAT — постамат СДЭК
         site: office.site, // Ссылка на данный офис на сайте СДЭК
-        office_image_list: office.office_image_list,
         work_time_list: office.work_time_list,
         work_time_exception_list: office.work_time_exception_list,
         location: office.location,
