@@ -1,8 +1,3 @@
-.dotted {
-  text-decoration: underline dotted 1px;
-  cursor: pointer;
-}
-
 .submit {
   display: flex;
   width: 100%;
@@ -11,16 +6,28 @@
   bottom: 0;
 }
 
+.office {
+  margin-top: calc(var(--space) * 1.5);
+}
+
+.comment {
+  opacity: var(--text-opacity);
+  /* margin-top: calc(var(--space) * 1); */
+}
+
+.dates {
+  margin-top: calc(var(--space) * 2);
+}
+
 .list {
   background: rgba(255, 255, 255, 0.3);
   overflow-y: auto;
   border-bottom: 1.5px solid black;
   scroll-behavior: auto;
   animation: list 500ms ease 1;
-  /* padding: calc(var(--space) / 2); */
-  /* height: 10vw; */
+  max-height: 13vw;
 }
-
+/* 
 .list::-webkit-scrollbar {
   width: 10px;
 }
@@ -46,7 +53,7 @@
 
 .li::before {
   display: none;
-}
+} */
 
 .li {
   padding: calc(var(--space) / 2);
