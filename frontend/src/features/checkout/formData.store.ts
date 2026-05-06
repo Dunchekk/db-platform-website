@@ -21,6 +21,8 @@ export type CheckoutFormInputs = {
 
 export type CheckoutFormStore = {
   form: CheckoutFormInputs;
+  formResetKey: number;
+  updateFormResetKey: () => void;
   setField: <K extends keyof CheckoutFormInputs>(
     field: K,
     value: CheckoutFormInputs[K]
@@ -49,6 +51,12 @@ export const useCheckoutFormInputs = create<CheckoutFormStore>((set) => ({
     agreement: false,
     city: null,
     office: null,
+  },
+  formResetKey: 0,
+  updateFormResetKey: () => {
+    set((state) => ({
+      formResetKey: state.formResetKey + 1,
+    }));
   },
   setField: (field, value) => {
     set((state) => ({
