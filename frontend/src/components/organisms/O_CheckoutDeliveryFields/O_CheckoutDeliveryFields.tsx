@@ -76,6 +76,12 @@ const O_CheckoutDeliveryFields = ({
     e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>
   ) => {
     setQueryOffices(e.target.value);
+
+    if (!selectedCity) {
+      showToast("укажите город для получения", "error");
+      return;
+    }
+
     const query = e.target.value.toLowerCase().trim();
     if (e.target.value.trim() === "" && selectedCity) {
       const newOffices = await getOffices(selectedCity.code);
