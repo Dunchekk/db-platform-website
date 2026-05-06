@@ -4,6 +4,7 @@ import React, { ComponentPropsWithoutRef } from "react";
 import W_CardItemsWrapper from "../../wrappers/W_CardItemsWrapper/W_CardItemsWrapper";
 import { CartViewObject } from "@/shared/types/object.types";
 import M_Input from "../../molecules/M_Input/M_Input";
+import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
 
 type Props = {
   cartObjects: CartViewObject[];
@@ -17,6 +18,16 @@ const O_CheckoutCartSummary = ({
   subtotal,
   ...props
 }: Props) => {
+  const setField = useCheckoutFormInputs((state) => state.setField);
+  const comment = useCheckoutFormInputs((state) => state.form.comment);
+
+  const handleCommChange = (
+    e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setField("comment", value);
+  };
+
   return (
     <div className={className} {...props}>
       <div>
@@ -39,6 +50,8 @@ const O_CheckoutCartSummary = ({
         id={"comment"}
         name="comment"
         placeholder="комментарий к заказу"
+        value={comment}
+        onChange={handleCommChange}
       ></M_Input>
 
       <p className={cls.opacity}>

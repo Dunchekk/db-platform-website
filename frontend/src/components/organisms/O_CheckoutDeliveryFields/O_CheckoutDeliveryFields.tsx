@@ -5,6 +5,7 @@ import cls from "@/components/organisms/O_CheckoutDeliveryFields/O_CheckoutDeliv
 import A_Button from "../../atoms/A_Button/A_Button";
 import { getCities, getOffices } from "@/shared/api/cdek";
 import { CdekOffice, CdekSuggestedCity } from "@/shared/types/cdek.types";
+import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
 
 type Props = {
   isCartEmpty: boolean;
@@ -17,18 +18,23 @@ const O_CheckoutDeliveryFields = ({
   showToast,
   ...props
 }: Props) => {
+  // зустанд
+  const setField = useCheckoutFormInputs((state) => state.setField);
+  const selectedCity = useCheckoutFormInputs((state) => state.form.city);
+  const selectedOffice = useCheckoutFormInputs((state) => state.form.office);
+
   const [isCitiesOpen, setIsCitiesOpen] = useState<boolean>(false);
   const [cities, setCities] = useState<CdekSuggestedCity[]>([]);
 
-  const [selectedCity, setSelectedCity] = useState<CdekSuggestedCity | null>(
-    null
+  const [queryCities, setQueryCities] = useState<string>(
+    selectedCity?.label || ""
   );
-  const [queryCities, setQueryCities] = useState<string>("");
 
   const [offices, setOffices] = useState<CdekOffice[]>([]);
   const [isOfficesOpen, setIsOfficesOpen] = useState<boolean>(false);
-  const [selectedOffice, setSelectedOffice] = useState<CdekOffice | null>(null);
-  const [queryOffices, setQueryOffices] = useState<string>("");
+  const [queryOffices, setQueryOffices] = useState<string>(
+    selectedOffice?.location?.address || ""
+  );
 
   const handleCityInputChange = async (
     e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>
@@ -51,15 +57,17 @@ const O_CheckoutDeliveryFields = ({
   };
 
   const handleCityClick = async (city: CdekSuggestedCity) => {
-    setSelectedCity(city);
+    setField("city", city);
     setQueryCities(city.label);
     const newOffices = await getOffices(city.code);
     setOffices(newOffices);
+    setField("office", null);
+    setQueryOffices("");
     setIsCitiesOpen(false);
   };
 
   const handleOfficeClick = async (office: CdekOffice) => {
-    setSelectedOffice(office);
+    setField("office", office);
     setQueryOffices(office.location.address);
     setIsOfficesOpen(false);
   };
@@ -74,8 +82,8 @@ const O_CheckoutDeliveryFields = ({
       setOffices(newOffices);
       return;
     }
-
-    const newOffices = offices.filter(
+    const allOffices = await getOffices(selectedCity.code);
+    const newOffices = allOffices.filter(
       (office) =>
         office.location?.address?.toLowerCase().includes(query) ||
         office.nearest_metro_station?.toLowerCase().includes(query)
@@ -127,13 +135,19 @@ const O_CheckoutDeliveryFields = ({
           <div className={cls.list}>
             <ul className={cls.ul}>
               {offices.map((office) => {
+                const officeAddress = office.location?.address;
+
+                if (!officeAddress) {
+                  return null;
+                }
+
                 return (
                   <li
                     key={office.code}
                     onClick={() => handleOfficeClick(office)}
                     className={cls.li}
                   >
-                    {office.location.address}
+                    {officeAddress}
                   </li>
                 );
               })}
@@ -147,13 +161,19 @@ const O_CheckoutDeliveryFields = ({
               выбран {selectedOffice.type === "PVZ" ? "ПВЗ" : "Постомат"} ↓
             </span>
             <br /> <br />
-            <span>адрес: {selectedOffice.location.address_full}</span> <br />
+            <span>
+              адрес: {selectedOffice.location.address_full || "Адрес не указан"}
+            </span>{" "}
+            <br />
             <span>
               телефон:
               {selectedOffice.phones.map((phone) => phone.number).join(", ")}
             </span>
             <br />
-            <span>время работы: {selectedOffice.work_time}</span>
+            <span>
+              время работы:{" "}
+              {selectedOffice.work_time || "Расписание не указано"}
+            </span>
             {selectedOffice.site && <span>сайт: {selectedOffice.site}</span>}
           </div>
         )}
