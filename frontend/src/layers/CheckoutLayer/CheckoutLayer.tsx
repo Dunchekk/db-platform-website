@@ -9,6 +9,7 @@ import O_CheckoutCustomerFields from "@/components/organisms/O_CheckoutCustomerF
 import O_CheckoutDeliveryFields from "@/components/organisms/O_CheckoutDeliveryFields/O_CheckoutDeliveryFields";
 import { createOrder } from "@/shared/api/checkout";
 import A_Toast from "@/components/atoms/A_Toast/A_Toast";
+import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
 
 const CheckoutLayer = () => {
   const allObjects: DbObject[] = useObjects((state) => state.objects);
@@ -39,6 +40,13 @@ const CheckoutLayer = () => {
   };
   // toast ↑
 
+  const form = useCheckoutFormInputs((state) => state.form);
+  const formResetKey = useCheckoutFormInputs((state) => state.formResetKey);
+  const resetForm = useCheckoutFormInputs((state) => state.resetForm);
+  const updateFormResetKey = useCheckoutFormInputs(
+    (state) => state.updateFormResetKey
+  );
+
   const isCartEmpty = cartItems.length === 0;
 
   const subtotal = cartObjects.reduce((sum, object) => {
@@ -51,18 +59,44 @@ const CheckoutLayer = () => {
     if (isCartEmpty) {
       showToast("добавьте что-нибудь в корзину", "error");
       return;
+    } else if (!form.agreement) {
+      showToast(
+        "необходимо согласие с публичной офертой и политикой обработки персональных данных",
+        "error"
+      );
+      return;
+    } else if (!form.firstName.trim()) {
+      showToast("пожалуйста, укажите ваше имя", "error");
+      return;
+    } else if (!form.lastName.trim()) {
+      showToast("пожалуйста, укажите вашу фамилию", "error");
+      return;
+    } else if (!form.email.trim()) {
+      showToast("пожалуйста, укажите ваш email", "error");
+      return;
+    } else if (!form.phone.trim()) {
+      showToast("пожалуйста, укажите ваш номер телефона", "error");
+      return;
+      // } else if (!form.deliveryPrice) {
+      //   showToast("не удалось загрузить стоимость доставки", "error");
+      //   return;
+      // } else if (!form.subtotal) {
+      //   showToast("не удалось загрузить сумму заказа", "error");
+      //   return;
+      // } else if (!form.total) {
+      //   showToast("не удалось загрузить итоговую сумму заказа", "error");
+      //   return;
     }
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+
     const deliveryPrice = 0; // позже записать! мок
     const payload: CheckoutBody = {
-      firstName: String(formData.get("firstName") ?? ""),
-      lastName: String(formData.get("lastName") ?? ""),
-      patronymic: String(formData.get("patronymic") ?? ""),
-      email: String(formData.get("email") ?? ""),
-      phone: String(formData.get("phone") ?? ""),
-      telegram: String(formData.get("telegram") ?? ""),
-      comment: String(formData.get("comment") ?? ""),
+      firstName: String(form.firstName ?? ""),
+      lastName: String(form.lastName ?? ""),
+      patronymic: String(form.patronymic ?? ""),
+      email: String(form.email ?? ""),
+      phone: String(form.phone ?? ""),
+      telegram: String(form.telegram ?? ""),
+      comment: String(form.comment ?? ""),
       deliveryPrice,
       subtotal,
       total: subtotal + deliveryPrice,
@@ -75,7 +109,8 @@ const CheckoutLayer = () => {
     try {
       await createOrder(payload);
       showToast("заказ успешно создан!", "success");
-      form.reset();
+      resetForm();
+      updateFormResetKey();
       clearItems();
       // showToast("----", "success"); // тут инфа о том куда приедет заказ + сделать рассылку на почту
     } catch (e) {
@@ -101,6 +136,7 @@ const CheckoutLayer = () => {
           className={cls.column}
           isCartEmpty={isCartEmpty}
           showToast={showToast}
+          key={formResetKey}
         />
       </div>
       {toast ? (
