@@ -1,12 +1,78 @@
-.dotted {
-  text-decoration: underline dotted 1px;
-  cursor: pointer;
-}
-
 .submit {
   display: flex;
   width: 100%;
   justify-content: end;
   position: absolute;
   bottom: 0;
+}
+
+.office {
+  margin-top: calc(var(--space) * 1.5);
+}
+
+.comment {
+  opacity: var(--text-opacity);
+  /* margin-top: calc(var(--space) * 1); */
+}
+
+.dates {
+  margin-top: calc(var(--space) * 2);
+}
+
+.list {
+  background: rgba(255, 255, 255, 0.3);
+  overflow-y: auto;
+  border-bottom: 1.5px solid black;
+  scroll-behavior: auto;
+  animation: list 500ms ease 1;
+  max-height: 13vw;
+}
+/* 
+.list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 10px;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 10px;
+}
+
+.list::-webkit-scrollbar-thumb:hover {
+  background: rgba(39, 39, 39, 0.7);
+}
+
+.ul {
+  display: flex;
+  flex-direction: column;
+}
+
+.li::before {
+  display: none;
+} */
+
+.li {
+  padding: calc(var(--space) / 2);
+  cursor: pointer;
+  transition: all 300ms;
+  background: rgba(255, 255, 255, 0);
+}
+
+.li:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes list {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  100% {
+    height: auto;
+    opacity: 100%;
+  }
 }

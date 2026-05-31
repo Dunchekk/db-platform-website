@@ -4,19 +4,37 @@ import React, { ComponentPropsWithoutRef } from "react";
 import W_CardItemsWrapper from "../../wrappers/W_CardItemsWrapper/W_CardItemsWrapper";
 import { CartViewObject } from "@/shared/types/object.types";
 import M_Input from "../../molecules/M_Input/M_Input";
+import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
 
 type Props = {
   cartObjects: CartViewObject[];
-  subtotal: number;
   className?: string;
+  subtotal: number;
+  showToast: (message: string, type: "default" | "success" | "error") => void;
 } & ComponentPropsWithoutRef<"div">;
 
 const O_CheckoutCartSummary = ({
   cartObjects,
   className,
   subtotal,
+  showToast,
   ...props
 }: Props) => {
+  const setField = useCheckoutFormInputs((state) => state.setField);
+  const comment = useCheckoutFormInputs((state) => state.form.comment);
+
+  // цены
+  const deliveryPrice = useCheckoutFormInputs(
+    (state) => state.form.deliveryPrice
+  );
+
+  const handleCommChange = (
+    e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setField("comment", value);
+  };
+
   return (
     <div className={className} {...props}>
       <div>
@@ -27,11 +45,28 @@ const O_CheckoutCartSummary = ({
       <div>
         <div className={cls.prices}>
           <span>сумма:</span>
-          <span>{subtotal} ₽</span>
+          <span>{typeof subtotal === "number" ? subtotal : "(?)"} ₽</span>
         </div>
         <div className={cls.prices}>
           <span>доставка:</span>
-          <span>(?)</span> {/* сюда позже включаем доставку */}
+          <span>
+            {typeof deliveryPrice === "number" ? (
+              deliveryPrice
+            ) : (
+              <span
+                onMouseEnter={() =>
+                  showToast(
+                    "ввдеите данные о доставке, чтобы узнать итоговую цену",
+                    "default"
+                  )
+                }
+              >
+                (?){" "}
+              </span>
+            )}{" "}
+            ₽
+          </span>
+          {/* сюда позже включаем доставку */}
         </div>
       </div>
 
@@ -39,6 +74,8 @@ const O_CheckoutCartSummary = ({
         id={"comment"}
         name="comment"
         placeholder="комментарий к заказу"
+        value={comment}
+        onChange={handleCommChange}
       ></M_Input>
 
       <p className={cls.opacity}>
@@ -47,7 +84,24 @@ const O_CheckoutCartSummary = ({
 
       <div className={cls.final}>
         <span>итого:</span>
-        <span>(?) {subtotal} ₽</span>
+        <span>
+          {typeof deliveryPrice !== "number" ? (
+            <span
+              onMouseEnter={() =>
+                showToast(
+                  "ввдеите данные о доставке, чтобы узнать итоговую цену",
+                  "default"
+                )
+              }
+            >
+              (?){" "}
+            </span>
+          ) : null}
+          {typeof deliveryPrice === "number"
+            ? subtotal + deliveryPrice
+            : subtotal}{" "}
+          ₽
+        </span>
       </div>
     </div>
   );

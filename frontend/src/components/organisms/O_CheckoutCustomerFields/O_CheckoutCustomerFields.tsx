@@ -4,53 +4,85 @@ import React, { ComponentPropsWithoutRef } from "react";
 import M_Input from "../../molecules/M_Input/M_Input";
 import { Link } from "react-router";
 import M_InputCheckbox from "../../molecules/M_InputCheckbox/M_InputCheckbox";
+import {
+  CheckoutFormInputs,
+  useCheckoutFormInputs,
+} from "@/features/checkout/formData.store";
 
 const O_CheckoutCustomerFields = ({
   className,
   ...props
 }: ComponentPropsWithoutRef<"div">) => {
+  const setField = useCheckoutFormInputs((state) => state.setField);
+  const checkboxAgreement = useCheckoutFormInputs(
+    (state) => state.form.agreement
+  );
+  const checkboxCoolness = useCheckoutFormInputs(
+    (state) => state.form.coolness
+  );
+
+  const firstName = useCheckoutFormInputs((state) => state.form.firstName);
+  const lastName = useCheckoutFormInputs((state) => state.form.lastName);
+  const patronymic = useCheckoutFormInputs((state) => state.form.patronymic);
+  const email = useCheckoutFormInputs((state) => state.form.email);
+  const phone = useCheckoutFormInputs((state) => state.form.phone);
+  const telegram = useCheckoutFormInputs((state) => state.form.telegram);
+
+  const handleChange = (value: string, field: keyof CheckoutFormInputs) => {
+    setField(field, value);
+  };
+
   return (
     <div className={className} {...props}>
       <div>
         <p>ваши данные:</p>
         <M_Input
-          name="firstName"
-          id={"имя"}
           required
           placeholder="имя*"
+          value={firstName}
+          onChange={(e) => handleChange(e.target.value, "firstName")}
         ></M_Input>
         <M_Input
-          name="lastName"
-          id={"фамилия"}
           required
           placeholder="фамилия*"
+          value={lastName}
+          onChange={(e) => handleChange(e.target.value, "lastName")}
         ></M_Input>
         <M_Input
-          name="patronymic"
-          id={"отчество"}
           placeholder="отчество"
+          value={patronymic}
+          onChange={(e) => handleChange(e.target.value, "patronymic")}
         ></M_Input>
         <M_Input
-          name="email"
           type="email"
-          id={"почта"}
           required
           placeholder="почта*"
+          value={email}
+          onChange={(e) => handleChange(e.target.value, "email")}
         ></M_Input>
         <M_Input
-          name="phone"
-          id={"телефон"}
           required
           placeholder="телефон*"
+          type="phobe"
+          value={phone}
+          onChange={(e) => handleChange(e.target.value, "phone")}
         ></M_Input>
         <M_Input
-          id={"телеграмм"}
-          name="telegram"
           placeholder="телеграмм (@example)"
+          value={telegram}
+          onChange={(e) => handleChange(e.target.value, "telegram")}
         ></M_Input>
       </div>
       <div className={cls.checkboxes}>
-        <M_InputCheckbox required className={cls.checkbox} id="policy">
+        <M_InputCheckbox
+          required
+          className={cls.checkbox}
+          checked={checkboxAgreement}
+          id="policy"
+          onChange={() => {
+            setField("agreement", !checkboxAgreement);
+          }}
+        >
           <label htmlFor="policy">
             Я принимаю условия{" "}
             <Link
@@ -71,7 +103,15 @@ const O_CheckoutCustomerFields = ({
             *
           </label>
         </M_InputCheckbox>
-        <M_InputCheckbox required className={cls.checkbox} id="coolness">
+        <M_InputCheckbox
+          required
+          className={cls.checkbox}
+          checked={checkboxCoolness}
+          id="coolness"
+          onChange={() => {
+            setField("coolness", !checkboxCoolness);
+          }}
+        >
           <label htmlFor="coolness">Я очень крут*</label>
         </M_InputCheckbox>
       </div>

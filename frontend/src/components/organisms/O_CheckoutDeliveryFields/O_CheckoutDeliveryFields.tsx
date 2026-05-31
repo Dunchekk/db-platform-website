@@ -1,9 +1,13 @@
-import React from "react";
-import M_InputCheckbox from "../../molecules/M_InputCheckbox/M_InputCheckbox";
+import React, { useState } from "react";
 import M_Input from "../../molecules/M_Input/M_Input";
 import type { ComponentPropsWithoutRef } from "react";
 import cls from "@/components/organisms/O_CheckoutDeliveryFields/O_CheckoutDeliveryFields.module.css";
 import A_Button from "../../atoms/A_Button/A_Button";
+import { BASE_WEIGHT, getCities, getOffices } from "@/shared/api/cdek";
+import { CdekOffice, CdekSuggestedCity } from "@/shared/types/cdek.types";
+import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
+import { getDeliveryPrice } from "@/shared/api/cdek";
+import { useCheckoutItems } from "@/features/checkout/checkout.store";
 
 type Props = {
   isCartEmpty: boolean;
@@ -16,36 +20,211 @@ const O_CheckoutDeliveryFields = ({
   showToast,
   ...props
 }: Props) => {
+  // зустанд
+  const setField = useCheckoutFormInputs((state) => state.setField);
+  const selectedCity = useCheckoutFormInputs((state) => state.form.city);
+  const selectedOffice = useCheckoutFormInputs((state) => state.form.office);
+  const getQuantity = useCheckoutItems((state) => state.getAllQuantity);
+
+  const [isCitiesOpen, setIsCitiesOpen] = useState<boolean>(false);
+  const [cities, setCities] = useState<CdekSuggestedCity[]>([]);
+
+  const [minPeriod, setMinPeriod] = useState<number>(null);
+  const [maxPeriod, setMaxPeriod] = useState<number>(null);
+
+  const [queryCities, setQueryCities] = useState<string>(
+    selectedCity?.label || ""
+  );
+
+  const [offices, setOffices] = useState<CdekOffice[]>([]);
+  const [isOfficesOpen, setIsOfficesOpen] = useState<boolean>(false);
+  const [queryOffices, setQueryOffices] = useState<string>(
+    selectedOffice?.location?.address || ""
+  );
+
+  const handleCityInputChange = async (
+    e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>
+  ) => {
+    const value = e.target.value.trim();
+    setQueryCities(e.target.value);
+
+    if (value.length < 2) {
+      setCities([]);
+      return;
+    }
+
+    let newCities: CdekSuggestedCity[] = [];
+    try {
+      newCities = await getCities(value);
+    } catch (e) {
+      showToast(`Ошибка при загрузке городов: ${e.message}`, "error");
+    }
+    setCities(newCities);
+    setField("city", null);
+    setField("office", null);
+    setField("deliveryPrice", null);
+    setMinPeriod(null);
+    setMaxPeriod(null);
+  };
+
+  const handleCityClick = async (city: CdekSuggestedCity) => {
+    setField("city", city);
+    setQueryCities(city.label);
+    const newOffices = await getOffices(city.code);
+    setOffices(newOffices);
+    setField("office", null);
+    setQueryOffices("");
+    setIsCitiesOpen(false);
+  };
+
+  const handleOfficeClick = async (office: CdekOffice) => {
+    setField("office", office);
+
+    try {
+      const priceResponse = await getDeliveryPrice(
+        selectedCity.code,
+        getQuantity() * BASE_WEIGHT
+      );
+      setField("deliveryPrice", priceResponse.delivery_sum);
+      setMinPeriod(priceResponse.period_min);
+      setMaxPeriod(priceResponse.period_max);
+      setQueryOffices(office.location.address);
+      setIsOfficesOpen(false);
+    } catch (e) {
+      if (e instanceof Error) {
+        showToast(`ошибка загрузки цены доставки: ${e.message}`, "error");
+      }
+      console.log(e);
+    }
+  };
+
+  const handleOfficeInputChange = async (
+    e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>
+  ) => {
+    setQueryOffices(e.target.value);
+
+    if (!selectedCity) {
+      showToast("укажите город для получения", "error");
+      return;
+    }
+
+    const query = e.target.value.toLowerCase().trim();
+    if (e.target.value.trim() === "" && selectedCity) {
+      const newOffices = await getOffices(selectedCity.code);
+      setOffices(newOffices);
+      return;
+    }
+    const allOffices = await getOffices(selectedCity.code);
+    const newOffices = allOffices.filter(
+      (office) =>
+        office.location?.address?.toLowerCase().includes(query) ||
+        office.nearest_metro_station?.toLowerCase().includes(query)
+    );
+
+    setOffices(newOffices);
+  };
+
   return (
     <div className={className} {...props}>
       <p>доставка:</p>
-      <M_Input placeholder="город*" />
 
       <div>
-        <M_InputCheckbox id="cdek1">
-          <label htmlFor="cdek1">СДЕК до ПВЗ от 3 дней (400 ₽)</label>
-        </M_InputCheckbox>
-        <M_InputCheckbox id="cdek2">
-          <label htmlFor="cdek2">СДЕК курьером от 2 дней (780 ₽)</label>
-        </M_InputCheckbox>
+        <M_Input
+          placeholder="город*"
+          onChange={handleCityInputChange}
+          value={queryCities}
+          onFocus={() => setIsCitiesOpen(true)}
+        />
+
+        {isCitiesOpen && cities.length !== 0 && (
+          <div className={cls.list}>
+            <ul className={cls.ul}>
+              {cities.map((city) => {
+                return (
+                  <li
+                    key={city.code}
+                    onClick={() => handleCityClick(city)}
+                    className={cls.li}
+                  >
+                    {city.label}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </div>
 
       <div>
-        <p>пункт получения:</p>
-        <span className={cls.dotted}>выбрать ↓</span>
-        <p>
-          MSK2589, Москва, ул. Генерала Глаголева
-          <br />
-          Адрес: ул. Генерала Глаголева, 22, корп. 1<br />
-          Время работы: Пн-Пт 09:00-21:00, Сб-Вс 10:00-20:00
-          <br />
-          Телефон: +79932658365
-        </p>
+        <M_Input
+          placeholder="пункт получения*"
+          onChange={handleOfficeInputChange}
+          value={queryOffices}
+          onFocus={() => setIsOfficesOpen(true)}
+        />
 
-        <span className={cls.dotted}>изменить ↑</span>
-        <br />
-        <span>сроки: ~от 2 до 5 дней</span>
+        {isOfficesOpen && offices.length !== 0 && (
+          <div className={cls.list}>
+            <ul className={cls.ul}>
+              {offices.map((office) => {
+                const officeAddress = office.location?.address;
+
+                if (!officeAddress) {
+                  return null;
+                }
+
+                return (
+                  <li
+                    key={office.code}
+                    onClick={() => handleOfficeClick(office)}
+                    className={cls.li}
+                  >
+                    {officeAddress}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+
+        {selectedOffice && !isOfficesOpen && (
+          <div className={cls.office}>
+            <span className={cls.dotted}>
+              выбран {selectedOffice.type === "PVZ" ? "ПВЗ" : "Постомат"} ↓
+            </span>
+            <br /> <br />
+            <span>
+              адрес: {selectedOffice.location.address_full || "Адрес не указан"}
+            </span>{" "}
+            <br />
+            <span>
+              телефон:
+              {selectedOffice.phones.map((phone) => phone.number).join(", ")}
+            </span>
+            <br />
+            <span>
+              время работы:{" "}
+              {selectedOffice.work_time || "Расписание не указано"}
+            </span>
+            {selectedOffice.site && (
+              <span>
+                <br />
+                сайт: {selectedOffice.site}
+              </span>
+            )}
+          </div>
+        )}
       </div>
+
+      <span className={cls.comment}>
+        В данное время доступна только доставка СДЕК до постомата или ПВЗ
+      </span>
+
+      {minPeriod && maxPeriod && (
+        <span className={cls.dates}>
+          сроки: ~от {minPeriod} до {maxPeriod} дней
+        </span>
+      )}
 
       <span
         onMouseEnter={() => {
