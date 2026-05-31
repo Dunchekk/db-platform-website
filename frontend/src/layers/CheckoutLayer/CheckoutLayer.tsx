@@ -14,6 +14,10 @@ import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
 const CheckoutLayer = () => {
   const allObjects: DbObject[] = useObjects((state) => state.objects);
   const cartItems: CheckoutItem[] = useCheckoutItems((state) => state.items);
+  const deliveryPrice = useCheckoutFormInputs(
+    (state) => state.form.deliveryPrice
+  );
+
   const clearItems = useCheckoutItems((state) => state.clearItems);
 
   const cartObjects: CartViewObject[] = allObjects
@@ -77,18 +81,20 @@ const CheckoutLayer = () => {
     } else if (!form.phone.trim()) {
       showToast("пожалуйста, укажите ваш номер телефона", "error");
       return;
-      // } else if (!form.deliveryPrice) {
-      //   showToast("не удалось загрузить стоимость доставки", "error");
-      //   return;
-      // } else if (!form.subtotal) {
-      //   showToast("не удалось загрузить сумму заказа", "error");
-      //   return;
-      // } else if (!form.total) {
-      //   showToast("не удалось загрузить итоговую сумму заказа", "error");
-      //   return;
+    } else if (typeof form.deliveryPrice !== "number") {
+      showToast("не удалось загрузить стоимость доставки", "error");
+      return;
+    } else if (!subtotal) {
+      showToast("не удалось загрузить сумму заказа", "error");
+      return;
+    } else if (!form.city) {
+      showToast("пожалуйста, укажите город назначения для доставки", "error");
+      return;
+    } else if (!form.office) {
+      showToast("пожалуйста, укажите пункт назначения для доставки", "error");
+      return;
     }
 
-    const deliveryPrice = 0; // позже записать! мок
     const payload: CheckoutBody = {
       firstName: String(form.firstName ?? ""),
       lastName: String(form.lastName ?? ""),
@@ -128,6 +134,7 @@ const CheckoutLayer = () => {
           className={cls.column}
           cartObjects={cartObjects}
           subtotal={subtotal}
+          showToast={showToast}
         />
 
         <O_CheckoutCustomerFields className={cls.column} />
