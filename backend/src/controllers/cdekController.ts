@@ -2,6 +2,7 @@ import ApiError from "../error/ApiError";
 import type { NextFunction, Request, Response } from "express";
 import {
   suggestCdekCities,
+  suggestCdekDeliveryPrice,
   suggestCdekOffices,
 } from "../services/cdek.service";
 
@@ -72,6 +73,57 @@ class CdekController {
       // отправляем его на фронт
 
       return res.json(normalized);
+    } catch (e) {
+      if (e instanceof ApiError) {
+        next(e);
+        return;
+      }
+
+      if (e instanceof Error) {
+        next(ApiError.internal(e.message));
+        return;
+      }
+
+      next(ApiError.internal("Unknown error"));
+    }
+  }
+
+  async getDeliveryPriceByCity(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    // GET /api/cdek/delivery-price?city_code=44&weight=1200
+    try {
+      const city_code =
+        typeof req.query.city_code === "string" &&
+        !isNaN(Number(req.query.city_code))
+          ? Number(req.query.city_code)
+          : null;
+
+      const weight =
+        typeof req.query.weight === "string" && !isNaN(Number(req.query.weight))
+          ? Number(req.query.weight)
+          : null;
+
+      if (city_code === null) {
+        throw ApiError.badRequest("Price query must contain city cdek code");
+      } else if (weight === null) {
+        throw ApiError.badRequest("Weight query must contain some value");
+      }
+
+      const deliveryInfo = await suggestCdekDeliveryPrice(city_code, weight);
+
+      const normalizedDeliveryInfo = {
+        delivery_sum: deliveryInfo.delivery_sum,
+        period_min: deliveryInfo.calendar_min ?? deliveryInfo.period_min,
+        period_max: deliveryInfo.calendar_max ?? deliveryInfo.period_max,
+        currency: deliveryInfo.currency === "RUB" ? "₽" : deliveryInfo.currency,
+      };
+
+      // отправляем его на фронт
+
+      return res.json(normalizedDeliveryInfo);
     } catch (e) {
       if (e instanceof ApiError) {
         next(e);
