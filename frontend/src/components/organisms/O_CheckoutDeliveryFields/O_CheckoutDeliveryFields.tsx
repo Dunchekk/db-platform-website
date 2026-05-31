@@ -3,9 +3,11 @@ import M_Input from "../../molecules/M_Input/M_Input";
 import type { ComponentPropsWithoutRef } from "react";
 import cls from "@/components/organisms/O_CheckoutDeliveryFields/O_CheckoutDeliveryFields.module.css";
 import A_Button from "../../atoms/A_Button/A_Button";
-import { getCities, getOffices } from "@/shared/api/cdek";
+import { BASE_WEIGHT, getCities, getOffices } from "@/shared/api/cdek";
 import { CdekOffice, CdekSuggestedCity } from "@/shared/types/cdek.types";
 import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
+import { getDeliveryPrice } from "@/shared/api/cdek";
+import { useCheckoutItems } from "@/features/checkout/checkout.store";
 
 type Props = {
   isCartEmpty: boolean;
@@ -22,9 +24,13 @@ const O_CheckoutDeliveryFields = ({
   const setField = useCheckoutFormInputs((state) => state.setField);
   const selectedCity = useCheckoutFormInputs((state) => state.form.city);
   const selectedOffice = useCheckoutFormInputs((state) => state.form.office);
+  const getQuantity = useCheckoutItems((state) => state.getAllQuantity);
 
   const [isCitiesOpen, setIsCitiesOpen] = useState<boolean>(false);
   const [cities, setCities] = useState<CdekSuggestedCity[]>([]);
+
+  const [minPeriod, setMinPeriod] = useState<number>(null);
+  const [maxPeriod, setMaxPeriod] = useState<number>(null);
 
   const [queryCities, setQueryCities] = useState<string>(
     selectedCity?.label || ""
@@ -54,6 +60,11 @@ const O_CheckoutDeliveryFields = ({
       showToast(`Ошибка при загрузке городов: ${e.message}`, "error");
     }
     setCities(newCities);
+    setField("city", null);
+    setField("office", null);
+    setField("deliveryPrice", null);
+    setMinPeriod(null);
+    setMaxPeriod(null);
   };
 
   const handleCityClick = async (city: CdekSuggestedCity) => {
@@ -68,8 +79,23 @@ const O_CheckoutDeliveryFields = ({
 
   const handleOfficeClick = async (office: CdekOffice) => {
     setField("office", office);
-    setQueryOffices(office.location.address);
-    setIsOfficesOpen(false);
+
+    try {
+      const priceResponse = await getDeliveryPrice(
+        selectedCity.code,
+        getQuantity() * BASE_WEIGHT
+      );
+      setField("deliveryPrice", priceResponse.delivery_sum);
+      setMinPeriod(priceResponse.period_min);
+      setMaxPeriod(priceResponse.period_max);
+      setQueryOffices(office.location.address);
+      setIsOfficesOpen(false);
+    } catch (e) {
+      if (e instanceof Error) {
+        showToast(`ошибка загрузки цены доставки: ${e.message}`, "error");
+      }
+      console.log(e);
+    }
   };
 
   const handleOfficeInputChange = async (
@@ -189,7 +215,11 @@ const O_CheckoutDeliveryFields = ({
         В данное время доступна только доставка СДЕК до постомата или ПВЗ
       </span>
 
-      <span className={cls.dates}>сроки: ~от 2 до 5 дней</span>
+      {minPeriod && maxPeriod && (
+        <span className={cls.dates}>
+          сроки: ~от {minPeriod} до {maxPeriod} дней
+        </span>
+      )}
 
       <span
         onMouseEnter={() => {
