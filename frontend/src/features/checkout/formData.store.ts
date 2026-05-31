@@ -10,9 +10,7 @@ export type CheckoutFormInputs = {
   phone: string;
   telegram: string;
   comment: string;
-  deliveryPrice: number;
-  subtotal: number;
-  total: number;
+  deliveryPrice: number | null;
   coolness: boolean;
   agreement: boolean;
   city: CdekSuggestedCity | null;
@@ -28,11 +26,6 @@ export type CheckoutFormStore = {
     value: CheckoutFormInputs[K]
   ) => void;
   resetForm: () => void;
-  setCity: (city: CdekSuggestedCity | null) => void;
-  setOffice: (office: CdekOffice | null) => void;
-  setPrices: (
-    prices: Pick<CheckoutFormInputs, "deliveryPrice" | "subtotal" | "total">
-  ) => void;
 };
 
 export const useCheckoutFormInputs = create<CheckoutFormStore>((set) => ({
@@ -45,8 +38,6 @@ export const useCheckoutFormInputs = create<CheckoutFormStore>((set) => ({
     telegram: "",
     comment: "",
     deliveryPrice: 0,
-    subtotal: 0,
-    total: 0,
     coolness: false,
     agreement: false,
     city: null,
@@ -77,41 +68,11 @@ export const useCheckoutFormInputs = create<CheckoutFormStore>((set) => ({
         telegram: "",
         comment: "",
         deliveryPrice: 0,
-        subtotal: 0,
-        total: 0,
         coolness: false,
         agreement: false,
         city: null,
         office: null,
       },
     });
-  },
-
-  setCity: (city) =>
-    set((state) => ({
-      form: {
-        ...state.form,
-        city,
-      },
-    })),
-
-  setOffice: (office) => {
-    set((state) => ({
-      form: {
-        ...state.form,
-        office,
-      },
-    }));
-  },
-
-  setPrices: (prices) => {
-    set((state) => ({
-      form: {
-        ...state.form,
-        deliveryPrice: prices.deliveryPrice,
-        subtotal: prices.subtotal,
-        total: prices.total,
-      },
-    }));
   },
 }));
