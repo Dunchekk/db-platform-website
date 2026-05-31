@@ -206,7 +206,12 @@ const O_CheckoutDeliveryFields = ({
               время работы:{" "}
               {selectedOffice.work_time || "Расписание не указано"}
             </span>
-            {selectedOffice.site && <span>сайт: {selectedOffice.site}</span>}
+            {selectedOffice.site && (
+              <span>
+                <br />
+                сайт: {selectedOffice.site}
+              </span>
+            )}
           </div>
         )}
       </div>

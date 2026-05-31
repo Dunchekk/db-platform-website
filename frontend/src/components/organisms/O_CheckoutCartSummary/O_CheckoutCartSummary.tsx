@@ -45,12 +45,26 @@ const O_CheckoutCartSummary = ({
       <div>
         <div className={cls.prices}>
           <span>сумма:</span>
-          <span>{typeof subtotal === "number" ? subtotal : "(?)"}</span>
+          <span>{typeof subtotal === "number" ? subtotal : "(?)"} ₽</span>
         </div>
         <div className={cls.prices}>
           <span>доставка:</span>
           <span>
-            {typeof deliveryPrice === "number" ? deliveryPrice : "(?)"}
+            {typeof deliveryPrice === "number" ? (
+              deliveryPrice
+            ) : (
+              <span
+                onMouseEnter={() =>
+                  showToast(
+                    "ввдеите данные о доставке, чтобы узнать итоговую цену",
+                    "default"
+                  )
+                }
+              >
+                (?){" "}
+              </span>
+            )}{" "}
+            ₽
           </span>
           {/* сюда позже включаем доставку */}
         </div>
@@ -80,12 +94,12 @@ const O_CheckoutCartSummary = ({
                 )
               }
             >
-              (?)
+              (?){" "}
             </span>
           ) : null}
           {typeof deliveryPrice === "number"
             ? subtotal + deliveryPrice
-            : subtotal}
+            : subtotal}{" "}
           ₽
         </span>
       </div>
