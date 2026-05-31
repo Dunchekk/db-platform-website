@@ -37,7 +37,7 @@ export const useCheckoutFormInputs = create<CheckoutFormStore>((set) => ({
     phone: "",
     telegram: "",
     comment: "",
-    deliveryPrice: 0,
+    deliveryPrice: null,
     coolness: false,
     agreement: false,
     city: null,
