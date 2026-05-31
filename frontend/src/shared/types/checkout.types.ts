@@ -24,3 +24,10 @@ export type CheckoutItemsStore = {
   clearItems: () => void;
   getAllQuantity: () => number;
 };
+
+export type NormalizedDeliveryInfo = {
+  delivery_sum: number;
+  period_min: number;
+  period_max: number;
+  currency: string;
+};
