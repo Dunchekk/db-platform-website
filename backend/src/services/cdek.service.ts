@@ -1,9 +1,11 @@
 import "dotenv/config";
 import { URLSearchParams } from "node:url";
 import {
+  CdekSuggestDeliveryPriceBodySchema,
   CdekSuggestedCityDto,
   CdekSuggestedOfficesDto,
   CdekTokenResponse,
+  DeliveryCalculationResponse,
 } from "../types/cdek.types";
 import ApiError from "../error/ApiError";
 import { requiredEnv } from "../helpers/requiredEnv";
@@ -24,6 +26,8 @@ export const cdekOrderProperties = {
   length: "40", // величина посылок
   width: "30",
   height: "8",
+  from_city_code: 44,
+  tarrif_code: 136,
 };
 
 async function fetchCdek(path: string, init: RequestInit) {
@@ -144,4 +148,53 @@ export async function suggestCdekOffices(city_code: number) {
   });
 
   return response.json() as Promise<CdekSuggestedOfficesDto[]>;
+}
+
+export async function suggestCdekDeliveryPrice(
+  to_city_code: number,
+  order_weight: number = 600,
+  from_city_code: number = cdekOrderProperties.from_city_code,
+  tariff_code: number = cdekOrderProperties.tarrif_code
+) {
+  const token = await getCdekToken();
+
+  if (!to_city_code) {
+    throw ApiError.badRequest("Query must contain to-city cdek code");
+  } else if (!from_city_code) {
+    throw ApiError.badRequest("Query must contain from-city cdek code");
+  } else if (!order_weight) {
+    throw ApiError.badRequest("Query must contain order weight");
+  } else if (!tariff_code) {
+    throw ApiError.badRequest("Query must contain tarrif code");
+  }
+
+  const body: CdekSuggestDeliveryPriceBodySchema = {
+    type: 1,
+    currency: 1,
+    lang: "rus",
+    tariff_code: tariff_code,
+    from_location: {
+      code: from_city_code,
+    },
+    to_location: {
+      code: to_city_code,
+    },
+    packages: [
+      {
+        weight: order_weight,
+      },
+    ],
+  };
+
+  const response = await fetchCdek(`/calculator/tariff`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  return response.json() as Promise<DeliveryCalculationResponse>;
 }
