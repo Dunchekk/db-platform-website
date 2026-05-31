@@ -115,3 +115,101 @@ export type CdekSuggestedOfficesDto = {
   width_max: number; // Максимальная ширина грузоместа в см, которую может принять офис
   height_max: number; // Максимальная высота грузоместа в см, которую может принять офис
 };
+
+export type CdekPackageDto = {
+  weight: number;
+  length?: number;
+  width?: number;
+  height?: number;
+};
+
+/**
+ * Запрос на получение цены доставки
+ */
+export type CdekSuggestDeliveryPriceBodySchema = {
+  date?: string;
+  type?: 1 | 2;
+  currency?: 1;
+  lang?: string;
+  tariff_code: number;
+  from_location: {
+    code: number;
+  };
+  to_location: {
+    code: number;
+  };
+  packages: CdekPackageDto[];
+};
+
+/**
+ * Результат расчета стоимости доставки
+ */
+export type DeliveryCalculationResponse = {
+  /** Стоимость доставки */
+  delivery_sum: number;
+
+  /** Минимальное время доставки (в рабочих днях) */
+  period_min: number;
+
+  /** Максимальное время доставки (в рабочих днях) */
+  period_max: number;
+
+  /** Минимальное время доставки (в календарных днях) */
+  calendar_min?: number;
+
+  /** Максимальное время доставки (в календарных днях) */
+  calendar_max?: number;
+
+  /** Расчетный вес (в граммах) */
+  weight_calc: number;
+
+  /** Дополнительные услуги */
+  services?: CalcResponseAdditionalServiceDto[];
+
+  /** Стоимость доставки с учетом дополнительных услуг */
+  total_sum: number;
+
+  /** Валюта, в которой рассчитана стоимость доставки (код СДЭК) */
+  currency: string;
+
+  /** Список ошибок */
+  errors?: ErrorDto[];
+
+  /** Список предупреждений */
+  warnings?: WarningDto[];
+
+  /** Прогнозируемый диапазон дат доставки */
+  delivery_date_range?: DeliveryDateRangeDto;
+};
+
+/** Дополнительные услуги */
+interface CalcResponseAdditionalServiceDto {
+  code: string;
+  sum: number;
+  [key: string]: any;
+}
+
+/** Ошибка */
+interface ErrorDto {
+  code: string;
+  message: string;
+}
+
+/** Предупреждение */
+interface WarningDto {
+  code: string;
+  message: string;
+}
+
+/** Диапазон дат доставки */
+interface DeliveryDateRangeDto {
+  date_min?: string;
+  date_max?: string;
+}
+
+export type normalizedDeliveryInfo = {
+  delivery_sum: number;
+  period_min: number;
+  period_max: number;
+  currency: string;
+};
