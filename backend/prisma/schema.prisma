@@ -70,6 +70,11 @@ enum OrderStatus {
   COMPLETED
 }
 
+enum DeliveryMethod {
+  CDEK_PVZ
+  CDEK_POSTAMAT
+}
+
 model Order {
   id                 Int         @id @default(autoincrement())
   status             OrderStatus @default(PENDING)
@@ -80,7 +85,15 @@ model Order {
   email              String
   phone              String
   telegram           String?
-  deliveryPrice      Int         @default(0)
+  
+  deliveryMethod        DeliveryMethod
+  deliveryPrice         Int             @default(0)
+  deliveryCityCode      Int
+  deliveryCityLabel     String
+  deliveryOfficeCode    String
+  deliveryOfficeUuid    String?
+  deliveryOfficeType    String?
+  deliveryOfficeAddress String
 
   comment            String?
   subtotal           Int
