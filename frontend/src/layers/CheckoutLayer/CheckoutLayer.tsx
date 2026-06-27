@@ -105,6 +105,8 @@ const CheckoutLayer = () => {
       comment: String(form.comment ?? ""),
       deliveryPrice,
       subtotal,
+      office: form.office,
+      city: form.city,
       total: subtotal + deliveryPrice,
       items: cartItems.map((item) => ({
         itemId: item.itemId,
