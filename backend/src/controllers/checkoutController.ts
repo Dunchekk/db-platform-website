@@ -2,6 +2,16 @@ import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../db";
 import ApiError from "../error/ApiError";
 import { ReqOrderBody } from "../types/checkout.types";
+import { suggestCdekDeliveryPrice } from "../services/cdek.service";
+import {
+  validateEmail,
+  validatePhone,
+  validateRequiredString,
+} from "../helpers/validation";
+import { Order } from "@prisma/client";
+import { prepareOrderItems } from "../services/order.service";
+
+const BASE_WEIGHT = 500; // в граммах
 
 class CheckoutController {
   async createOrder(req: Request, res: Response, next: NextFunction) {
@@ -13,6 +23,8 @@ class CheckoutController {
         email,
         phone,
         telegram,
+        office,
+        city,
         // deliveryPrice,
         comment,
         // subtotal,
@@ -20,76 +32,58 @@ class CheckoutController {
         items,
       }: ReqOrderBody = req.body;
 
-      if (items.length <= 0) {
+      if (!Array.isArray(items) || items.length <= 0) {
         throw ApiError.badRequest("Must be 1 item or more");
       }
+      const { subtotal, orderItemsData, totalQuantity } =
+        await prepareOrderItems(items);
+      const updateDeliveryPrice = await suggestCdekDeliveryPrice(
+        city.code,
+        totalQuantity * BASE_WEIGHT
+      );
 
-      const order = await prisma.$transaction(async (tx) => {
+      // создаем заказ
+      const order = await prisma.$transaction(async (tx): Promise<Order> => {
         const createdOrder = await tx.order.create({
           data: {
-            firstName,
-            lastName,
+            firstName: validateRequiredString(firstName, "firstName"),
+            lastName: validateRequiredString(lastName, "lastName"),
             patronymic,
-            email,
-            phone,
+            email: validateEmail(email),
+            phone: validatePhone(phone),
             telegram,
-            deliveryPrice: 0,
+            deliveryPrice: updateDeliveryPrice.total_sum,
             comment,
-            subtotal: 0,
-            total: 0,
+            subtotal: subtotal, // верный сабтотал
+            total: subtotal + updateDeliveryPrice.total_sum,
+
+            deliveryOfficeUuid: office.uuid,
+            deliveryCityCode: city.code,
+            deliveryCityLabel: city.label,
+            deliveryMethod:
+              office.type === "PVZ" ? "CDEK_PVZ" : "CDEK_POSTAMAT",
+            deliveryOfficeAddress: office.location.address_full,
+            deliveryOfficeCode: office.code,
+            deliveryOfficeType: office.type,
           },
         });
 
-        // let orderSubTotal = 0;
-        // let orderTotal = 0
-        // let orderDelivPrice = 0
-
-        const orderItemsData = await Promise.all(
-          items.map(async (item) => {
-            const innerItem = await tx.item.findUnique({
-              where: { id: item.itemId },
-            });
-
-            if (innerItem === null) {
-              throw ApiError.notFound("There is no item with such ID");
-            }
-
-            if (item.quantity <= 0) {
-              throw ApiError.badRequest("Quantity must be greater than 0");
-            }
-
-            return {
-              itemId: item.itemId,
-              orderId: createdOrder.id,
-              title: innerItem.name,
-              price: innerItem.price,
-              quantity: item.quantity,
-              total: innerItem.price * item.quantity,
-            };
-          })
-        );
-
-        const orderSubTotal = orderItemsData.reduce(
-          (sum, item) => sum + item.total,
-          0
-        );
-
+        // создаем orderItems
         await Promise.all(
-          orderItemsData.map((data) => tx.orderItem.create({ data }))
+          orderItemsData.map((item) =>
+            tx.orderItem.create({
+              data: {
+                ...item,
+                orderId: createdOrder.id,
+              },
+            })
+          )
         );
 
-        const updCreatedOrder = await tx.order.update({
-          where: { id: createdOrder.id },
-          data: { subtotal: orderSubTotal },
-        });
-
-        return updCreatedOrder;
+        return createdOrder;
       });
 
       res.json(order);
-
-      // создать заказ (ордер)
-      // создать все ордерАйтемы
 
       // позже: редиректнуть пользователя на страницу оплаты
       // позже: принять сообщение страницы оплаты об оплате
@@ -99,11 +93,11 @@ class CheckoutController {
       // отправить подтверждение на имейл (?)
     } catch (e) {
       if (e instanceof ApiError) {
-        next(ApiError.badRequest(e.message));
+        return next(e);
       }
       if (e instanceof Error) {
         console.log(e);
-        next(ApiError.badRequest(e.message));
+        return next(e);
       }
 
       // сделать эрроры посильнее
