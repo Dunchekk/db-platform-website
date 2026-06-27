@@ -1,3 +1,5 @@
+import { CdekOffice, CdekSuggestedCity } from "./cdek.types";
+
 export type CheckoutBody = {
   firstName: string;
   lastName: string;
@@ -8,6 +10,8 @@ export type CheckoutBody = {
   comment?: string;
   deliveryPrice: number;
   subtotal: number;
+  office: CdekOffice;
+  city: CdekSuggestedCity;
   total: number;
   items: CheckoutItem[];
 };
