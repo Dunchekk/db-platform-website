@@ -10,8 +10,20 @@ import {
 } from "../helpers/validation";
 import { Order } from "@prisma/client";
 import { prepareOrderItems } from "../services/order.service";
+import { YooCheckout } from "@a2seven/yoo-checkout"; // OR const { YooCheckout } = require('@a2seven/yoo-checkout');
+import "dotenv/config";
+import { CreatePayload } from "../services/yookassa.service";
+import { mapYooKassaStatus } from "../helpers/mapYooKassaStatus";
 
 const BASE_WEIGHT = 500; // в граммах
+
+const YOUKASSA_SECRET_KEY = process.env.YOUKASSA_SECRET_KEY as string;
+const SHOP_ID = process.env.SHOP_ID as string;
+
+const YouKassa = new YooCheckout({
+  shopId: SHOP_ID,
+  secretKey: YOUKASSA_SECRET_KEY,
+});
 
 class CheckoutController {
   async createOrder(req: Request, res: Response, next: NextFunction) {
@@ -83,14 +95,69 @@ class CheckoutController {
         return createdOrder;
       });
 
-      res.json(order);
+      //---------------------------------------------------- создаем payment: panding
+
+      const innerPayment = await prisma.payment.create({
+        data: {
+          orderId: order.id,
+          amount: order.total,
+        },
+      });
+
+      //---------------------------------------------------- создаем payment youkassa
+
+      const idempotenceKey = "02347fc4-a1f0-49db-807e-f0d67c2ed5a5";
+
+      const createPayload = await CreatePayload(
+        order,
+        order.id,
+        innerPayment.id
+      );
+
+      try {
+        const payment = await YouKassa.createPayment(
+          createPayload,
+          idempotenceKey
+        );
+
+        await prisma.payment.update({
+          // обновляем наш внутренний payment
+          where: { id: innerPayment.id },
+          data: {
+            providerPaymentId: payment.id,
+            idempotenceKey,
+            confirmationUrl: payment.confirmation.confirmation_url,
+            status: mapYooKassaStatus(payment.status),
+            paidAt: payment.paid ? new Date() : null,
+          },
+        });
+      } catch (e) {
+        await prisma.payment.update({
+          where: { id: innerPayment.id },
+          data: {
+            status: "FAILED",
+          },
+        });
+
+        throw e;
+      }
+
+      //----------------------------------------------------
 
       // позже: редиректнуть пользователя на страницу оплаты
       // позже: принять сообщение страницы оплаты об оплате
       // позже: обработать и записать данные о доставке
 
-      // посчитать тотал прайс (?)
       // отправить подтверждение на имейл (?)
+
+      //----------------------------------------------------
+
+      const answer = {
+        orderId: order.id,
+        paymentId: innerPayment.id,
+        confirmationUrl: innerPayment.confirmationUrl,
+      };
+      res.json(answer);
     } catch (e) {
       if (e instanceof ApiError) {
         return next(e);
