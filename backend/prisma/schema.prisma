@@ -64,10 +64,32 @@ model ItemImage {
 }
 
 enum OrderStatus {
-  PENDING
+  PENDING_PAYMENT
   PAID
+  FULFILLMENT_PENDING
+  SHIPPED
+  DELIVERED
   CANCELLED
-  COMPLETED
+}
+
+enum PaymentProvider {
+  YOOKASSA
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  CANCELED
+  FAILED
+}
+
+enum ShipmentStatus {
+  PENDING
+  CREATED
+  IN_TRANSIT
+  READY_FOR_PICKUP
+  DELIVERED
+  CANCELED
 }
 
 enum DeliveryMethod {
@@ -77,7 +99,7 @@ enum DeliveryMethod {
 
 model Order {
   id                 Int         @id @default(autoincrement())
-  status             OrderStatus @default(PENDING)
+  status             OrderStatus @default(PENDING_PAYMENT)
 
   firstName          String
   lastName           String
@@ -103,6 +125,8 @@ model Order {
   updatedAt          DateTime    @updatedAt
 
   items              OrderItem[]
+  payments           Payment[]
+  shipments          Shipment[]
 }
 
 model OrderItem {
@@ -118,4 +142,42 @@ model OrderItem {
   item        Item?  @relation(fields: [itemId], references: [id], onDelete: SetNull)
 
   @@index([orderId])
+}
+
+model Payment {
+  id                Int             @id @default(autoincrement())
+  orderId           Int
+  provider          PaymentProvider @default(YOOKASSA)
+  status            PaymentStatus   @default(PENDING)
+  amount            Int
+  currency          String          @default("RUB")
+  providerPaymentId String?         @unique
+  idempotenceKey    String?         @unique
+  confirmationUrl   String?
+  paidAt            DateTime?
+  canceledAt        DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+}
+
+model Shipment {
+  id                  Int            @id @default(autoincrement())
+  orderId             Int
+  status              ShipmentStatus @default(PENDING)
+  provider            String         @default("CDEK")
+  providerShipmentId  String?
+  trackingNumber      String?
+  trackingUrl         String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  order               Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
 }
