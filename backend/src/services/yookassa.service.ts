@@ -12,6 +12,7 @@ export async function CreatePayload(
       value: String(order.total) + ".00",
       currency: "RUB",
     },
+    capture: true, // не нужна ручная стадия “подтвердить списание позже”
     payment_method_data: {
       type: "bank_card",
     },
