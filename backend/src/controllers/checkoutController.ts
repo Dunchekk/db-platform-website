@@ -97,7 +97,7 @@ class CheckoutController {
 
       //---------------------------------------------------- создаем payment: panding
 
-      const innerPayment = await prisma.payment.create({
+      let innerPayment = await prisma.payment.create({
         data: {
           orderId: order.id,
           amount: order.total,
@@ -120,7 +120,7 @@ class CheckoutController {
           idempotenceKey
         );
 
-        await prisma.payment.update({
+        innerPayment = await prisma.payment.update({
           // обновляем наш внутренний payment
           where: { id: innerPayment.id },
           data: {
