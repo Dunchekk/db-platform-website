@@ -35,3 +35,9 @@ export type NormalizedDeliveryInfo = {
   period_max: number;
   currency: string;
 };
+
+export type CreateOrderResponse = {
+  orderId: number;
+  paymentId: number;
+  confirmationUrl: string;
+};

@@ -3,7 +3,11 @@ import cls from "@/layers/CheckoutLayer/CheckoutLayer.module.css";
 import { CartViewObject, DbObject } from "@/shared/types/object.types";
 import { useCheckoutItems } from "@/features/checkout/checkout.store";
 import { useObjects } from "@/features/objects/objects.store";
-import { CheckoutBody, CheckoutItem } from "@/shared/types/checkout.types";
+import {
+  CheckoutBody,
+  CheckoutItem,
+  // CreateOrderResponse,
+} from "@/shared/types/checkout.types";
 import O_CheckoutCartSummary from "@/components/organisms/O_CheckoutCartSummary/O_CheckoutCartSummary";
 import O_CheckoutCustomerFields from "@/components/organisms/O_CheckoutCustomerFields/O_CheckoutCustomerFields";
 import O_CheckoutDeliveryFields from "@/components/organisms/O_CheckoutDeliveryFields/O_CheckoutDeliveryFields";
@@ -18,7 +22,7 @@ const CheckoutLayer = () => {
     (state) => state.form.deliveryPrice
   );
 
-  const clearItems = useCheckoutItems((state) => state.clearItems);
+  // const clearItems = useCheckoutItems((state) => state.clearItems);
 
   const cartObjects: CartViewObject[] = allObjects
     .filter((object) => cartItems.some((item) => item.itemId === object.id))
@@ -46,10 +50,10 @@ const CheckoutLayer = () => {
 
   const form = useCheckoutFormInputs((state) => state.form);
   const formResetKey = useCheckoutFormInputs((state) => state.formResetKey);
-  const resetForm = useCheckoutFormInputs((state) => state.resetForm);
-  const updateFormResetKey = useCheckoutFormInputs(
-    (state) => state.updateFormResetKey
-  );
+  // const resetForm = useCheckoutFormInputs((state) => state.resetForm);
+  // const updateFormResetKey = useCheckoutFormInputs(
+  // (state) => state.updateFormResetKey
+  // );
 
   const isCartEmpty = cartItems.length === 0;
 
@@ -115,11 +119,18 @@ const CheckoutLayer = () => {
     };
 
     try {
-      await createOrder(payload);
-      showToast("заказ успешно создан!", "success");
-      resetForm();
-      updateFormResetKey();
-      clearItems();
+      const response = await createOrder(payload);
+      const confirmationUrl = response.confirmationUrl;
+
+      if (!confirmationUrl) {
+        showToast("Ошибка сервера: не получили ссылку на оплату", "error");
+        throw new Error("Не получили ссылку на оплату");
+      }
+
+      window.location.href = confirmationUrl;
+      // resetForm();
+      // updateFormResetKey();
+      // clearItems();
       // showToast("----", "success"); // тут инфа о том куда приедет заказ + сделать рассылку на почту
     } catch (e) {
       if (e instanceof Error) {
