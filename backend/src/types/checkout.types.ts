@@ -40,3 +40,28 @@ export type ReqOrderItem = {
 export type OrderWithCurrentPayment = Order & {
   currentPayment: Payment | null;
 };
+
+export type CheckoutOrderInput = {
+  checkoutAttemptKey: string;
+  subtotal: number;
+  orderItemsData: PreparedOrderItem[];
+  deliveryPrice: number;
+  firstName: string;
+  lastName: string;
+  patronymic?: string;
+  email: string;
+  phone: string;
+  telegram?: string;
+  comment?: string;
+  office: CdekOfficeFromFront;
+  city: CdekSuggestedCityFromFront;
+};
+
+export type ProviderPaymentResult = {
+  id: string;
+  status: string;
+  paid: boolean;
+  confirmation: {
+    confirmation_url?: string;
+  };
+};
