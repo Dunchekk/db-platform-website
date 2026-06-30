@@ -108,8 +108,10 @@ const CheckoutLayer = () => {
       officeCode: form.office?.code ?? null,
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
+      patronymic: form.patronymic.trim(),
       email: form.email.trim(),
       phone: form.phone.trim(),
+      telegram: form.telegram.trim(),
       comment: form.comment.trim(),
     });
 
@@ -143,6 +145,12 @@ const CheckoutLayer = () => {
 
     try {
       const response = await createOrder(payload);
+
+      if (response.alreadyPaid) {
+        showToast("этот заказ уже оплачен", "success");
+        return;
+      }
+
       const confirmationUrl = response.confirmationUrl;
 
       if (!confirmationUrl) {
