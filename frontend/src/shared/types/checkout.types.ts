@@ -40,5 +40,6 @@ export type NormalizedDeliveryInfo = {
 export type CreateOrderResponse = {
   orderId: number;
   paymentId: number;
-  confirmationUrl: string;
+  confirmationUrl: string | null;
+  alreadyPaid: boolean;
 };
