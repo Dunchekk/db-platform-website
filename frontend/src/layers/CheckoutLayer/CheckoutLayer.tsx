@@ -54,6 +54,7 @@ const CheckoutLayer = () => {
   // const updateFormResetKey = useCheckoutFormInputs(
   // (state) => state.updateFormResetKey
   // );
+  const setField = useCheckoutFormInputs((state) => state.setField);
 
   const isCartEmpty = cartItems.length === 0;
 
@@ -99,6 +100,27 @@ const CheckoutLayer = () => {
       return;
     }
 
+    let attemptKey;
+
+    const newFingerPrint = JSON.stringify({
+      items: [...cartItems].sort((a, b) => a.itemId - b.itemId),
+      cityCode: form.city?.code ?? null,
+      officeCode: form.office?.code ?? null,
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim(),
+      comment: form.comment.trim(),
+    });
+
+    if (form.checkoutAttemptKey && form.fingerprint === newFingerPrint) {
+      attemptKey = form.checkoutAttemptKey;
+    } else {
+      attemptKey = crypto.randomUUID() as string;
+      setField("checkoutAttemptKey", attemptKey);
+      setField("fingerprint", newFingerPrint);
+    }
+
     const payload: CheckoutBody = {
       firstName: String(form.firstName ?? ""),
       lastName: String(form.lastName ?? ""),
@@ -109,6 +131,7 @@ const CheckoutLayer = () => {
       comment: String(form.comment ?? ""),
       deliveryPrice,
       subtotal,
+      checkoutAttemptKey: attemptKey,
       office: form.office,
       city: form.city,
       total: subtotal + deliveryPrice,
