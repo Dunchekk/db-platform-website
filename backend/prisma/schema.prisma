@@ -81,6 +81,7 @@ enum PaymentStatus {
   SUCCEEDED
   CANCELED
   FAILED
+  PROVIDER_UNKNOWN
 }
 
 enum ShipmentStatus {
@@ -100,6 +101,8 @@ enum DeliveryMethod {
 model Order {
   id                 Int         @id @default(autoincrement())
   status             OrderStatus @default(PENDING_PAYMENT)
+  checkoutAttemptKey String?     @unique
+  currentPaymentId   Int?        @unique
 
   firstName          String
   lastName           String
@@ -125,7 +128,8 @@ model Order {
   updatedAt          DateTime    @updatedAt
 
   items              OrderItem[]
-  payments           Payment[]
+  payments           Payment[]   @relation("OrderPayments")
+  currentPayment     Payment?    @relation("OrderCurrentPayment", fields: [currentPaymentId], references: [id], onDelete: SetNull)
   shipments          Shipment[]
 }
 
@@ -159,7 +163,8 @@ model Payment {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 
-  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order             Order           @relation("OrderPayments", fields: [orderId], references: [id], onDelete: Cascade)
+  currentForOrder   Order?          @relation("OrderCurrentPayment")
 
   @@index([orderId])
   @@index([status])
