@@ -1,3 +1,4 @@
+import { Order, Payment } from "@prisma/client";
 import { CdekOfficeFromFront, CdekSuggestedCityFromFront } from "./cdek.types";
 
 export type ReqOrderBody = {
@@ -9,6 +10,7 @@ export type ReqOrderBody = {
   telegram?: string;
   deliveryPrice: number;
   comment?: string;
+  checkoutAttemptKey: string;
   subtotal: number;
   total: number;
   items: ReqOrderItem[];
@@ -33,4 +35,8 @@ export type PreparedOrder = {
 export type ReqOrderItem = {
   itemId: number;
   quantity: number;
+};
+
+export type OrderWithCurrentPayment = Order & {
+  currentPayment: Payment | null;
 };
