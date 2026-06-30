@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import "dotenv/config";
 import { mapYooKassaStatus } from "../helpers/mapYooKassaStatus";
 import { prisma } from "../db";
+import { YouKassa } from "../services/yookassa.service";
 
 class PaymentController {
   async handleYouKassaWebhook(req: Request, res: Response, next: NextFunction) {
@@ -20,7 +21,13 @@ class PaymentController {
         },
       });
 
-      if (!innerPayment) {
+      if (!innerPayment || !innerPayment.providerPaymentId) {
+        return res.sendStatus(200);
+      }
+
+      const actualPayment = await YouKassa.getPayment(object.id);
+
+      if (actualPayment.status !== object.status) {
         return res.sendStatus(200);
       }
 
