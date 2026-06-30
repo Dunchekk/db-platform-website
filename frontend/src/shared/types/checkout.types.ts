@@ -14,6 +14,7 @@ export type CheckoutBody = {
   city: CdekSuggestedCity;
   total: number;
   items: CheckoutItem[];
+  checkoutAttemptKey: string | null;
 };
 
 export type CheckoutItem = {
