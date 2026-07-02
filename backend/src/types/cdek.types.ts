@@ -213,3 +213,25 @@ export type normalizedDeliveryInfo = {
   period_max: number;
   currency: string;
 };
+
+// from frontend
+export type CdekOfficeFromFront = {
+  code: string;
+  uuid: string;
+  address_comment?: string;
+  nearest_metro_station?: string;
+  work_time: string;
+  phones: CdekPhoneDto[];
+  type: null | "PVZ" | "POSTAMAT" | "ALL";
+  site?: string;
+  work_time_list: CdekOfficeWorkTimeDto[];
+  work_time_exception_list?: CdekOfficeWorkTimeExceptionDto[];
+  location: CdekOfficeLocationDto;
+};
+
+export type CdekSuggestedCityFromFront = {
+  uuid: string;
+  code: number;
+  label: string;
+  countryCode: string;
+};

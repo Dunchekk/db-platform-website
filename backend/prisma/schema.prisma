@@ -64,15 +64,45 @@ model ItemImage {
 }
 
 enum OrderStatus {
-  PENDING
+  PENDING_PAYMENT
   PAID
+  FULFILLMENT_PENDING
+  SHIPPED
+  DELIVERED
   CANCELLED
-  COMPLETED
+}
+
+enum PaymentProvider {
+  YOOKASSA
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  CANCELED
+  FAILED
+  PROVIDER_UNKNOWN
+}
+
+enum ShipmentStatus {
+  PENDING
+  CREATED
+  IN_TRANSIT
+  READY_FOR_PICKUP
+  DELIVERED
+  CANCELED
+}
+
+enum DeliveryMethod {
+  CDEK_PVZ
+  CDEK_POSTAMAT
 }
 
 model Order {
   id                 Int         @id @default(autoincrement())
-  status             OrderStatus @default(PENDING)
+  status             OrderStatus @default(PENDING_PAYMENT)
+  checkoutAttemptKey String?     @unique
+  currentPaymentId   Int?        @unique
 
   firstName          String
   lastName           String
@@ -80,7 +110,15 @@ model Order {
   email              String
   phone              String
   telegram           String?
-  deliveryPrice      Int         @default(0)
+  
+  deliveryMethod        DeliveryMethod
+  deliveryPrice         Int             @default(0)
+  deliveryCityCode      Int
+  deliveryCityLabel     String
+  deliveryOfficeCode    String
+  deliveryOfficeUuid    String?
+  deliveryOfficeType    String?
+  deliveryOfficeAddress String
 
   comment            String?
   subtotal           Int
@@ -90,6 +128,9 @@ model Order {
   updatedAt          DateTime    @updatedAt
 
   items              OrderItem[]
+  payments           Payment[]   @relation("OrderPayments")
+  currentPayment     Payment?    @relation("OrderCurrentPayment", fields: [currentPaymentId], references: [id], onDelete: SetNull)
+  shipments          Shipment[]
 }
 
 model OrderItem {
@@ -105,4 +146,43 @@ model OrderItem {
   item        Item?  @relation(fields: [itemId], references: [id], onDelete: SetNull)
 
   @@index([orderId])
+}
+
+model Payment {
+  id                Int             @id @default(autoincrement())
+  orderId           Int
+  provider          PaymentProvider @default(YOOKASSA)
+  status            PaymentStatus   @default(PENDING)
+  amount            Int
+  currency          String          @default("RUB")
+  providerPaymentId String?         @unique
+  idempotenceKey    String?         @unique
+  confirmationUrl   String?
+  paidAt            DateTime?
+  canceledAt        DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  order             Order           @relation("OrderPayments", fields: [orderId], references: [id], onDelete: Cascade)
+  currentForOrder   Order?          @relation("OrderCurrentPayment")
+
+  @@index([orderId])
+  @@index([status])
+}
+
+model Shipment {
+  id                  Int            @id @default(autoincrement())
+  orderId             Int
+  status              ShipmentStatus @default(PENDING)
+  provider            String         @default("CDEK")
+  providerShipmentId  String?
+  trackingNumber      String?
+  trackingUrl         String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  order               Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
 }

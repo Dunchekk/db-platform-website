@@ -63,7 +63,7 @@ const O_CheckoutCustomerFields = ({
         <M_Input
           required
           placeholder="телефон*"
-          type="phobe"
+          type="phone"
           value={phone}
           onChange={(e) => handleChange(e.target.value, "phone")}
         ></M_Input>

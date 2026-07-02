@@ -12,6 +12,7 @@
   "author": "dunchek",
   "license": "ISC",
   "dependencies": {
+    "@a2seven/yoo-checkout": "^1.1.4",
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.6.0",
     "argon2": "^0.44.0",

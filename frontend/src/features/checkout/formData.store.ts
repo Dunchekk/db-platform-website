@@ -12,6 +12,8 @@ export type CheckoutFormInputs = {
   comment: string;
   deliveryPrice: number | null;
   coolness: boolean;
+  fingerprint: string | null;
+  checkoutAttemptKey: string | null;
   agreement: boolean;
   city: CdekSuggestedCity | null;
   office: CdekOffice | null;
@@ -41,6 +43,8 @@ export const useCheckoutFormInputs = create<CheckoutFormStore>((set) => ({
     coolness: false,
     agreement: false,
     city: null,
+    checkoutAttemptKey: null,
+    fingerprint: null,
     office: null,
   },
   formResetKey: 0,
@@ -69,6 +73,8 @@ export const useCheckoutFormInputs = create<CheckoutFormStore>((set) => ({
         comment: "",
         deliveryPrice: 0,
         coolness: false,
+        checkoutAttemptKey: null,
+        fingerprint: null,
         agreement: false,
         city: null,
         office: null,
