@@ -16,6 +16,7 @@ import { prisma } from "../db";
 import { getCurrentCdekStatusCode } from "../helpers/getCurrentCdekStatusCode";
 import { validatePhone } from "../helpers/validation";
 import { Order, OrderItem, Prisma } from "@prisma/client";
+import { restoreShipmentFromCdekIfExists } from "./helpers/restoreShipmentFromCdekIfExists";
 
 let cachedToken: string | null = null;
 let tokenExpiresAt = 0;
@@ -362,46 +363,13 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
 
   // если у найденной записи все упало то будем с ней работать, и перепишем ее на рабочую
   if (shipment.status === "FAILED" || shipment.status === "CANCELED") {
-    const existingCdekShipment = await fetchCdekShipment({
+    // проверим еще в сдеке -- дейсствительно ли все упало. если на ремоуте все ок то возрождаем старую запись
+    const restoredShipment = await restoreShipmentFromCdekIfExists({
       orderId,
-    }).catch(() => null);
+      fetchShipment: fetchCdekShipment,
+    });
 
-    //  проверим еще в сдеке -- дейсствительно ли все упало. если на ремоуте все ок то возрождаем старую запись
-
-    const existingCdekShipmentStatus = existingCdekShipment
-      ? getCurrentCdekStatusCode(existingCdekShipment)
-      : null;
-
-    if (
-      existingCdekShipment?.entity?.uuid &&
-      existingCdekShipmentStatus !== "INVALID" &&
-      existingCdekShipmentStatus !== "NOT_DELIVERED" &&
-      existingCdekShipmentStatus !== "REMOVED"
-    ) {
-      const restoredTrackingNumber = existingCdekShipment.entity.cdek_number
-        ? String(existingCdekShipment.entity.cdek_number)
-        : null;
-
-      const restoredShipment = await prisma.shipment.update({
-        where: {
-          orderId,
-        },
-        data: {
-          status: "CREATED",
-          providerShipmentId: existingCdekShipment.entity.uuid,
-          trackingNumber: restoredTrackingNumber,
-        },
-      });
-
-      await prisma.order.update({
-        where: {
-          id: orderId,
-        },
-        data: {
-          status: "FULFILLMENT_PENDING",
-        },
-      });
-
+    if (restoredShipment) {
       return restoredShipment;
     }
 
