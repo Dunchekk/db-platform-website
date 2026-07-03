@@ -1,6 +1,9 @@
 import "dotenv/config";
 import { URLSearchParams } from "node:url";
 import {
+  CdekCreatingOrderBody,
+  CdekEntityResponse,
+  cdekShipmentResponce,
   CdekSuggestDeliveryPriceBodySchema,
   CdekSuggestedCityDto,
   CdekSuggestedOfficesDto,
@@ -9,6 +12,10 @@ import {
 } from "../types/cdek.types";
 import ApiError from "../error/ApiError";
 import { requiredEnv } from "../helpers/requiredEnv";
+import { prisma } from "../db";
+import { getCurrentCdekStatusCode } from "../helpers/getCurrentCdekStatusCode";
+import { validatePhone } from "../helpers/validation";
+import { Order, OrderItem } from "@prisma/client";
 
 let cachedToken: string | null = null;
 let tokenExpiresAt = 0;
@@ -26,8 +33,13 @@ export const cdekOrderProperties = {
   length: "40", // величина посылок
   width: "30",
   height: "8",
+  base_weight: "350",
   from_city_code: 44,
   tarrif_code: 136,
+  name: "Дубовицкий Иван Максимович",
+  inn: "0000000000000000",
+  phone: "24567820957",
+  shipment_point: "",
 };
 
 async function fetchCdek(path: string, init: RequestInit) {
@@ -197,4 +209,208 @@ export async function suggestCdekDeliveryPrice(
   });
 
   return response.json() as Promise<DeliveryCalculationResponse>;
+}
+
+//-------------------------
+
+export async function fetchCdekShipment(params: {
+  trackingNumber?: string | null;
+  orderId?: number | null;
+}) {
+  const token = await getCdekToken();
+
+  const searchParams = new URLSearchParams();
+
+  if (params.trackingNumber) {
+    searchParams.set("cdek_number", params.trackingNumber);
+  }
+
+  if (params.orderId) {
+    searchParams.set("im_number", String(params.orderId));
+  }
+
+  if (!searchParams.size) {
+    throw ApiError.badRequest(
+      "CDEK shipment lookup requires trackingNumber or orderId"
+    );
+  }
+
+  const response = await fetchCdek(`/orders?${searchParams.toString()}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  });
+
+  return response.json() as Promise<cdekShipmentResponce>;
+}
+
+export async function CreatingCdekShipmentRegistrationBody(
+  order: Order & { items: OrderItem[] }
+): Promise<CdekCreatingOrderBody> {
+  const packageItems = order.items.map((item) => ({
+    name: item.title,
+    ware_key: String(item.itemId ?? item.id),
+    payment: {
+      value: item.price,
+    },
+    weight: cdekOrderProperties.base_weight,
+    amount: item.quantity,
+    cost: item.price,
+    marking: null,
+  })) as unknown as CdekCreatingOrderBody["packages"][number]["items"];
+
+  const body: CdekCreatingOrderBody = {
+    type: 1,
+    number: String(order.id),
+    tariff_code: cdekOrderProperties.tarrif_code,
+    comment: order.comment || undefined,
+    delivery_point: order?.deliveryOfficeCode,
+    shipment_point: cdekOrderProperties.shipment_point,
+    seller: {
+      name: cdekOrderProperties.name,
+      inn: cdekOrderProperties.inn,
+      phone: cdekOrderProperties.phone,
+    },
+    recipient: {
+      name: [order.lastName, order.firstName, order.patronymic]
+        .filter(Boolean)
+        .join(" "),
+      email: `${order?.email}`,
+      phones: [{ number: `${validatePhone(order?.phone)}` }],
+    },
+    packages: [
+      {
+        number: String(order.id),
+        weight: Number(cdekOrderProperties.base_weight) * packageItems.length,
+        width: Number(cdekOrderProperties.width),
+        height: Number(cdekOrderProperties.height),
+        length: Number(cdekOrderProperties.length),
+        items: packageItems,
+        package_id: null,
+      },
+    ],
+  };
+
+  return body;
+}
+//-------------------------
+
+export async function createCdekShipmentForPaidOrder(orderId: number) {
+  // проверка на существующий shipment с отправкой у этого айди, повторный ниче не делает
+  const oldShipment = await prisma.shipment.findFirst({
+    where: {
+      orderId,
+    },
+  });
+
+  if (oldShipment && oldShipment.trackingNumber && oldShipment.orderId) {
+    const cdekOldShipment = await fetchCdekShipment({
+      trackingNumber: oldShipment.trackingNumber,
+      orderId: oldShipment.orderId,
+    });
+
+    if (cdekOldShipment) {
+      const status = getCurrentCdekStatusCode(cdekOldShipment);
+      if (
+        status !== "INVALID" &&
+        status !== "NOT_DELIVERED" &&
+        status !== "REMOVED"
+      ) {
+        return cdekOldShipment;
+      }
+    }
+  }
+
+  // собрать payload только из server-side данных заказа: ФИО, телефон, город/ПВЗ, OrderItem, вес, тариф, габариты, стоимость.
+  const order = await prisma.order.findUnique({
+    where: {
+      id: orderId,
+    },
+    include: {
+      items: true,
+    },
+  });
+
+  if (!order) throw new Error("Order not found");
+
+  const body = await CreatingCdekShipmentRegistrationBody(order);
+
+  // вызов сдек
+  const token = await getCdekToken();
+
+  const response = await fetchCdek(`/orders`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  const responseBody = (await response.json()) as CdekEntityResponse;
+
+  // проверка статуса (последнего во всех статусах)
+  const lastRequest = responseBody.requests[responseBody.requests.length - 1];
+
+  if (!responseBody.entity?.uuid || lastRequest?.state === "INVALID") {
+    const cdekError = lastRequest?.errors
+      ?.map((item) => item.message)
+      .join("; ");
+    throw ApiError.badGateway(
+      `CDEK shipment creation failed${cdekError ? `: ${cdekError}` : ""}`
+    );
+  }
+
+  // запрос инфо только что создавшегося заказа: проверяем статус и достаем трекинг
+  const cdekShipmentInfo = await fetchCdekShipment({
+    orderId,
+  });
+
+  const cdekShipmentStatus = getCurrentCdekStatusCode(cdekShipmentInfo);
+
+  if (cdekShipmentStatus === "INVALID") {
+    throw ApiError.badGateway(
+      "CDEK shipment was created but returned INVALID status"
+    );
+  }
+
+  const trackingNumber = cdekShipmentInfo.entity?.cdek_number
+    ? String(cdekShipmentInfo.entity.cdek_number)
+    : null;
+
+  // После успешного ответа CDEK сохранить в Shipment минимум providerShipmentId, трек-номер, ссылку/идентификатор для последующего GET, и перевести Shipment.status в CREATED
+  const shipment = oldShipment
+    ? await prisma.shipment.update({
+        where: {
+          id: oldShipment.id,
+        },
+        data: {
+          status: "CREATED",
+          providerShipmentId: responseBody.entity.uuid,
+          trackingNumber,
+        },
+      })
+    : await prisma.shipment.create({
+        data: {
+          status: "CREATED",
+          orderId: orderId,
+          providerShipmentId: responseBody.entity.uuid,
+          trackingNumber,
+        },
+      });
+
+  // Order.status после этого логичнее переводить из PAID в FULFILLMENT_PENDING
+  await prisma.order.update({
+    where: {
+      id: orderId,
+    },
+    data: {
+      status: "FULFILLMENT_PENDING",
+    },
+  });
+
+  return shipment;
 }
