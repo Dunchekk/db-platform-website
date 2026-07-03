@@ -99,8 +99,14 @@ class PaymentController {
           },
         });
 
-        // тут будет сдек
-        createCdekShipmentForPaidOrder(order.id);
+        try {
+          await createCdekShipmentForPaidOrder(order.id);
+        } catch (e) {
+          console.error("Failed to create CDEK shipment for paid order", {
+            orderId: order.id,
+            error: e,
+          });
+        }
       }
 
       if (event === "payment.canceled") {
