@@ -15,7 +15,7 @@ import { requiredEnv } from "../helpers/requiredEnv";
 import { prisma } from "../db";
 import { getCurrentCdekStatusCode } from "../helpers/getCurrentCdekStatusCode";
 import { validatePhone } from "../helpers/validation";
-import { Order, OrderItem } from "@prisma/client";
+import { Order, OrderItem, Prisma } from "@prisma/client";
 
 let cachedToken: string | null = null;
 let tokenExpiresAt = 0;
@@ -298,32 +298,93 @@ export async function CreatingCdekShipmentRegistrationBody(
 //-------------------------
 
 export async function createCdekShipmentForPaidOrder(orderId: number) {
-  // проверка на существующий shipment с отправкой у этого айди, повторный ниче не делает
-  const oldShipment = await prisma.shipment.findFirst({
+  // смотрим есть ли запись достаки у этого заказа (одна запись на 1 заказ)
+  let canCreateRemoteShipment = false;
+  let shipment = await prisma.shipment.findUnique({
     where: {
       orderId,
     },
   });
 
-  if (oldShipment && oldShipment.trackingNumber && oldShipment.orderId) {
-    const cdekOldShipment = await fetchCdekShipment({
-      trackingNumber: oldShipment.trackingNumber,
-      orderId: oldShipment.orderId,
-    });
-
-    if (cdekOldShipment) {
-      const status = getCurrentCdekStatusCode(cdekOldShipment);
+  if (!shipment) {
+    try {
+      shipment = await prisma.shipment.create({
+        data: {
+          orderId,
+          status: "PENDING",
+        },
+      });
+      canCreateRemoteShipment = true;
+    } catch (e) {
       if (
-        status !== "INVALID" &&
-        status !== "NOT_DELIVERED" &&
-        status !== "REMOVED"
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2002" // Если два потока одновременно пытаются создать одну и ту же Shipment, один create пройдет, второй упадет с Prisma P2002. Не валим процесс, дочитываем уже созданную запись
       ) {
-        return cdekOldShipment;
+        shipment = await prisma.shipment.findUnique({
+          where: {
+            orderId,
+          },
+        });
+      } else {
+        throw e;
       }
     }
   }
 
-  // собрать payload только из server-side данных заказа: ФИО, телефон, город/ПВЗ, OrderItem, вес, тариф, габариты, стоимость.
+  if (!shipment) {
+    throw ApiError.internal("Failed to acquire local shipment lock");
+  }
+
+  // если у найденной записи все ок по статусам, есть айди, не можем делать новую регистрацию, то возвращаем ее
+  if (
+    shipment.status === "CREATED" ||
+    shipment.status === "IN_TRANSIT" ||
+    shipment.status === "READY_FOR_PICKUP" ||
+    shipment.status === "DELIVERED"
+  ) {
+    return shipment;
+  }
+
+  if (shipment.status === "PENDING" && shipment.providerShipmentId) {
+    return shipment;
+  }
+
+  if (shipment.status === "PENDING" && !canCreateRemoteShipment) {
+    return shipment;
+  }
+
+  // если у найденной записи все упало то будем с ней работать, и перепишем ее на рабочую
+  if (shipment.status === "FAILED" || shipment.status === "CANCELED") {
+    const claimedShipment = await prisma.shipment.updateMany({
+      where: {
+        id: shipment.id,
+        status: shipment.status,
+      },
+      data: {
+        status: "PENDING",
+        providerShipmentId: null,
+        trackingNumber: null,
+        trackingUrl: null,
+      },
+    });
+
+    // Два разных процесса (или запроса от пользователя) одновременно пытаются
+    // обработать один и тот же заказ, у которого статус FAILED или CANCELED.
+    // Если бы они оба просто прочитали статус, увидели, что он «плохой»,
+    // и пошли создавать отправку в СДЭК, то для одного заказа создалось
+    // бы два дубликата в СДЭКе.
+
+    if (!claimedShipment.count) {
+      // если count === 1, значит именно этот поток успел перевести запись из FAILED/CANCELED в PENDING и может идти дальше в CDEK
+      return prisma.shipment.findUnique({
+        where: {
+          orderId,
+        },
+      });
+    }
+  }
+
+  // собрать payload только из server-side данных заказа:
   const order = await prisma.order.findUnique({
     where: {
       id: orderId,
@@ -337,80 +398,84 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
 
   const body = await CreatingCdekShipmentRegistrationBody(order);
 
-  // вызов сдек
-  const token = await getCdekToken();
+  try {
+    // вызов сдек
+    const token = await getCdekToken();
 
-  const response = await fetchCdek(`/orders`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+    const response = await fetchCdek(`/orders`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
 
-  const responseBody = (await response.json()) as CdekEntityResponse;
+    const responseBody = (await response.json()) as CdekEntityResponse;
 
-  // проверка статуса (последнего во всех статусах)
-  const lastRequest = responseBody.requests[responseBody.requests.length - 1];
+    // проверка статуса (последнего во всех статусах)
+    const lastRequest = responseBody.requests[responseBody.requests.length - 1];
 
-  if (!responseBody.entity?.uuid || lastRequest?.state === "INVALID") {
-    const cdekError = lastRequest?.errors
-      ?.map((item) => item.message)
-      .join("; ");
-    throw ApiError.badGateway(
-      `CDEK shipment creation failed${cdekError ? `: ${cdekError}` : ""}`
-    );
+    if (!responseBody.entity?.uuid || lastRequest?.state === "INVALID") {
+      const cdekError = lastRequest?.errors
+        ?.map((item) => item.message)
+        .join("; ");
+      throw ApiError.badGateway(
+        `CDEK shipment creation failed${cdekError ? `: ${cdekError}` : ""}`
+      );
+    }
+
+    // запрос инфо только что создавшегося заказа: проверяем статус и достаем трекинг
+    const cdekShipmentInfo = await fetchCdekShipment({
+      orderId,
+    });
+
+    const cdekShipmentStatus = getCurrentCdekStatusCode(cdekShipmentInfo);
+
+    if (cdekShipmentStatus === "INVALID") {
+      throw ApiError.badGateway(
+        "CDEK shipment was created but returned INVALID status"
+      );
+    }
+
+    const trackingNumber = cdekShipmentInfo.entity?.cdek_number
+      ? String(cdekShipmentInfo.entity.cdek_number)
+      : null;
+
+    // После успешного ответа CDEK сохранить в Shipment минимум providerShipmentId, трек-номер, ссылку/идентификатор для последующего GET, и перевести Shipment.status в CREATED
+    const updatedShipment = await prisma.shipment.update({
+      where: {
+        orderId,
+      },
+      data: {
+        status: "CREATED",
+        providerShipmentId: responseBody.entity.uuid,
+        trackingNumber,
+      },
+    });
+
+    // Order.status после этого логичнее переводить из PAID в FULFILLMENT_PENDING
+    await prisma.order.update({
+      where: {
+        id: orderId,
+      },
+      data: {
+        status: "FULFILLMENT_PENDING",
+      },
+    });
+
+    return updatedShipment;
+  } catch (e) {
+    await prisma.shipment.update({
+      where: {
+        orderId,
+      },
+      data: {
+        status: "FAILED",
+      },
+    });
+
+    throw e;
   }
-
-  // запрос инфо только что создавшегося заказа: проверяем статус и достаем трекинг
-  const cdekShipmentInfo = await fetchCdekShipment({
-    orderId,
-  });
-
-  const cdekShipmentStatus = getCurrentCdekStatusCode(cdekShipmentInfo);
-
-  if (cdekShipmentStatus === "INVALID") {
-    throw ApiError.badGateway(
-      "CDEK shipment was created but returned INVALID status"
-    );
-  }
-
-  const trackingNumber = cdekShipmentInfo.entity?.cdek_number
-    ? String(cdekShipmentInfo.entity.cdek_number)
-    : null;
-
-  // После успешного ответа CDEK сохранить в Shipment минимум providerShipmentId, трек-номер, ссылку/идентификатор для последующего GET, и перевести Shipment.status в CREATED
-  const shipment = oldShipment
-    ? await prisma.shipment.update({
-        where: {
-          id: oldShipment.id,
-        },
-        data: {
-          status: "CREATED",
-          providerShipmentId: responseBody.entity.uuid,
-          trackingNumber,
-        },
-      })
-    : await prisma.shipment.create({
-        data: {
-          status: "CREATED",
-          orderId: orderId,
-          providerShipmentId: responseBody.entity.uuid,
-          trackingNumber,
-        },
-      });
-
-  // Order.status после этого логичнее переводить из PAID в FULFILLMENT_PENDING
-  await prisma.order.update({
-    where: {
-      id: orderId,
-    },
-    data: {
-      status: "FULFILLMENT_PENDING",
-    },
-  });
-
-  return shipment;
 }
