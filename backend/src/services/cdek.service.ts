@@ -28,18 +28,18 @@ export const cdekConfig = {
 };
 
 export const cdekOrderProperties = {
-  weight_min: null, // Минимальный вес (в кг.), принимаемый в ПВЗ (> WeightMin)
-  weight_max: "0", // Максимальный вес (в кг.), принимаемый в ПВЗ (<=WeightMax)
+  weightMin: null, // Минимальный вес (в кг.), принимаемый в ПВЗ (> WeightMin)
+  weightMax: "0", // Максимальный вес (в кг.), принимаемый в ПВЗ (<=WeightMax)
   length: "40", // величина посылок
   width: "30",
   height: "8",
-  base_weight: "350",
-  from_city_code: 44,
-  tarrif_code: 136,
+  baseWeight: "350",
+  fromCityCode: 44,
+  tariffCode: 136,
   name: "Дубовицкий Иван Максимович",
   inn: "0000000000000000",
   phone: "24567820957",
-  shipment_point: "",
+  shipmentPoint: "",
 };
 
 async function fetchCdek(path: string, init: RequestInit) {
@@ -142,7 +142,7 @@ export async function suggestCdekOffices(city_code: number) {
     city_code: String(city_code),
     type: "ALL",
     country_code: cdekConfig.countryCode,
-    weight_max: cdekOrderProperties.weight_max,
+    weight_max: cdekOrderProperties.weightMax,
     length: cdekOrderProperties.length,
     width: cdekOrderProperties.width,
     height: cdekOrderProperties.height,
@@ -165,8 +165,8 @@ export async function suggestCdekOffices(city_code: number) {
 export async function suggestCdekDeliveryPrice(
   to_city_code: number,
   order_weight: number = 600,
-  from_city_code: number = cdekOrderProperties.from_city_code,
-  tariff_code: number = cdekOrderProperties.tarrif_code
+  from_city_code: number = cdekOrderProperties.fromCityCode,
+  tariff_code: number = cdekOrderProperties.tariffCode
 ) {
   const token = await getCdekToken();
 

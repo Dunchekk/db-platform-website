@@ -3,15 +3,15 @@ import { validatePhone } from "../../helpers/validation";
 import { CdekCreatingOrderBody } from "../../types/cdek.types";
 
 type CdekOrderPropertiesForRegistrationBody = {
-  base_weight: string;
+  baseWeight: string;
   length: string;
   width: string;
   height: string;
-  tarrif_code: number;
+  tariffCode: number;
   name: string;
   inn: string;
   phone: string;
-  shipment_point: string;
+  shipmentPoint: string;
 };
 
 export function buildCdekShipmentRegistrationBody(
@@ -24,7 +24,7 @@ export function buildCdekShipmentRegistrationBody(
     payment: {
       value: item.price,
     },
-    weight: cdekOrderProperties.base_weight,
+    weight: cdekOrderProperties.baseWeight,
     amount: item.quantity,
     cost: item.price,
     marking: null,
@@ -33,10 +33,10 @@ export function buildCdekShipmentRegistrationBody(
   return {
     type: 1,
     number: String(order.id),
-    tariff_code: cdekOrderProperties.tarrif_code,
+    tariff_code: cdekOrderProperties.tariffCode,
     comment: order.comment || undefined,
     delivery_point: order?.deliveryOfficeCode,
-    shipment_point: cdekOrderProperties.shipment_point,
+    shipment_point: cdekOrderProperties.shipmentPoint,
     seller: {
       name: cdekOrderProperties.name,
       inn: cdekOrderProperties.inn,
@@ -52,7 +52,7 @@ export function buildCdekShipmentRegistrationBody(
     packages: [
       {
         number: String(order.id),
-        weight: Number(cdekOrderProperties.base_weight) * packageItems.length,
+        weight: Number(cdekOrderProperties.baseWeight) * packageItems.length,
         width: Number(cdekOrderProperties.width),
         height: Number(cdekOrderProperties.height),
         length: Number(cdekOrderProperties.length),
