@@ -1,7 +1,6 @@
 import "dotenv/config";
 import { URLSearchParams } from "node:url";
 import {
-  CdekCreatingOrderBody,
   CdekEntityResponse,
   cdekShipmentResponce,
   CdekSuggestDeliveryPriceBodySchema,
@@ -13,8 +12,8 @@ import {
 import ApiError from "../error/ApiError";
 import { requiredEnv } from "../helpers/requiredEnv";
 import { prisma } from "../db";
-import { validatePhone } from "../helpers/validation";
-import { Order, OrderItem, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { buildCdekShipmentRegistrationBody } from "./helpers/buildCdekShipmentRegistrationBody";
 import { restoreShipmentFromCdekIfExists } from "./helpers/restoreShipmentFromCdekIfExists";
 import { waitForCdekShipment } from "./helpers/waitForCdekShipment";
 
@@ -247,55 +246,6 @@ export async function fetchCdekShipment(params: {
   return response.json() as Promise<cdekShipmentResponce>;
 }
 
-export async function CreatingCdekShipmentRegistrationBody(
-  order: Order & { items: OrderItem[] }
-): Promise<CdekCreatingOrderBody> {
-  const packageItems = order.items.map((item) => ({
-    name: item.title,
-    ware_key: String(item.itemId ?? item.id),
-    payment: {
-      value: item.price,
-    },
-    weight: cdekOrderProperties.base_weight,
-    amount: item.quantity,
-    cost: item.price,
-    marking: null,
-  })) as unknown as CdekCreatingOrderBody["packages"][number]["items"];
-
-  const body: CdekCreatingOrderBody = {
-    type: 1,
-    number: String(order.id),
-    tariff_code: cdekOrderProperties.tarrif_code,
-    comment: order.comment || undefined,
-    delivery_point: order?.deliveryOfficeCode,
-    shipment_point: cdekOrderProperties.shipment_point,
-    seller: {
-      name: cdekOrderProperties.name,
-      inn: cdekOrderProperties.inn,
-      phone: cdekOrderProperties.phone,
-    },
-    recipient: {
-      name: [order.lastName, order.firstName, order.patronymic]
-        .filter(Boolean)
-        .join(" "),
-      email: `${order?.email}`,
-      phones: [{ number: `${validatePhone(order?.phone)}` }],
-    },
-    packages: [
-      {
-        number: String(order.id),
-        weight: Number(cdekOrderProperties.base_weight) * packageItems.length,
-        width: Number(cdekOrderProperties.width),
-        height: Number(cdekOrderProperties.height),
-        length: Number(cdekOrderProperties.length),
-        items: packageItems,
-        package_id: null,
-      },
-    ],
-  };
-
-  return body;
-}
 //-------------------------
 
 export async function createCdekShipmentForPaidOrder(orderId: number) {
@@ -410,7 +360,7 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
 
   if (!order) throw new Error("Order not found");
 
-  const body = await CreatingCdekShipmentRegistrationBody(order);
+  const body = buildCdekShipmentRegistrationBody(order, cdekOrderProperties);
 
   try {
     // вызов сдек
