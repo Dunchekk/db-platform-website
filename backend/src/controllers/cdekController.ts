@@ -4,7 +4,7 @@ import {
   suggestCdekCities,
   suggestCdekDeliveryPrice,
   suggestCdekOffices,
-} from "../services/cdek.service";
+} from "../services/cdek.api";
 
 class CdekController {
   async getCitiesByParams(req: Request, res: Response, next: NextFunction) {
