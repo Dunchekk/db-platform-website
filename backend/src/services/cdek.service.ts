@@ -13,10 +13,10 @@ import {
 import ApiError from "../error/ApiError";
 import { requiredEnv } from "../helpers/requiredEnv";
 import { prisma } from "../db";
-import { getCurrentCdekStatusCode } from "../helpers/getCurrentCdekStatusCode";
 import { validatePhone } from "../helpers/validation";
 import { Order, OrderItem, Prisma } from "@prisma/client";
 import { restoreShipmentFromCdekIfExists } from "./helpers/restoreShipmentFromCdekIfExists";
+import { waitForCdekShipment } from "./helpers/waitForCdekShipment";
 
 let cachedToken: string | null = null;
 let tokenExpiresAt = 0;
@@ -75,10 +75,6 @@ async function fetchCdek(path: string, init: RequestInit) {
 
     throw ApiError.serviceUnavailable("CDEK is unavailable");
   }
-}
-
-async function wait(ms: number) {
-  await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export async function getCdekToken(): Promise<string> {
@@ -453,63 +449,9 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
       },
     });
 
-    let cdekShipmentInfo: cdekShipmentResponce | null = null;
-
-    // три попытки на то чтобы достучаться до сдека и взять новую запись о доставке
-    for (let attempt = 0; attempt < 3; attempt++) {
-      cdekShipmentInfo = await fetchCdekShipment({
-        orderId,
-      }).catch(() => null);
-
-      const cdekShipmentStatus = cdekShipmentInfo
-        ? getCurrentCdekStatusCode(cdekShipmentInfo)
-        : null;
-
-      if (cdekShipmentStatus === "INVALID") {
-        throw ApiError.badGateway(
-          "CDEK shipment was created but returned INVALID status"
-        );
-      }
-
-      // если достучались то обновляем параметры трекинга
-      if (
-        cdekShipmentInfo?.entity?.uuid &&
-        cdekShipmentInfo.entity?.cdek_number
-      ) {
-        const trackingNumber = String(cdekShipmentInfo.entity.cdek_number);
-
-        const updatedShipment = await prisma.shipment.update({
-          where: {
-            orderId,
-          },
-          data: {
-            status: "CREATED",
-            trackingNumber,
-          },
-        });
-
-        await prisma.order.update({
-          where: {
-            id: orderId,
-          },
-          data: {
-            status: "FULFILLMENT_PENDING",
-          },
-        });
-
-        return updatedShipment;
-      }
-
-      if (attempt < 2) {
-        await wait(700);
-      }
-    }
-
-    // возвращаем наш объект доставки
-    return prisma.shipment.findUnique({
-      where: {
-        orderId,
-      },
+    return waitForCdekShipment({
+      orderId,
+      fetchShipment: fetchCdekShipment,
     });
   } catch (e) {
     await prisma.shipment.update({
@@ -523,4 +465,4 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
 
     throw e;
   }
-}
+} // доделать хелперы и рефактор.
