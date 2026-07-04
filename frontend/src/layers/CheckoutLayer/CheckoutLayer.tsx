@@ -83,10 +83,6 @@ const CheckoutLayer = () => {
 
     let isCancelled = false;
 
-    const cleanReturnParams = () => {
-      window.history.replaceState({}, "", pathname);
-    };
-
     const wait = (ms: number) =>
       new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -99,8 +95,7 @@ const CheckoutLayer = () => {
         }
 
         if (response.isPaid) {
-          showToast("заказ оплачен, проверьте свою почту", "success");
-          cleanReturnParams();
+          showToast("Заказ оплачен, проверьте свою почту", "success");
           return;
         }
 
@@ -112,6 +107,10 @@ const CheckoutLayer = () => {
 
     syncPaymentStatus().catch((e) => {
       if (isCancelled) {
+        showToast(
+          "Не удалось подтвердить оплату. Проверьте свою почту, и, если что, напишите мне",
+          "error"
+        );
         return;
       }
 
