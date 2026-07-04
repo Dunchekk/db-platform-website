@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import cls from "@/layers/CheckoutLayer/CheckoutLayer.module.css";
 import { CartViewObject, DbObject } from "@/shared/types/object.types";
 import { useCheckoutItems } from "@/features/checkout/checkout.store";
@@ -11,11 +11,16 @@ import {
 import O_CheckoutCartSummary from "@/components/organisms/O_CheckoutCartSummary/O_CheckoutCartSummary";
 import O_CheckoutCustomerFields from "@/components/organisms/O_CheckoutCustomerFields/O_CheckoutCustomerFields";
 import O_CheckoutDeliveryFields from "@/components/organisms/O_CheckoutDeliveryFields/O_CheckoutDeliveryFields";
-import { createOrder } from "@/shared/api/checkout";
+import { checkPaymentStatus, createOrder } from "@/shared/api/checkout";
 import A_Toast from "@/components/atoms/A_Toast/A_Toast";
 import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
+import { useLocation } from "react-router";
+
+const PAYMENT_STATUS_POLL_ATTEMPTS = 5;
+const PAYMENT_STATUS_POLL_DELAY = 1500;
 
 const CheckoutLayer = () => {
+  const { pathname, search } = useLocation();
   const allObjects: DbObject[] = useObjects((state) => state.objects);
   const cartItems: CheckoutItem[] = useCheckoutItems((state) => state.items);
   const deliveryPrice = useCheckoutFormInputs(
@@ -61,6 +66,61 @@ const CheckoutLayer = () => {
   const subtotal = cartObjects.reduce((sum, object) => {
     return sum + object.price * object.quantity;
   }, 0);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(search);
+    const paymentReturn = searchParams.get("paymentReturn");
+    const orderId = Number(searchParams.get("orderId"));
+    const paymentId = Number(searchParams.get("paymentId"));
+
+    if (
+      paymentReturn !== "1" ||
+      !Number.isInteger(orderId) ||
+      !Number.isInteger(paymentId)
+    ) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    const wait = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
+
+    const syncPaymentStatus = async () => {
+      for (let attempt = 0; attempt < PAYMENT_STATUS_POLL_ATTEMPTS; attempt++) {
+        const response = await checkPaymentStatus(orderId, paymentId);
+
+        if (isCancelled) {
+          return;
+        }
+
+        if (response.isPaid) {
+          showToast("Заказ оплачен, проверьте свою почту", "success");
+          return;
+        }
+
+        if (attempt < PAYMENT_STATUS_POLL_ATTEMPTS - 1) {
+          await wait(PAYMENT_STATUS_POLL_DELAY);
+        }
+      }
+    };
+
+    syncPaymentStatus().catch((e) => {
+      if (isCancelled) {
+        showToast(
+          "Не удалось подтвердить оплату. Проверьте свою почту, и, если что, напишите мне",
+          "error"
+        );
+        return;
+      }
+
+      console.log(e);
+    });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [pathname, search]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

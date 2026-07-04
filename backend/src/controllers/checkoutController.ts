@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import ApiError from "../error/ApiError";
 import { ReqOrderBody } from "../types/checkout.types";
-import { suggestCdekDeliveryPrice } from "../services/cdek.service";
+import { suggestCdekDeliveryPrice } from "../services/cdek.api";
 import {
   getOrCreateCheckoutOrder,
   prepareOrderItems,
@@ -49,23 +49,21 @@ class CheckoutController {
 
       // создаем заказ
 
-      const order = await getOrCreateCheckoutOrder(
-        {
-          checkoutAttemptKey,
-          subtotal,
-          orderItemsData,
-          deliveryPrice: updateDeliveryPrice.total_sum,
-          firstName,
-          lastName,
-          patronymic,
-          email,
-          phone,
-          telegram,
-          office,
-          city,
-          comment,
-        }
-      );
+      const order = await getOrCreateCheckoutOrder({
+        checkoutAttemptKey,
+        subtotal,
+        orderItemsData,
+        deliveryPrice: updateDeliveryPrice.total_sum,
+        firstName,
+        lastName,
+        patronymic,
+        email,
+        phone,
+        telegram,
+        office,
+        city,
+        comment,
+      });
 
       const payment = await resolveCheckoutPayment(order);
 

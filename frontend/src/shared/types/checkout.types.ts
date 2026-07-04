@@ -43,3 +43,11 @@ export type CreateOrderResponse = {
   confirmationUrl: string | null;
   alreadyPaid: boolean;
 };
+
+export type CheckPaymentStatusResponse = {
+  orderId: number;
+  paymentId: number;
+  orderStatus: string;
+  paymentStatus: string;
+  isPaid: boolean;
+};

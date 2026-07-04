@@ -4,6 +4,9 @@ import { mapYooKassaStatus } from "../helpers/mapYooKassaStatus";
 import { prisma } from "../db";
 import { YouKassa } from "../services/yookassa.service";
 import { createCdekShipmentForPaidOrder } from "../services/cdek.service";
+import { CheckOrderStatusParams } from "../types/checkout.types";
+import ApiError from "../error/ApiError";
+import { buildPaymentUpdateFromProvider } from "../helpers/buildPaymentUpdateFromProvider";
 
 class PaymentController {
   async handleYouKassaWebhook(req: Request, res: Response, next: NextFunction) {
@@ -119,6 +122,80 @@ class PaymentController {
       }
 
       return res.sendStatus(200);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  async checkOrderStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const params = req.params as CheckOrderStatusParams;
+      const orderId = Number(params.orderId);
+      const paymentId = Number(params.paymentId);
+
+      if (!Number.isInteger(orderId) || !Number.isInteger(paymentId)) {
+        throw ApiError.badRequest(
+          "The checking order status requires orderId and paymentId"
+        );
+      }
+
+      const payment = await prisma.payment.findFirst({
+        where: {
+          id: paymentId,
+          orderId,
+        },
+        select: {
+          id: true,
+          status: true,
+          providerPaymentId: true,
+          order: {
+            select: {
+              id: true,
+              status: true,
+            },
+          },
+        },
+      });
+
+      if (!payment) {
+        throw ApiError.badRequest("There is no payment with such orderId/paymentId");
+      }
+
+      let actualPayment = payment;
+
+      if (
+        payment.providerPaymentId &&
+        (payment.status === "PENDING" || payment.status === "PROVIDER_UNKNOWN")
+      ) {
+        const providerPayment = await YouKassa.getPayment(payment.providerPaymentId);
+
+        actualPayment = await prisma.payment.update({
+          where: { id: payment.id },
+          data: buildPaymentUpdateFromProvider(providerPayment),
+          select: {
+            id: true,
+            status: true,
+            providerPaymentId: true,
+            order: {
+              select: {
+                id: true,
+                status: true,
+              },
+            },
+          },
+        });
+      }
+
+      return res.json({
+        orderId: actualPayment.order.id,
+        paymentId: actualPayment.id,
+        orderStatus: actualPayment.order.status,
+        paymentStatus: actualPayment.status,
+        isPaid:
+          actualPayment.status === "SUCCEEDED" ||
+          actualPayment.order.status === "PAID" ||
+          actualPayment.order.status === "FULFILLMENT_PENDING",
+      });
     } catch (e) {
       return next(e);
     }
