@@ -16,6 +16,10 @@ export const IMAGE_URL = (
 };
 
 export const CHECKOUT_URL = "/api/checkout";
+export const PAYMENT_STATUS_URL = (
+  orderId: number | string,
+  paymentId: number | string
+) => `/api/payment/order/${orderId}/payment/${paymentId}/status`;
 
 // CDEK
 export const CDEK_GET_CITIES_URL = "/api/cdek/cities";
