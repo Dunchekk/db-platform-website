@@ -4,6 +4,8 @@ import { mapYooKassaStatus } from "../helpers/mapYooKassaStatus";
 import { prisma } from "../db";
 import { YouKassa } from "../services/yookassa.service";
 import { createCdekShipmentForPaidOrder } from "../services/cdek.service";
+import { CheckOrderStatusParams } from "../types/checkout.types";
+import ApiError from "../error/ApiError";
 
 class PaymentController {
   async handleYouKassaWebhook(req: Request, res: Response, next: NextFunction) {
@@ -119,6 +121,54 @@ class PaymentController {
       }
 
       return res.sendStatus(200);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  async checkOrderStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const params = req.params as CheckOrderStatusParams;
+      const orderId = Number(params.orderId);
+      const paymentId = Number(params.paymentId);
+
+      if (!Number.isInteger(orderId) || !Number.isInteger(paymentId)) {
+        throw ApiError.badRequest(
+          "The checking order status requires orderId and paymentId"
+        );
+      }
+
+      const payment = await prisma.payment.findFirst({
+        where: {
+          id: paymentId,
+          orderId,
+        },
+        select: {
+          id: true,
+          status: true,
+          order: {
+            select: {
+              id: true,
+              status: true,
+            },
+          },
+        },
+      });
+
+      if (!payment) {
+        throw ApiError.badRequest("There is no payment with such orderId/paymentId");
+      }
+
+      return res.json({
+        orderId: payment.order.id,
+        paymentId: payment.id,
+        orderStatus: payment.order.status,
+        paymentStatus: payment.status,
+        isPaid:
+          payment.status === "SUCCEEDED" ||
+          payment.order.status === "PAID" ||
+          payment.order.status === "FULFILLMENT_PENDING",
+      });
     } catch (e) {
       return next(e);
     }

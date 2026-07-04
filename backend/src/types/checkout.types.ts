@@ -65,3 +65,8 @@ export type ProviderPaymentResult = {
     confirmation_url?: string;
   };
 };
+
+export type CheckOrderStatusParams = {
+  orderId: string;
+  paymentId: string;
+};
