@@ -6,6 +6,7 @@ import { YouKassa } from "../services/yookassa.service";
 import { createCdekShipmentForPaidOrder } from "../services/cdek.service";
 import { CheckOrderStatusParams } from "../types/checkout.types";
 import ApiError from "../error/ApiError";
+import { buildPaymentUpdateFromProvider } from "../helpers/buildPaymentUpdateFromProvider";
 
 class PaymentController {
   async handleYouKassaWebhook(req: Request, res: Response, next: NextFunction) {
@@ -146,6 +147,7 @@ class PaymentController {
         select: {
           id: true,
           status: true,
+          providerPaymentId: true,
           order: {
             select: {
               id: true,
@@ -159,15 +161,40 @@ class PaymentController {
         throw ApiError.badRequest("There is no payment with such orderId/paymentId");
       }
 
+      let actualPayment = payment;
+
+      if (
+        payment.providerPaymentId &&
+        (payment.status === "PENDING" || payment.status === "PROVIDER_UNKNOWN")
+      ) {
+        const providerPayment = await YouKassa.getPayment(payment.providerPaymentId);
+
+        actualPayment = await prisma.payment.update({
+          where: { id: payment.id },
+          data: buildPaymentUpdateFromProvider(providerPayment),
+          select: {
+            id: true,
+            status: true,
+            providerPaymentId: true,
+            order: {
+              select: {
+                id: true,
+                status: true,
+              },
+            },
+          },
+        });
+      }
+
       return res.json({
-        orderId: payment.order.id,
-        paymentId: payment.id,
-        orderStatus: payment.order.status,
-        paymentStatus: payment.status,
+        orderId: actualPayment.order.id,
+        paymentId: actualPayment.id,
+        orderStatus: actualPayment.order.status,
+        paymentStatus: actualPayment.status,
         isPaid:
-          payment.status === "SUCCEEDED" ||
-          payment.order.status === "PAID" ||
-          payment.order.status === "FULFILLMENT_PENDING",
+          actualPayment.status === "SUCCEEDED" ||
+          actualPayment.order.status === "PAID" ||
+          actualPayment.order.status === "FULFILLMENT_PENDING",
       });
     } catch (e) {
       return next(e);
