@@ -5,6 +5,7 @@ import { randomUUID } from "crypto";
 import { prisma } from "../db";
 import { shouldMarkProviderUnknown } from "../helpers/shouldMarkProviderUnknown";
 import { OrderWithCurrentPayment } from "../types/checkout.types";
+import { buildFrontendPaymentReturnUrl } from "../helpers/buildFrontendPaymentReturnUrl";
 
 import "dotenv";
 import { buildPaymentUpdateFromProvider } from "../helpers/buildPaymentUpdateFromProvider";
@@ -33,7 +34,7 @@ export function CreatePayload(
     },
     confirmation: {
       type: "redirect",
-      return_url: process.env.FRONTEND_RETURN_URL,
+      return_url: buildFrontendPaymentReturnUrl(orderId, paymentId),
     },
     metadata: {
       time: Date.now().toString(),
