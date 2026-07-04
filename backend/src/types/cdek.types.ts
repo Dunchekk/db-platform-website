@@ -235,3 +235,501 @@ export type CdekSuggestedCityFromFront = {
   label: string;
   countryCode: string;
 };
+
+export type CdekCreatingOrderBody = {
+  type?: 1 | 2; // 1 -- ИМ, 2 -- доставка
+  additional_order_types?: []; // могут быть другие
+  number?: string; // внутренний для ИС номер заказа
+  accompanying_number?: string; // номер СНТ
+  tariff_code: number; // код тарифа
+  comment?: string;
+  shipment_point?: string;
+  delivery_point?: string;
+  date_invoice?: null;
+  shipper_name?: string;
+  shipper_address?: string;
+  delivery_recipient_cost?: {
+    value?: number; // доп. сбор за доставку с получателя
+    vat_sum?: number;
+    vat_rate?: number;
+  };
+  delivery_recipient_cost_adv?: [
+    {
+      threshold?: number; // порог стоимости заказа
+      sum?: number; // доп. сбор при достижении порога
+      vat_sum?: number;
+      vat_rate?: number;
+    },
+  ];
+  sender?: {
+    company?: string;
+    name?: string;
+    contragent_type?: "LEGAL_ENTITY";
+    passport_series?: string;
+    passport_number?: string;
+    passport_date_of_issue?: null;
+    passport_organization?: string;
+    tin?: string;
+    passport_date_of_birth?: null;
+    email?: string;
+    phones?: [
+      {
+        number?: string;
+        additional?: string;
+      },
+    ];
+  };
+  seller?: {
+    name?: string;
+    inn?: string;
+    phone?: string;
+    ownership_form?: null;
+    address?: string;
+  };
+  recipient: {
+    company?: string;
+    name: string;
+    contragent_type?: string;
+    passport_series?: string;
+    passport_number?: string;
+    passport_date_of_issue?: null;
+    passport_organization?: string;
+    tin?: string;
+    passport_date_of_birth?: null;
+    email?: string;
+    phones: [
+      {
+        number: string;
+        additional?: string;
+      },
+    ];
+  };
+  from_location?: {
+    code?: number; // код населенного пункта СДЭК
+    city_uuid?: null;
+    city?: string;
+    fias_guid?: null;
+    kladr_code?: string;
+    country_code?: string;
+    country?: null;
+    region?: string;
+    region_code?: number;
+    fias_region_guid?: null;
+    sub_region?: string;
+    longitude?: number;
+    latitude?: number;
+    time_zone?: number;
+    payment_limit?: number;
+    address: string;
+    postal_code?: string;
+  };
+  to_location?: {
+    code?: number; // код населенного пункта СДЭК
+    city_uuid?: null;
+    city?: string;
+    fias_guid?: null;
+    kladr_code?: string;
+    country_code?: string;
+    country?: null;
+    region?: string;
+    region_code?: number;
+    fias_region_guid?: null;
+    sub_region?: string;
+    longitude?: number;
+    latitude?: number;
+    time_zone?: number;
+    payment_limit?: number;
+    address: string;
+    postal_code?: string;
+  };
+  services?: [
+    {
+      code?: string;
+      parameter?: number;
+    },
+  ];
+  packages: [
+    {
+      number: string;
+      weight: number; // общий вес упаковки в граммах
+      length?: number;
+      width?: number;
+      height?: number;
+      comment?: string;
+      items: [
+        {
+          name: string;
+          ware_key: string;
+          marking: null;
+          payment: {
+            value: number; // стоимость единицы товарного вложения
+            vat_sum?: number;
+            vat_rate?: number;
+          };
+          weight: number; // вес единицы товара в граммах
+          weight_gross?: number;
+          amount: number; // количество единиц товара
+          name_i18n?: string;
+          brand?: string;
+          country_code?: string;
+          material?: null;
+          wifi_gsm?: null;
+          url?: string;
+          seller?: {
+            name?: string;
+            inn?: string;
+            phone?: string;
+            ownership_form?: null;
+            address?: string;
+            giis_subdivision_id?: null;
+          };
+          cost: number; // объявленная стоимость товара
+          feacn_code?: string;
+          jewel_uin?: null;
+          used?: null;
+        },
+      ];
+      package_id: null;
+    },
+  ];
+  delivery_types?: [null];
+  print?: "WAYBILL" | "BARCODE";
+  widgetToken?: null;
+  is_client_return?: null;
+  has_reverse_order?: null;
+  developer_key?: null;
+};
+
+export type CdekOrderStatusCode =
+  | "ACCEPTED"
+  | "CREATED"
+  | "REMOVED"
+  | "RECEIVED_AT_SHIPMENT_WAREHOUSE"
+  | "DELIVERED"
+  | "NOT_DELIVERED"
+  | "READY_FOR_SHIPMENT_IN_SENDER_CITY"
+  | "TAKEN_BY_TRANSPORTER_FROM_SENDER_CITY"
+  | "SENT_TO_RECIPIENT_CITY"
+  | "ACCEPTED_IN_RECIPIENT_CITY"
+  | "ACCEPTED_AT_RECIPIENT_CITY_WAREHOUSE"
+  | "TAKEN_BY_COURIER"
+  | "ACCEPTED_AT_PICK_UP_POINT"
+  | "ACCEPTED_AT_TRANSIT_WAREHOUSE"
+  | "RETURNED_TO_SENDER_CITY_WAREHOUSE"
+  | "RETURNED_TO_TRANSIT_WAREHOUSE"
+  | "RETURNED_TO_RECIPIENT_CITY_WAREHOUSE"
+  | "READY_FOR_SHIPMENT_IN_TRANSIT_CITY"
+  | "TAKEN_BY_TRANSPORTER_FROM_TRANSIT_CITY"
+  | "SENT_TO_TRANSIT_CITY"
+  | "ACCEPTED_IN_TRANSIT_CITY"
+  | "SENT_TO_SENDER_CITY"
+  | "ACCEPTED_IN_SENDER_CITY"
+  | "ENTERED_TO_TRANSIT_WAREHOUSE"
+  | "ENTERED_TO_RECIPIENT_CITY_WAREHOUSE"
+  | "ENTERED_TO_PICK_UP_POINT"
+  | "IN_CUSTOMS_INTERNATIONAL"
+  | "SHIPPED_TO_DESTINATION"
+  | "PASSED_TO_TRANSIT_CARRIER"
+  | "IN_CUSTOMS_LOCAL"
+  | "CUSTOMS_COMPLETE"
+  | "POSTOMAT_POSTED"
+  | "POSTOMAT_SEIZED"
+  | "POSTOMAT_RECEIVED"
+  | "INVALID";
+
+export type cdekShipmentResponce = {
+  entity?: {
+    uuid: string; // (! required !) идентификатор заказа в ИС СДЭК
+    type: 1 | 2; // (! required !) тип заказа: 1 -- ИМ, 2 -- доставка
+    additional_order_types?: number[]; // дополнительные типы заказа
+    is_return: boolean; // (! required !) признак возвратного заказа
+    is_reverse: boolean; // (! required !) признак реверсного заказа
+    cdek_number?: number; // номер заказа СДЭК
+    number?: string; // номер заказа в ИС клиента
+    accompanying_number?: string; // номер сопроводительной накладной на товар
+    accompanying_waybill?: {
+      client_name?: string;
+      flight_number?: string;
+      air_waybill_numbers?: string[];
+      vehicle_numbers?: string[];
+      vehicle_driver?: string;
+      planned_departure_date_time?: string;
+    };
+    tariff_code: number; // (! required !) код тарифа
+    comment?: string;
+    shipment_point?: string;
+    delivery_point?: string;
+    date_invoice?: string;
+    keep_free_until?: string;
+    shipper_name?: string;
+    shipper_address?: string;
+    delivery_recipient_cost?: {
+      value?: number; // доп. сбор за доставку с получателя
+      vat_sum?: number;
+      vat_rate?: number;
+    };
+    delivery_recipient_cost_adv?: [
+      {
+        threshold?: number; // порог стоимости заказа
+        sum?: number; // доп. сбор при достижении порога
+        vat_sum?: number;
+        vat_rate?: number;
+      },
+    ];
+    sender: {
+      // (! required !) объект отправителя
+      company?: string;
+      name: string; // (! required !) ФИО контактного лица отправителя
+      contragent_type?: "LEGAL_ENTITY" | "INDIVIDUAL";
+      passport_series?: string;
+      passport_number?: string;
+      passport_date_of_issue?: string;
+      passport_organization?: string;
+      tin?: string;
+      passport_date_of_birth?: string;
+      email?: string;
+      phones?: [
+        {
+          number?: string;
+          additional?: string;
+        },
+      ];
+      passport_requirements_satisfied?: boolean;
+    };
+    seller?: {
+      name?: string;
+      inn?: string;
+      phone?: string;
+      ownership_form?: string;
+      address?: string;
+    };
+    recipient: {
+      // (! required !) объект получателя
+      company?: string;
+      name: string; // (! required !) ФИО контактного лица получателя
+      contragent_type?: "LEGAL_ENTITY" | "INDIVIDUAL";
+      passport_series?: string;
+      passport_number?: string;
+      passport_date_of_issue?: string;
+      passport_organization?: string;
+      tin?: string;
+      passport_date_of_birth?: string;
+      email?: string;
+      phones?: [
+        {
+          number?: string;
+          additional?: string;
+        },
+      ];
+      passport_requirements_satisfied?: boolean;
+    };
+    from_location: {
+      // (! required !) локация отправления
+      code: number; // (! required !) код населенного пункта СДЭК
+      city_uuid?: string;
+      city: string; // (! required !) город отправления
+      fias_guid?: string;
+      kladr_code?: string;
+      country_code?: string;
+      country?: string;
+      region?: string;
+      region_code?: number;
+      fias_region_guid?: string;
+      kladr_region_code?: string;
+      sub_region?: string;
+      longitude?: number;
+      latitude?: number;
+      time_zone?: string;
+      payment_limit?: number;
+      address?: string;
+      postal_code?: string;
+    };
+    to_location?: {
+      code?: number; // код населенного пункта СДЭК
+      city_uuid?: string;
+      city?: string;
+      fias_guid?: string;
+      kladr_code?: string;
+      country_code?: string;
+      country?: string;
+      region?: string;
+      region_code?: number;
+      fias_region_guid?: string;
+      kladr_region_code?: string;
+      sub_region?: string;
+      longitude?: number;
+      latitude?: number;
+      time_zone?: string;
+      payment_limit?: number;
+      address?: string;
+      postal_code?: string;
+    };
+    services?: [
+      {
+        code?: string;
+        parameter?: string | number;
+      },
+    ];
+    delivery_mode?: 1 | 2 | 3 | 4 | 6 | 7 | 8 | 9 | 10 | 11;
+    has_reverse_order?: boolean;
+    delay_reasons?: [
+      {
+        date?: string;
+        reason?: string;
+      },
+    ];
+    delivery_types?: number[];
+    planned_delivery_date?: string;
+    delivery_detail?: {
+      delivery_sum?: number;
+      total_sum?: number;
+      payment_sum?: number;
+      vat_rate?: number;
+      vat_sum?: number;
+    };
+    delivery_problem?: [
+      {
+        code?: string;
+        create_date?: string;
+        message?: string;
+      },
+    ];
+    calls?: {
+      failed_calls?: [
+        {
+          date_time?: string;
+          reason_code?: string;
+        },
+      ];
+      rescheduled_calls?: [
+        {
+          date_time?: string;
+          date_next?: string;
+          time_next?: string;
+          comment?: string;
+        },
+      ];
+    };
+    packages: [
+      {
+        // (! required !) упаковка заказа
+        number: string; // (! required !) номер упаковки
+        weight: number; // (! required !) общий вес упаковки в граммах
+        length?: number;
+        width?: number;
+        height?: number;
+        comment?: string;
+        items?: [
+          {
+            name?: string;
+            ware_key?: string;
+            marking?: string;
+            payment?: {
+              value?: number; // стоимость единицы товарного вложения
+              vat_sum?: number;
+              vat_rate?: number;
+            };
+            weight?: number; // вес единицы товара в граммах
+            weight_gross?: number;
+            amount?: number; // количество единиц товара
+            name_i18n?: string;
+            brand?: string;
+            country_code?: string;
+            material?: string;
+            wifi_gsm?: string;
+            url?: string;
+            seller?: {
+              name?: string;
+              inn?: string;
+              phone?: string;
+              ownership_form?: string;
+              address?: string;
+              giis_subdivision_id?: string;
+            };
+            cost?: number; // объявленная стоимость товара
+            feacn_code?: string;
+            item_id?: string;
+            itemId?: string;
+            jewel_uin?: string;
+            used?: boolean;
+          },
+        ];
+        package_id?: string;
+      },
+    ];
+    statuses?: [
+      {
+        code?: CdekOrderStatusCode;
+        name?: string;
+        date_time?: string;
+        reason_code?: string;
+        city?: string;
+        city_uuid?: string;
+        deleted?: boolean;
+      },
+    ];
+    is_client_return: boolean; // (! required !) признак клиентского возврата
+    developer_key?: string;
+  };
+  requests: [
+    // (! required !) список запросов к API по заказу
+    {
+      request_uuid?: string;
+      type: string; // (! required !) тип запроса к API
+      date_time: string; // (! required !) дата и время создания запроса
+      state: string; // (! required !) состояние обработки запроса
+      errors?: CdekErrorDto[];
+      warnings?: CdekWarningDto[];
+    },
+  ];
+  related_entities?: [
+    {
+      uuid: string; // (! required !) идентификатор связанной сущности
+      type:
+        | "return_order"
+        | "direct_order"
+        | "client_return_order"
+        | "client_direct_order"
+        | "waybill"
+        | "barcode"
+        | "reverse_order"
+        | "delivery"; // (! required !) тип связанной сущности
+      url?: string;
+      create_time?: string;
+      cdek_number?: number;
+      date?: string;
+      time_from?: string;
+      time_to?: string;
+    },
+  ];
+};
+
+export type CdekEntityResponse = {
+  entity?: {
+    uuid: string;
+  };
+  requests: {
+    request_uuid?: string;
+    type:
+      | "CREATE"
+      | "UPDATE"
+      | "DELETE"
+      | "AUTH"
+      | "GET"
+      | "CREATE_CLIENT_RETURN";
+    date_time: string;
+    state: "ACCEPTED" | "WAITING" | "SUCCESSFUL" | "INVALID";
+    errors?: {
+      code?: string;
+      message?: string;
+    }[];
+    warnings?: {
+      code?: string;
+      message?: string;
+    }[];
+  }[];
+  related_entities?: {
+    uuid?: string;
+    type?: string;
+  }[];
+};

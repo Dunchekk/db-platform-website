@@ -3,6 +3,7 @@ import "dotenv/config";
 import { mapYooKassaStatus } from "../helpers/mapYooKassaStatus";
 import { prisma } from "../db";
 import { YouKassa } from "../services/yookassa.service";
+import { createCdekShipmentForPaidOrder } from "../services/cdek.service";
 
 class PaymentController {
   async handleYouKassaWebhook(req: Request, res: Response, next: NextFunction) {
@@ -91,12 +92,21 @@ class PaymentController {
 
       // обновляем статус заказа по событию
       if (event === "payment.succeeded") {
-        await prisma.order.update({
+        const order = await prisma.order.update({
           where: { id: innerPayment.orderId },
           data: {
             status: "PAID",
           },
         });
+
+        try {
+          await createCdekShipmentForPaidOrder(order.id);
+        } catch (e) {
+          console.error("Failed to create CDEK shipment for paid order", {
+            orderId: order.id,
+            error: e,
+          });
+        }
       }
 
       if (event === "payment.canceled") {
