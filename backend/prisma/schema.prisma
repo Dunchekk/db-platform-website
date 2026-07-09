@@ -99,6 +99,17 @@ enum DeliveryMethod {
   CDEK_POSTAMAT
 }
 
+enum NotificationJobType {
+  SHIPMENT_CREATED_EMAIL
+}
+
+enum NotificationJobStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+}
+
 model Order {
   id                 Int         @id @default(autoincrement())
   status             OrderStatus @default(PENDING_PAYMENT)
@@ -132,6 +143,7 @@ model Order {
   payments           Payment[]   @relation("OrderPayments")
   currentPayment     Payment?    @relation("OrderCurrentPayment", fields: [currentPaymentId], references: [id], onDelete: SetNull)
   shipments          Shipment[]
+  notificationJobs   NotificationJob[]
 }
 
 model OrderItem {
@@ -183,7 +195,30 @@ model Shipment {
   updatedAt           DateTime       @updatedAt
 
   order               Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  notificationJobs    NotificationJob[]
 
   @@index([orderId])
   @@index([status])
+}
+
+model NotificationJob {
+  id         Int                   @id @default(autoincrement())
+  type       NotificationJobType
+  status     NotificationJobStatus @default(PENDING)
+  orderId    Int
+  shipmentId Int?
+  attempts   Int                   @default(0)
+  runAt      DateTime              @default(now())
+  lockedAt   DateTime?
+  lastError  String?
+  sentAt     DateTime?
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+
+  order      Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  shipment   Shipment?             @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
+
+  @@unique([type, orderId])
+  @@index([status, runAt])
+  @@index([shipmentId])
 }
