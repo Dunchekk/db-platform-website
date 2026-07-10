@@ -1,3 +1,4 @@
+import "dotenv/config";
 import nodemailer from "nodemailer";
 import { prisma } from "../db";
 
@@ -72,10 +73,14 @@ export async function sendConfirmationOrderMail(orderId: number) {
     "db",
   ].join("\n");
 
-  await transporter.sendMail({
+  const answer = await transporter.sendMail({
     from: `"db" <${process.env.MAIL_USER}>`,
     to: order.email,
     subject: `Заказ №${order.id} оформлен`,
     text,
   });
+
+  if (answer.rejected.length > 0) {
+    throw new Error("Mail transfer was rejected");
+  }
 }
