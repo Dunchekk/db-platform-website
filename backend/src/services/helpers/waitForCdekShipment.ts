@@ -2,6 +2,7 @@ import { prisma } from "../../db";
 import ApiError from "../../error/ApiError";
 import { getCurrentCdekStatusCode } from "../../helpers/getCurrentCdekStatusCode";
 import { cdekShipmentResponce } from "../../types/cdek.types";
+import { enqueueShipmentCreatedEmail } from "../notification.service";
 
 type WaitForCdekShipmentParams = {
   orderId: number;
@@ -35,7 +36,10 @@ export async function waitForCdekShipment({
     }
 
     // если достучались то обновляем параметры трекинга
-    if (cdekShipmentInfo?.entity?.uuid && cdekShipmentInfo.entity?.cdek_number) {
+    if (
+      cdekShipmentInfo?.entity?.uuid &&
+      cdekShipmentInfo.entity?.cdek_number
+    ) {
       const trackingNumber = String(cdekShipmentInfo.entity.cdek_number);
 
       const updatedShipment = await prisma.shipment.update({
@@ -48,7 +52,7 @@ export async function waitForCdekShipment({
         },
       });
 
-      await prisma.order.update({
+      const order = await prisma.order.update({
         where: {
           id: orderId,
         },
@@ -56,6 +60,12 @@ export async function waitForCdekShipment({
           status: "FULFILLMENT_PENDING",
         },
       });
+
+      await enqueueShipmentCreatedEmail(
+        order.id,
+        updatedShipment.id,
+        "SHIPMENT_CREATED_EMAIL"
+      );
 
       return updatedShipment;
     }
