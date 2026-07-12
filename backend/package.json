@@ -6,8 +6,10 @@
   "scripts": {
     "start": "ts-node-dev --respawn --transpile-only src/server.ts",
     "migrate": "npx prisma migrate dev --name init ",
+    "worker:notifications": "ts-node-dev --transpile-only src/workers/notification.worker.ts",
     "generate": "npx prisma generate",
-    "tcp": "nc -zv 172.27.112.1 5432"
+    "tcp": "nc -zv 172.27.112.1 5432",
+    "type-check": "tsc --noEmit"
   },
   "author": "dunchek",
   "license": "ISC",
@@ -21,6 +23,7 @@
     "express": "^5.2.1",
     "jose": "^6.2.2",
     "multer": "^2.1.1",
+    "nodemailer": "^9.0.3",
     "pg": "^8.20.0",
     "prisma": "^7.8.0"
   },
@@ -30,6 +33,7 @@
     "@types/express": "^5.0.6",
     "@types/multer": "^2.1.0",
     "@types/node": "^25.4.0",
+    "@types/nodemailer": "^8.0.1",
     "@types/pg": "^8.20.0",
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
