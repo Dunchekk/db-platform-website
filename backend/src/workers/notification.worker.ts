@@ -24,7 +24,7 @@ async function startWorker() {
       await processNotificationJob(job.orderId);
       await markNotificationJobSent(job.id);
     } catch (e) {
-      await markNotificationJobFailed(job.id);
+      await markNotificationJobFailed(job.id, e);
       console.log(e);
     }
   }

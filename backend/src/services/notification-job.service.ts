@@ -103,7 +103,7 @@ export async function markNotificationJobFailed(id: number, e: unknown) {
         data: {
           status: "FAILED",
           lockedAt: null,
-          lastError: "",
+          lastError: e instanceof Error ? e.message : String(e),
         },
       });
     }
