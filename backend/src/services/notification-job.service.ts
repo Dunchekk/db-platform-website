@@ -41,7 +41,7 @@ export async function claimNextNotificationJob() {
       },
     });
   } catch (e) {
-    await markNotificationJobFailed(pendingJob.id);
+    await markNotificationJobFailed(pendingJob.id, e);
 
     console.log(e);
     return null;
@@ -69,12 +69,12 @@ export async function markNotificationJobSent(id: number) {
       throw new Error("Did not find notification to update");
     }
   } catch (e) {
-    await markNotificationJobFailed(id);
+    await markNotificationJobFailed(id, e);
     console.log(e);
   }
 }
 
-export async function markNotificationJobFailed(id: number) {
+export async function markNotificationJobFailed(id: number, e: unknown) {
   try {
     const notification = await prisma.notificationJob.update({
       where: {
@@ -86,7 +86,7 @@ export async function markNotificationJobFailed(id: number) {
           increment: 1,
         },
         lockedAt: null,
-        lastError: "",
+        lastError: e instanceof Error ? e.message : String(e),
       },
     });
     if (!notification) {
