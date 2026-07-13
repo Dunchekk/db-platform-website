@@ -27,6 +27,12 @@ export const logEvents = {
     "cdek_shipment_create_failed_for_paid_order",
   paymentStatusCheckRefreshedFromProvider:
     "payment_status_check_refreshed_from_provider",
+  // cdek
+  cdekShipmentCreateStarted: "cdek_shipment_create_started",
+  cdekShipmentCreateSkippedExisting: "cdek_shipment_create_skipped_existing",
+  cdekShipmentRestored: "cdek_shipment_restored",
+  cdekShipmentRemoteCreateSucceeded: "cdek_shipment_remote_create_succeeded",
+  cdekShipmentRemoteCreateFailed: "cdek_shipment_remote_create_failed",
 } as const;
 
 export type LogEvent = (typeof logEvents)[keyof typeof logEvents];
