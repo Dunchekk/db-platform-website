@@ -1,6 +1,7 @@
 export const logEvents = {
   // notification
   notificationJobEnqueued: "notification_job_enqueued",
+  notificationJobEnqueueStarted: "notification_job_enqueue_started",
   notificationJobClaimed: "notification_job_claimed",
   notificationJobProcessingStarted: "notification_job_processing_started",
   notificationJobSent: "notification_job_sent",
@@ -31,6 +32,9 @@ export const logEvents = {
   cdekShipmentCreateStarted: "cdek_shipment_create_started",
   cdekShipmentCreateSkippedExisting: "cdek_shipment_create_skipped_existing",
   cdekShipmentRestored: "cdek_shipment_restored",
+  cdekShipmentPollRetry: "cdek_shipment_poll_retry",
+  cdekShipmentInvalidStatus: "cdek_shipment_invalid_status",
+  cdekShipmentCreatedConfirmed: "cdek_shipment_created_confirmed",
   cdekShipmentRemoteCreateSucceeded: "cdek_shipment_remote_create_succeeded",
   cdekShipmentRemoteCreateFailed: "cdek_shipment_remote_create_failed",
 } as const;

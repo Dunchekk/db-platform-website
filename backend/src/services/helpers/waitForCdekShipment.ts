@@ -1,6 +1,7 @@
 import { prisma } from "../../db";
 import ApiError from "../../error/ApiError";
 import { getCurrentCdekStatusCode } from "../../helpers/getCurrentCdekStatusCode";
+import { logEvents, logger } from "../../lib/logger";
 import { cdekShipmentResponce } from "../../types/cdek.types";
 import { enqueueShipmentCreatedEmail } from "../notification.service";
 
@@ -20,6 +21,7 @@ export async function waitForCdekShipment({
   orderId,
   fetchShipment,
 }: WaitForCdekShipmentParams) {
+  // несколько раз опрашиваем cdek -- номер отслеживания может появиться не сразу
   for (let attempt = 0; attempt < 3; attempt++) {
     const cdekShipmentInfo = await fetchShipment({
       orderId,
@@ -29,7 +31,12 @@ export async function waitForCdekShipment({
       ? getCurrentCdekStatusCode(cdekShipmentInfo)
       : null;
 
+    // если cdek вернул невалидный статус, дальше ретраить бессмысленно
     if (cdekShipmentStatus === "INVALID") {
+      logger.error(logEvents.cdekShipmentInvalidStatus, {
+        orderId,
+        attempt: attempt + 1,
+      });
       throw ApiError.badGateway(
         "CDEK shipment was created but returned INVALID status"
       );
@@ -52,6 +59,15 @@ export async function waitForCdekShipment({
         },
       });
 
+      logger.info(logEvents.cdekShipmentCreatedConfirmed, {
+        orderId,
+        shipmentId: updatedShipment.id,
+        shipmentStatus: updatedShipment.status,
+        providerShipmentId: updatedShipment.providerShipmentId,
+        trackingNumber,
+      });
+
+      // после подтверждения отправки переводим заказ в ожидание фулфилмента
       const order = await prisma.order.update({
         where: {
           id: orderId,
@@ -70,12 +86,16 @@ export async function waitForCdekShipment({
       return updatedShipment;
     }
 
+    // если данных пока не хватило, даем cdek время и пробуем еще раз
     if (attempt < 2) {
+      logger.warn(logEvents.cdekShipmentPollRetry, {
+        orderId,
+        attempt: attempt + 1,
+      });
       await wait(700);
     }
   }
 
-  // возвращаем наш объект доставки
   return prisma.shipment.findUnique({
     where: {
       orderId,
