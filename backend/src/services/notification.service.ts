@@ -1,5 +1,6 @@
 import { NotificationJobType } from "@prisma/client";
 import { prisma } from "../db";
+import { logEvents, logger } from "../lib/logger";
 
 export async function enqueueShipmentCreatedEmail(
   orderId: number,
@@ -19,5 +20,11 @@ export async function enqueueShipmentCreatedEmail(
       orderId,
       shipmentId,
     },
+  });
+
+  logger.info(logEvents.notificationJobEnqueued, {
+    orderId,
+    shipmentId,
+    type,
   });
 }

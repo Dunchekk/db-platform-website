@@ -1,6 +1,7 @@
 import "dotenv/config";
 import nodemailer from "nodemailer";
 import { prisma } from "../db";
+import { logEvents, logger } from "../lib/logger";
 import { buildConfirmationOrderMail } from "./helpers/buildConfirmationOrderMail";
 
 // Nodemailer + SMTP обычного ящика Яндекс 360
@@ -16,47 +17,71 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendConfirmationOrderMail(orderId: number) {
-  const order = await prisma.order.findUnique({
-    where: {
-      id: orderId,
-    },
-    include: {
-      items: true,
-    },
-  });
+  try {
+    const order = await prisma.order.findUnique({
+      where: {
+        id: orderId,
+      },
+      include: {
+        items: true,
+      },
+    });
 
-  const shipment = await prisma.shipment.findUnique({
-    where: {
-      orderId: orderId,
-    },
-  });
+    const shipment = await prisma.shipment.findUnique({
+      where: {
+        orderId: orderId,
+      },
+    });
 
-  if (!order) {
-    throw new Error("Can not find order for sending email");
-  }
+    if (!order) {
+      throw new Error("Can not find order for sending email");
+    }
 
-  if (order.items.length < 1) {
-    throw new Error("Order does not contains any items");
-  }
+    if (order.items.length < 1) {
+      throw new Error("Order does not contains any items");
+    }
 
-  if (!shipment) {
-    throw new Error("Can not find shipment for sending email");
-  }
+    if (!shipment) {
+      throw new Error("Can not find shipment for sending email");
+    }
 
-  if (!order.email) {
-    throw new Error("Order do not have any email adress");
-  }
+    if (!order.email) {
+      throw new Error("Order do not have any email adress");
+    }
 
-  const { subject, text } = buildConfirmationOrderMail(order, shipment);
+    const { subject, text } = buildConfirmationOrderMail(order, shipment);
 
-  const answer = await transporter.sendMail({
-    from: `"db" <${process.env.MAIL_USER}>`,
-    to: order.email,
-    subject,
-    text,
-  });
+    logger.info(logEvents.mailSendStarted, {
+      orderId,
+      shipmentId: shipment.id,
+      to: order.email,
+      subject,
+    });
 
-  if (answer.rejected.length > 0) {
-    throw new Error("Mail transfer was rejected");
+    const answer = await transporter.sendMail({
+      from: `"db" <${process.env.MAIL_USER}>`,
+      to: order.email,
+      subject,
+      text,
+    });
+
+    if (answer.rejected.length > 0) {
+      throw new Error("Mail transfer was rejected");
+    }
+
+    logger.info(logEvents.mailSendSucceeded, {
+      orderId,
+      shipmentId: shipment.id,
+      to: order.email,
+      messageId: answer.messageId,
+      rejected: answer.rejected,
+      accepted: answer.accepted,
+    });
+  } catch (e) {
+    logger.error(logEvents.mailSendFailed, {
+      orderId,
+      err: e,
+    });
+    throw e;
   }
 }

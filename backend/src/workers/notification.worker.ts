@@ -4,6 +4,7 @@ import {
   markNotificationJobSent,
   processNotificationJob,
 } from "../services/notification-job.service";
+import { logEvents, logger } from "../lib/logger";
 
 async function sleep(ms: number) {
   return new Promise((resolve) => {
@@ -12,6 +13,8 @@ async function sleep(ms: number) {
 }
 
 async function startWorker() {
+  logger.info(logEvents.workerStarted, {});
+
   while (true) {
     const job = await claimNextNotificationJob();
 
@@ -21,11 +24,24 @@ async function startWorker() {
     }
 
     try {
-      await processNotificationJob(job.orderId);
+      await processNotificationJob({
+        id: job.id,
+        orderId: job.orderId,
+        shipmentId: job.shipmentId,
+        type: job.type,
+        attempts: job.attempts,
+      });
       await markNotificationJobSent(job.id);
     } catch (e) {
       await markNotificationJobFailed(job.id, e);
-      console.log(e);
+      logger.error(logEvents.notificationJobFailed, {
+        jobId: job.id,
+        orderId: job.orderId,
+        shipmentId: job.shipmentId,
+        type: job.type,
+        attempts: job.attempts,
+        err: e,
+      });
     }
   }
 }

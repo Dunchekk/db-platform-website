@@ -9,6 +9,7 @@ import { buildFrontendPaymentReturnUrl } from "../helpers/buildFrontendPaymentRe
 
 import "dotenv";
 import { buildPaymentUpdateFromProvider } from "../helpers/buildPaymentUpdateFromProvider";
+import { logEvents, logger } from "../lib/logger";
 
 const YOUKASSA_SECRET_KEY = process.env.YOUKASSA_SECRET_KEY as string;
 const SHOP_ID = process.env.SHOP_ID as string;
@@ -28,7 +29,7 @@ export function CreatePayload(
       value: String(order.total) + ".00",
       currency: "RUB",
     },
-    capture: true, // не нужна ручная стадия “подтвердить списание позже”
+    capture: true, // не нужно ручное подтверждение “подтвердить списание позже”
     payment_method_data: {
       type: "bank_card",
     },
@@ -47,6 +48,7 @@ export function CreatePayload(
 export async function resolveCheckoutPayment(order: OrderWithCurrentPayment) {
   const existingPayment = order.currentPayment;
 
+  // если активный платеж уже создан и есть ссылка на оплату, просто переиспользуем его
   if (
     existingPayment &&
     existingPayment.status === "PENDING" &&
@@ -55,10 +57,12 @@ export async function resolveCheckoutPayment(order: OrderWithCurrentPayment) {
     return existingPayment;
   }
 
+  // успешный текущий платеж тоже не пересоздаем
   if (existingPayment && existingPayment.status === "SUCCEEDED") {
     return existingPayment;
   }
 
+  // для неясного статуса сначала пробуем восстановить состояние у провайдера
   if (existingPayment && existingPayment.status === "PROVIDER_UNKNOWN") {
     const restoredPayment = await tryRestoreUnknownPayment(
       order,
@@ -83,6 +87,7 @@ export async function resolveCheckoutPayment(order: OrderWithCurrentPayment) {
 async function createNewPaymentForOrder(order: OrderWithCurrentPayment) {
   const idempotenceKey = randomUUID();
 
+  // создаем локальный payment, чтобы вернуть пользователя в правильный заказ после оплаты
   let innerPayment = await prisma.payment.create({
     data: {
       orderId: order.id,
@@ -96,6 +101,7 @@ async function createNewPaymentForOrder(order: OrderWithCurrentPayment) {
     data: { currentPaymentId: innerPayment.id },
   });
 
+  // payload для запроса создания платежа юкассы
   const createPayload = await CreatePayload(order, order.id, innerPayment.id);
 
   try {
@@ -109,13 +115,32 @@ async function createNewPaymentForOrder(order: OrderWithCurrentPayment) {
       data: buildPaymentUpdateFromProvider(providerPayment),
     });
 
+    logger.info(logEvents.paymentCreateSucceeded, {
+      orderId: order.id,
+      paymentId: innerPayment.id,
+      providerPaymentId: innerPayment.providerPaymentId,
+      paymentStatus: innerPayment.status,
+    });
+
     return innerPayment;
   } catch (e) {
+    // отдельный статус чтобы отличить явный отказ провайдера от неясного сетевого сбоя
+    const failedStatus = shouldMarkProviderUnknown(e)
+      ? "PROVIDER_UNKNOWN"
+      : "FAILED";
+
     await prisma.payment.update({
       where: { id: innerPayment.id },
       data: {
-        status: shouldMarkProviderUnknown(e) ? "PROVIDER_UNKNOWN" : "FAILED",
+        status: failedStatus,
       },
+    });
+
+    logger.error(logEvents.paymentCreateFailed, {
+      orderId: order.id,
+      paymentId: innerPayment.id,
+      paymentStatus: failedStatus,
+      err: e,
     });
 
     throw e;
@@ -126,6 +151,7 @@ async function tryRestoreUnknownPayment(
   order: OrderWithCurrentPayment,
   payment: Payment
 ) {
+  // без idempotence key повторно спросить провайдера о том же платеже не получится
   if (!payment.idempotenceKey) {
     return prisma.payment.update({
       where: { id: payment.id },
@@ -141,18 +167,40 @@ async function tryRestoreUnknownPayment(
       payment.idempotenceKey
     );
 
-    return prisma.payment.update({
+    // если провайдер ответил успешно, просто синхронизируем локальный payment с его состоянием
+    const restoredPayment = await prisma.payment.update({
       where: { id: payment.id },
       data: buildPaymentUpdateFromProvider(providerPayment),
     });
+
+    logger.info(logEvents.paymentRestoreUnknownSucceeded, {
+      orderId: order.id,
+      paymentId: restoredPayment.id,
+      providerPaymentId: restoredPayment.providerPaymentId,
+      paymentStatus: restoredPayment.status,
+    });
+
+    return restoredPayment;
   } catch (e) {
+    // если провайдер снова не дал внятного ответа, оставляем payment в неопределенном состоянии
     if (shouldMarkProviderUnknown(e)) {
       return payment;
     }
 
-    return prisma.payment.update({
+    // если ответ однозначно плохой, фиксируем локальный payment как failed
+    const failedPayment = await prisma.payment.update({
       where: { id: payment.id },
       data: { status: "FAILED" },
     });
+
+    logger.error(logEvents.paymentRestoreUnknownFailed, {
+      orderId: order.id,
+      paymentId: failedPayment.id,
+      providerPaymentId: failedPayment.providerPaymentId,
+      paymentStatus: failedPayment.status,
+      err: e,
+    });
+
+    return failedPayment;
   }
 }

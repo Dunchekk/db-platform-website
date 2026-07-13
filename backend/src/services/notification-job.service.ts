@@ -1,4 +1,5 @@
 import { prisma } from "../db";
+import { logEvents, logger } from "../lib/logger";
 import { sendConfirmationOrderMail } from "./mail.service";
 
 export async function claimNextNotificationJob() {
@@ -35,21 +36,53 @@ export async function claimNextNotificationJob() {
       return null;
     }
 
-    return prisma.notificationJob.findUnique({
+    const job = await prisma.notificationJob.findUnique({
       where: {
         id: pendingJob.id,
       },
     });
+
+    if (job) {
+      logger.info(logEvents.notificationJobClaimed, {
+        jobId: job.id,
+        orderId: job.orderId,
+        shipmentId: job.shipmentId,
+        type: job.type,
+        attempts: job.attempts,
+        runAt: job.runAt,
+      });
+    }
+
+    return job;
   } catch (e) {
     await markNotificationJobFailed(pendingJob.id, e);
-
-    console.log(e);
+    logger.error(logEvents.notificationJobFailed, {
+      jobId: pendingJob.id,
+      orderId: pendingJob.orderId,
+      shipmentId: pendingJob.shipmentId,
+      type: pendingJob.type,
+      err: e,
+    });
     return null;
   }
 }
 
-export async function processNotificationJob(orderId: number) {
-  await sendConfirmationOrderMail(orderId);
+export async function processNotificationJob(job: {
+  id: number;
+  orderId: number;
+  shipmentId: number | null;
+  type: string;
+  attempts: number;
+}) {
+  logger.info(logEvents.notificationJobProcessingStarted, {
+    jobId: job.id,
+    orderId: job.orderId,
+    shipmentId: job.shipmentId,
+    type: job.type,
+    attempts: job.attempts,
+  });
+
+  await sendConfirmationOrderMail(job.orderId);
 }
 
 export async function markNotificationJobSent(id: number) {
@@ -68,9 +101,21 @@ export async function markNotificationJobSent(id: number) {
     if (!notification) {
       throw new Error("Did not find notification to update");
     }
+
+    logger.info(logEvents.notificationJobSent, {
+      jobId: notification.id,
+      orderId: notification.orderId,
+      shipmentId: notification.shipmentId,
+      type: notification.type,
+      attempts: notification.attempts,
+      sentAt: notification.sentAt,
+    });
   } catch (e) {
     await markNotificationJobFailed(id, e);
-    console.log(e);
+    logger.error(logEvents.notificationJobFailed, {
+      jobId: id,
+      err: e,
+    });
   }
 }
 
@@ -96,7 +141,7 @@ export async function markNotificationJobFailed(id: number, e: unknown) {
     const nextAttempts = notification.attempts;
 
     if (nextAttempts >= 3) {
-      await prisma.notificationJob.update({
+      const failedNotification = await prisma.notificationJob.update({
         where: {
           id: id,
         },
@@ -106,8 +151,32 @@ export async function markNotificationJobFailed(id: number, e: unknown) {
           lastError: e instanceof Error ? e.message : String(e),
         },
       });
+
+      logger.error(logEvents.notificationJobPermanentlyFailed, {
+        jobId: failedNotification.id,
+        orderId: failedNotification.orderId,
+        shipmentId: failedNotification.shipmentId,
+        type: failedNotification.type,
+        attempts: failedNotification.attempts,
+        err: e,
+      });
+
+      return;
     }
+
+    logger.warn(logEvents.notificationJobRequeued, {
+      jobId: notification.id,
+      orderId: notification.orderId,
+      shipmentId: notification.shipmentId,
+      type: notification.type,
+      attempts: notification.attempts,
+      runAt: notification.runAt,
+      err: e,
+    });
   } catch (e) {
-    console.log(e);
+    logger.error(logEvents.notificationJobFailed, {
+      jobId: id,
+      err: e,
+    });
   }
 }

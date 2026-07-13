@@ -7,10 +7,15 @@ import { restoreShipmentFromCdekIfExists } from "./helpers/restoreShipmentFromCd
 import { waitForCdekShipment } from "./helpers/waitForCdekShipment";
 import { createCdekOrder, fetchCdekShipment } from "./cdek.api";
 import { cdekOrderProperties } from "./cdek.config";
+import { logEvents, logger } from "../lib/logger";
 
 //-------------------------
 
 export async function createCdekShipmentForPaidOrder(orderId: number) {
+  logger.info(logEvents.cdekShipmentCreateStarted, {
+    orderId,
+  });
+
   // смотрим есть ли запись достаки у этого заказа (одна запись на 1 заказ)
   let canCreateRemoteShipment = false;
   let shipment = await prisma.shipment.findUnique({
@@ -58,14 +63,32 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
     shipment.status === "READY_FOR_PICKUP" ||
     shipment.status === "DELIVERED"
   ) {
+    logger.info(logEvents.cdekShipmentCreateSkippedExisting, {
+      orderId,
+      shipmentId: shipment.id,
+      shipmentStatus: shipment.status,
+      providerShipmentId: shipment.providerShipmentId,
+    });
     return shipment;
   }
 
   if (shipment.status === "PENDING" && shipment.providerShipmentId) {
+    logger.info(logEvents.cdekShipmentCreateSkippedExisting, {
+      orderId,
+      shipmentId: shipment.id,
+      shipmentStatus: shipment.status,
+      providerShipmentId: shipment.providerShipmentId,
+    });
     return shipment;
   }
 
   if (shipment.status === "PENDING" && !canCreateRemoteShipment) {
+    logger.info(logEvents.cdekShipmentCreateSkippedExisting, {
+      orderId,
+      shipmentId: shipment.id,
+      shipmentStatus: shipment.status,
+      providerShipmentId: shipment.providerShipmentId,
+    });
     return shipment;
   }
 
@@ -78,6 +101,12 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
     });
 
     if (restoredShipment) {
+      logger.info(logEvents.cdekShipmentRestored, {
+        orderId,
+        shipmentId: restoredShipment.id,
+        shipmentStatus: restoredShipment.status,
+        providerShipmentId: restoredShipment.providerShipmentId,
+      });
       return restoredShipment;
     }
 
@@ -148,11 +177,24 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
       },
     });
 
+    logger.info(logEvents.cdekShipmentRemoteCreateSucceeded, {
+      orderId,
+      shipmentId: shipment.id,
+      providerShipmentId: responseBody.entity.uuid,
+    });
+
     return waitForCdekShipment({
       orderId,
       fetchShipment: fetchCdekShipment,
     });
   } catch (e) {
+    logger.error(logEvents.cdekShipmentRemoteCreateFailed, {
+      orderId,
+      shipmentId: shipment.id,
+      shipmentStatus: shipment.status,
+      err: e,
+    });
+
     await prisma.shipment.update({
       where: {
         orderId,
