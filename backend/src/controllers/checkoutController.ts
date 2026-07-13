@@ -8,11 +8,14 @@ import {
 } from "../services/order.service";
 import "dotenv/config";
 import { resolveCheckoutPayment } from "../services/yookassa.service";
+import { logEvents, logger } from "../lib/logger";
 
 const BASE_WEIGHT = 500; // в граммах
 
 class CheckoutController {
   async createOrder(req: Request, res: Response, next: NextFunction) {
+    const requestBody = req.body as Partial<ReqOrderBody>;
+
     try {
       const {
         firstName,
@@ -38,6 +41,12 @@ class CheckoutController {
       if (!Array.isArray(items) || items.length <= 0) {
         throw ApiError.badRequest("Must be 1 item or more");
       }
+
+      logger.info(logEvents.checkoutCreateStarted, {
+        checkoutAttemptKey,
+        itemsCount: items.length,
+        cityCode: city?.code,
+      });
 
       const { subtotal, orderItemsData, totalQuantity } =
         await prepareOrderItems(items);
@@ -67,6 +76,13 @@ class CheckoutController {
 
       const payment = await resolveCheckoutPayment(order);
 
+      logger.info(logEvents.checkoutCreateSucceeded, {
+        checkoutAttemptKey,
+        orderId: order.id,
+        paymentId: payment.id,
+        paymentStatus: payment.status,
+      });
+
       return res.json({
         orderId: order.id,
         paymentId: payment.id,
@@ -79,7 +95,14 @@ class CheckoutController {
       }
 
       if (e instanceof Error) {
-        console.log(e);
+        logger.error(logEvents.checkoutCreateFailed, {
+          checkoutAttemptKey: requestBody.checkoutAttemptKey,
+          itemsCount: Array.isArray(requestBody.items)
+            ? requestBody.items.length
+            : undefined,
+          cityCode: requestBody.city?.code,
+          err: e,
+        });
         return next(e);
       }
     }
