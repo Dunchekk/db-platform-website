@@ -5,6 +5,7 @@ import cors from "cors";
 import apiRouter from "./routes";
 import errorHandler from "./middleware/ErrorHandlingMiddleware";
 import path from "path";
+import { logEvents, logger } from "./lib/logger";
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 
@@ -19,10 +20,17 @@ app.use(errorHandler);
 
 const start = async () => {
   try {
-    checkDb(prisma);
-    app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+    await checkDb(prisma);
+    app.listen(PORT, () =>
+      logger.info(logEvents.serverStarted, {
+        port: PORT,
+      })
+    );
   } catch (e) {
-    console.log(e);
+    logger.error(logEvents.serverStartFailed, {
+      port: PORT,
+      err: e,
+    });
   }
 };
 

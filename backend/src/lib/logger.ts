@@ -1,4 +1,9 @@
 export const logEvents = {
+  // server
+  serverStarted: "server_started",
+  serverStartFailed: "server_start_failed",
+  dbCheckSucceeded: "db_check_succeeded",
+  dbCheckFailed: "db_check_failed",
   // notification
   notificationJobEnqueued: "notification_job_enqueued",
   notificationJobEnqueueStarted: "notification_job_enqueue_started",
@@ -18,7 +23,8 @@ export const logEvents = {
   // payment
   paymentWebhookReceived: "payment_webhook_received",
   paymentWebhookIgnoredInvalid: "payment_webhook_ignored_invalid",
-  paymentWebhookIgnoredStatusMismatch: "payment_webhook_ignored_status_mismatch",
+  paymentWebhookIgnoredStatusMismatch:
+    "payment_webhook_ignored_status_mismatch",
   paymentWebhookPaymentNotFound: "payment_webhook_payment_not_found",
   paymentStatusUpdatedFromWebhook: "payment_status_updated_from_webhook",
   orderMarkedPaidFromWebhook: "order_marked_paid_from_webhook",
