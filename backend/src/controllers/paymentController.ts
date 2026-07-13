@@ -7,14 +7,25 @@ import { createCdekShipmentForPaidOrder } from "../services/cdek.service";
 import { CheckOrderStatusParams } from "../types/checkout.types";
 import ApiError from "../error/ApiError";
 import { buildPaymentUpdateFromProvider } from "../helpers/buildPaymentUpdateFromProvider";
+import { logEvents, logger } from "../lib/logger";
 
 class PaymentController {
   async handleYouKassaWebhook(req: Request, res: Response, next: NextFunction) {
     try {
       const { event, object } = req.body;
 
+      logger.info(logEvents.paymentWebhookReceived, {
+        event,
+        providerPaymentId: object?.id,
+        providerStatus: object?.status,
+      });
+
       // отсекаем пустой или битый вебхук
       if (!event || !object?.id) {
+        logger.warn(logEvents.paymentWebhookIgnoredInvalid, {
+          event,
+          providerPaymentId: object?.id,
+        });
         return res.sendStatus(200);
       }
 
@@ -29,6 +40,12 @@ class PaymentController {
       const actualPayment = await YouKassa.getPayment(object.id);
 
       if (actualPayment.status !== object.status) {
+        logger.warn(logEvents.paymentWebhookIgnoredStatusMismatch, {
+          event,
+          providerPaymentId: object.id,
+          webhookStatus: object.status,
+          actualStatus: actualPayment.status,
+        });
         return res.sendStatus(200);
       }
 
@@ -66,6 +83,12 @@ class PaymentController {
 
       if (!innerPayment) {
         // выходим если локальный платеж не нашли
+        logger.warn(logEvents.paymentWebhookPaymentNotFound, {
+          event,
+          providerPaymentId: object.id,
+          metadataPaymentId,
+          metadataOrderId,
+        });
         return res.sendStatus(200);
       }
 
@@ -81,6 +104,15 @@ class PaymentController {
               ? new Date()
               : innerPayment.canceledAt,
         },
+      });
+
+      logger.info(logEvents.paymentStatusUpdatedFromWebhook, {
+        event,
+        paymentId: innerPayment.id,
+        orderId: innerPayment.orderId,
+        providerPaymentId: innerPayment.providerPaymentId ?? actualPayment.id,
+        providerStatus: actualPayment.status,
+        localStatus: mapYooKassaStatus(actualPayment.status),
       });
 
       // проверяем что платеж еще текущий у заказа
@@ -102,9 +134,21 @@ class PaymentController {
           },
         });
 
+        logger.info(logEvents.orderMarkedPaidFromWebhook, {
+          paymentId: innerPayment.id,
+          orderId: order.id,
+          providerPaymentId: innerPayment.providerPaymentId ?? actualPayment.id,
+        });
+
         try {
           await createCdekShipmentForPaidOrder(order.id);
         } catch (e) {
+          logger.error(logEvents.cdekShipmentCreateFailedForPaidOrder, {
+            paymentId: innerPayment.id,
+            orderId: order.id,
+            providerPaymentId: innerPayment.providerPaymentId ?? actualPayment.id,
+            err: e,
+          });
           console.error("Failed to create CDEK shipment for paid order", {
             orderId: order.id,
             error: e,
@@ -118,6 +162,12 @@ class PaymentController {
           data: {
             status: "PENDING_PAYMENT",
           },
+        });
+
+        logger.info(logEvents.orderMarkedPendingPaymentFromWebhook, {
+          paymentId: innerPayment.id,
+          orderId: innerPayment.orderId,
+          providerPaymentId: innerPayment.providerPaymentId ?? actualPayment.id,
         });
       }
 
@@ -183,6 +233,14 @@ class PaymentController {
               },
             },
           },
+        });
+
+        logger.info(logEvents.paymentStatusCheckRefreshedFromProvider, {
+          orderId: actualPayment.order.id,
+          paymentId: actualPayment.id,
+          providerPaymentId: actualPayment.providerPaymentId,
+          paymentStatus: actualPayment.status,
+          orderStatus: actualPayment.order.status,
         });
       }
 

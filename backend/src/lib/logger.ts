@@ -14,6 +14,19 @@ export const logEvents = {
   // worker
   workerStarted: "notification_worker_started",
   workerIdlePoll: "notification_worker_idle_poll",
+  // payment
+  paymentWebhookReceived: "payment_webhook_received",
+  paymentWebhookIgnoredInvalid: "payment_webhook_ignored_invalid",
+  paymentWebhookIgnoredStatusMismatch: "payment_webhook_ignored_status_mismatch",
+  paymentWebhookPaymentNotFound: "payment_webhook_payment_not_found",
+  paymentStatusUpdatedFromWebhook: "payment_status_updated_from_webhook",
+  orderMarkedPaidFromWebhook: "order_marked_paid_from_webhook",
+  orderMarkedPendingPaymentFromWebhook:
+    "order_marked_pending_payment_from_webhook",
+  cdekShipmentCreateFailedForPaidOrder:
+    "cdek_shipment_create_failed_for_paid_order",
+  paymentStatusCheckRefreshedFromProvider:
+    "payment_status_check_refreshed_from_provider",
 } as const;
 
 export type LogEvent = (typeof logEvents)[keyof typeof logEvents];
