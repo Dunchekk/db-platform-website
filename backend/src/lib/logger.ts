@@ -28,6 +28,10 @@ export const logEvents = {
     "cdek_shipment_create_failed_for_paid_order",
   paymentStatusCheckRefreshedFromProvider:
     "payment_status_check_refreshed_from_provider",
+  paymentCreateSucceeded: "payment_create_succeeded",
+  paymentCreateFailed: "payment_create_failed",
+  paymentRestoreUnknownSucceeded: "payment_restore_unknown_succeeded",
+  paymentRestoreUnknownFailed: "payment_restore_unknown_failed",
   // cdek
   cdekShipmentCreateStarted: "cdek_shipment_create_started",
   cdekShipmentCreateSkippedExisting: "cdek_shipment_create_skipped_existing",
