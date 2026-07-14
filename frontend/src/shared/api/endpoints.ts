@@ -33,5 +33,5 @@ export const CDEK_GET_DELIVERY_PRICE_URL = "/api/cdek/delivery-price";
 // CHECKOUT_URL отдельно
 
 // GET /api/cdek/cities?query=мос
-// GET /api/cdek/delivery-points?city_code=44
+// GET /api/cdek/delivery-points?city_code=44&weight=1200&length=40&width=30&height=8
 // GET /api/cdek/delivery-price?city_code=44&weight=1200
