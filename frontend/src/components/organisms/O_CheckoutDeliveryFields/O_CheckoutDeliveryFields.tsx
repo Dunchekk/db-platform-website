@@ -11,12 +11,14 @@ import { useCheckoutItems } from "@/features/checkout/checkout.store";
 
 type Props = {
   isCartEmpty: boolean;
+  isSubmitting: boolean;
   showToast: (message: string, type: "default" | "success" | "error") => void;
 } & ComponentPropsWithoutRef<"div">;
 
 const O_CheckoutDeliveryFields = ({
   isCartEmpty,
   className,
+  isSubmitting,
   showToast,
   ...props
 }: Props) => {
@@ -233,7 +235,11 @@ const O_CheckoutDeliveryFields = ({
           }
         }}
       >
-        <A_Button className={cls.submit} type="submit" disabled={isCartEmpty}>
+        <A_Button
+          className={cls.submit}
+          type="submit"
+          disabled={isCartEmpty || isSubmitting}
+        >
           {"————> оформить заказ"}
         </A_Button>
       </span>

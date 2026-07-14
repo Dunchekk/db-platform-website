@@ -41,6 +41,7 @@ const CheckoutLayer = () => {
 
   // toast ↓
   const [toast, setToast] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [toastType, setToastType] = useState<"error" | "success" | "default">(
     "default"
   );
@@ -125,6 +126,11 @@ const CheckoutLayer = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (isSubmitting) {
+      showToast("Оформляем заказ!", "success");
+      return;
+    }
+
     if (isCartEmpty) {
       showToast("добавьте что-нибудь в корзину", "error");
       return;
@@ -204,6 +210,7 @@ const CheckoutLayer = () => {
     };
 
     try {
+      setIsSubmitting(true);
       const response = await createOrder(payload);
 
       if (response.alreadyPaid) {
@@ -228,6 +235,8 @@ const CheckoutLayer = () => {
         showToast(`не получилось создать заказ: ${e.message}`, "error");
       }
       console.log(e);
+    } finally {
+      setTimeout(() => setIsSubmitting(false), 500);
     }
   };
 
@@ -245,6 +254,7 @@ const CheckoutLayer = () => {
 
         <O_CheckoutDeliveryFields
           className={cls.column}
+          isSubmitting={isSubmitting}
           isCartEmpty={isCartEmpty}
           showToast={showToast}
           key={formResetKey}
