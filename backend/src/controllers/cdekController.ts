@@ -112,7 +112,9 @@ class CdekController {
         throw ApiError.badRequest("Weight query must contain some value");
       }
 
-      const deliveryInfo = await suggestCdekDeliveryPrice(city_code, weight);
+      const deliveryInfo = await suggestCdekDeliveryPrice(city_code, [
+        { weight },
+      ]);
 
       const normalizedDeliveryInfo = {
         delivery_sum: deliveryInfo.delivery_sum,
