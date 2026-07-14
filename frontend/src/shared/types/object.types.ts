@@ -25,6 +25,10 @@ export type DbObject = {
   name: string;
   price: number;
   position: number;
+  packageWeightGrams: number;
+  packageLengthCm: number;
+  packageWidthCm: number;
+  packageHeightCm: number;
   images: DbObjectImage[];
   points: DbObjectPoint[];
   info: DbObjectInfo[];
@@ -44,6 +48,10 @@ export type PayloadDbObject = {
   name: string;
   price: number;
   position: number;
+  packageWeightGrams: number;
+  packageLengthCm: number;
+  packageWidthCm: number;
+  packageHeightCm: number;
   points: CreateItemPointPayload[];
   info: CreateItemInfoPayload[];
 };
