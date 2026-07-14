@@ -5,6 +5,7 @@ import {
   suggestCdekDeliveryPrice,
   suggestCdekOffices,
 } from "../services/cdek.api";
+import { validatePositiveInteger } from "../helpers/validation";
 
 class CdekController {
   async getCitiesByParams(req: Request, res: Response, next: NextFunction) {
@@ -42,19 +43,20 @@ class CdekController {
 
   async getOfficesByParams(req: Request, res: Response, next: NextFunction) {
     // GET https://api.cdek.ru/v2/deliverypoints
-    // GET /api/cdek/delivery-points?city_code=44
+    // GET /api/cdek/delivery-points?city_code=44&weight=1200&length=40&width=30&height=8
     try {
-      const city_code =
-        typeof req.query.city_code === "string" &&
-        !isNaN(Number(req.query.city_code))
-          ? Number(req.query.city_code)
-          : null;
+      const city_code = validatePositiveInteger(
+        req.query.city_code,
+        "city_code"
+      );
+      const packageParams = {
+        weight: validatePositiveInteger(req.query.weight, "weight"),
+        length: validatePositiveInteger(req.query.length, "length"),
+        width: validatePositiveInteger(req.query.width, "width"),
+        height: validatePositiveInteger(req.query.height, "height"),
+      };
 
-      if (!city_code) {
-        throw ApiError.badRequest("City query must contain city cdek code");
-      }
-
-      const offices = await suggestCdekOffices(city_code);
+      const offices = await suggestCdekOffices(city_code, packageParams);
 
       const normalized = offices.map((office) => ({
         code: office.code, // Код ПВЗ
