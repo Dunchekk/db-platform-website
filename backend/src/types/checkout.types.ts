@@ -24,6 +24,10 @@ export type PreparedOrderItem = {
   price: number;
   quantity: number;
   total: number;
+  packageWeightGrams: number;
+  packageLengthCm: number;
+  packageWidthCm: number;
+  packageHeightCm: number;
 };
 
 export type PreparedOrder = {
