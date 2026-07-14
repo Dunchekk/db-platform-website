@@ -4,6 +4,11 @@ import {
   CheckoutItemsStore,
 } from "@/shared/types/checkout.types";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
+
+const resetDeliverySelection = () => {
+  useCheckoutFormInputs.getState().resetDeliverySelection();
+};
 
 export const useCheckoutItems = create<CheckoutItemsStore>()(
   persist(
@@ -22,11 +27,13 @@ export const useCheckoutItems = create<CheckoutItemsStore>()(
           set({
             items: updItems,
           });
+          resetDeliverySelection();
           return;
         }
         set({
           items: [...items, { itemId, quantity: 1 }],
         });
+        resetDeliverySelection();
       },
       decreaseItem: (itemId) => {
         const items = get().items;
@@ -40,6 +47,7 @@ export const useCheckoutItems = create<CheckoutItemsStore>()(
           set({
             items: items.filter((item) => item.itemId !== itemId),
           });
+          resetDeliverySelection();
           return;
         }
 
@@ -50,9 +58,11 @@ export const useCheckoutItems = create<CheckoutItemsStore>()(
               : item
           ),
         });
+        resetDeliverySelection();
       },
       clearItems: () => {
         set({ items: [] });
+        resetDeliverySelection();
       },
       getAllQuantity: () => {
         const items = get().items;

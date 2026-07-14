@@ -27,6 +27,7 @@ export type CheckoutFormStore = {
     field: K,
     value: CheckoutFormInputs[K]
   ) => void;
+  resetDeliverySelection: () => void;
   resetForm: () => void;
 };
 
@@ -58,6 +59,16 @@ export const useCheckoutFormInputs = create<CheckoutFormStore>((set) => ({
       form: {
         ...state.form,
         [field]: value,
+      },
+    }));
+  },
+  resetDeliverySelection: () => {
+    set((state) => ({
+      formResetKey: state.formResetKey + 1,
+      form: {
+        ...state.form,
+        office: null,
+        deliveryPrice: null,
       },
     }));
   },

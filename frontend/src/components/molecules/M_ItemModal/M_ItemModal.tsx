@@ -6,6 +6,7 @@ import A_Button from "@/components/atoms/A_Button/A_Button";
 import { changeItem, createItem, getItems } from "@/shared/api/objects";
 import { PayloadDbObject } from "@/shared/types/object.types";
 import { useObjects } from "@/features/objects/objects.store";
+import { parsePositiveInteger } from "@/shared/helpers/parsePositiveInteger";
 
 type Props = {
   className?: string;
@@ -35,6 +36,10 @@ const M_ItemModal = ({
   const initialName = obj?.name ?? "";
   const initialPrice = obj ? String(obj.price) : "";
   const initialPosition = obj ? String(obj.position) : "";
+  const initialPackageWeightGrams = obj ? String(obj.packageWeightGrams) : "";
+  const initialPackageLengthCm = obj ? String(obj.packageLengthCm) : "";
+  const initialPackageWidthCm = obj ? String(obj.packageWidthCm) : "";
+  const initialPackageHeightCm = obj ? String(obj.packageHeightCm) : "";
   const initialPoints = obj ? obj.points.map((p) => p.point) : [];
   const initialInfo = obj
     ? obj.info.map(({ title, description }) => ({ title, description }))
@@ -43,6 +48,16 @@ const M_ItemModal = ({
   const [name, setName] = useState(initialName);
   const [price, setPrice] = useState(initialPrice);
   const [position, setPosition] = useState(initialPosition);
+  const [packageWeightGrams, setPackageWeightGrams] = useState(
+    initialPackageWeightGrams
+  );
+  const [packageLengthCm, setPackageLengthCm] = useState(
+    initialPackageLengthCm
+  );
+  const [packageWidthCm, setPackageWidthCm] = useState(initialPackageWidthCm);
+  const [packageHeightCm, setPackageHeightCm] = useState(
+    initialPackageHeightCm
+  );
   const [points, setPoints] = useState(initialPoints);
   const [info, setInfo] = useState(initialInfo);
   const [point, setPoint] = useState<string>("");
@@ -53,6 +68,10 @@ const M_ItemModal = ({
     setName("");
     setPrice("");
     setPosition("");
+    setPackageWeightGrams("");
+    setPackageLengthCm("");
+    setPackageWidthCm("");
+    setPackageHeightCm("");
     setPoints([]);
     setInfo([]);
     setPoint("");
@@ -88,9 +107,23 @@ const M_ItemModal = ({
     const pName = String(name).trim();
     const pPrice = Number(price);
     const pPosition = Number(position);
+    const pPackageWeightGrams = parsePositiveInteger(packageWeightGrams);
+    const pPackageLengthCm = parsePositiveInteger(packageLengthCm);
+    const pPackageWidthCm = parsePositiveInteger(packageWidthCm);
+    const pPackageHeightCm = parsePositiveInteger(packageHeightCm);
 
     if (!pName || !Number.isInteger(pPrice) || !Number.isInteger(pPosition)) {
       showToast("не все обязательные поля заполнены", "error");
+      return;
+    }
+
+    if (
+      !pPackageWeightGrams ||
+      !pPackageLengthCm ||
+      !pPackageWidthCm ||
+      !pPackageHeightCm
+    ) {
+      showToast("укажите вес и размеры упаковки целыми числами", "error");
       return;
     }
 
@@ -98,6 +131,10 @@ const M_ItemModal = ({
       name: pName,
       price: pPrice,
       position: pPosition,
+      packageWeightGrams: pPackageWeightGrams,
+      packageLengthCm: pPackageLengthCm,
+      packageWidthCm: pPackageWidthCm,
+      packageHeightCm: pPackageHeightCm,
 
       points: points.map((point) => ({
         point,
@@ -171,6 +208,41 @@ const M_ItemModal = ({
               type="number"
               onChange={(e) => setPosition(e.target.value)}
             />
+            <span className={cls.aboutpackage}>об упаковке (для СДЕК):</span>
+            <M_Input
+              placeholder="вес (г)"
+              value={packageWeightGrams}
+              type="number"
+              min={1}
+              step={1}
+              onChange={(e) => setPackageWeightGrams(e.target.value)}
+            />
+            <div className={cls.packageSizes}>
+              <M_Input
+                placeholder="длина (см)"
+                value={packageLengthCm}
+                type="number"
+                min={1}
+                step={1}
+                onChange={(e) => setPackageLengthCm(e.target.value)}
+              />
+              <M_Input
+                placeholder="ширина (см)"
+                value={packageWidthCm}
+                type="number"
+                min={1}
+                step={1}
+                onChange={(e) => setPackageWidthCm(e.target.value)}
+              />
+              <M_Input
+                placeholder="высота (см)"
+                value={packageHeightCm}
+                type="number"
+                min={1}
+                step={1}
+                onChange={(e) => setPackageHeightCm(e.target.value)}
+              />
+            </div>
           </div>
 
           <div className={cls.column2}>

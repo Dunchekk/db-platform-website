@@ -16,6 +16,24 @@ export const validateRequiredString = (
   return normalized;
 };
 
+export const validatePositiveInteger = (
+  value: unknown,
+  fieldName: string
+): number => {
+  const parsed =
+    typeof value === "string" && value.trim() !== "" ? Number(value) : value;
+
+  if (typeof parsed !== "number" || !Number.isInteger(parsed)) {
+    throw ApiError.badRequest(`${fieldName} must be an integer`);
+  }
+
+  if (parsed <= 0) {
+    throw ApiError.badRequest(`${fieldName} must be greater than 0`);
+  }
+
+  return parsed;
+};
+
 export const validateEmail = (email: string | undefined): string => {
   const normalized = validateRequiredString(email, "Email").toLowerCase();
 

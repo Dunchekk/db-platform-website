@@ -26,6 +26,10 @@ model Item {
   name        String
   price       Int
   position    Int
+  packageWeightGrams Int
+  packageLengthCm    Int
+  packageWidthCm     Int
+  packageHeightCm    Int
 
   points      ItemPoint[]
   info        ItemInfo[]
@@ -154,6 +158,10 @@ model OrderItem {
   price       Int
   quantity    Int
   total       Int
+  packageWeightGrams Int
+  packageLengthCm    Int
+  packageWidthCm     Int
+  packageHeightCm    Int
 
   order       Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   item        Item?  @relation(fields: [itemId], references: [id], onDelete: SetNull)

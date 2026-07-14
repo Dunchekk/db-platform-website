@@ -2,6 +2,8 @@ import ApiError from "../error/ApiError";
 import {
   CdekCreatingOrderBody,
   CdekEntityResponse,
+  CdekOfficeLookupPackageParams,
+  CdekPackageDto,
   CdekTokenResponse,
   CdekSuggestedCityDto,
   CdekSuggestedOfficesDto,
@@ -103,7 +105,10 @@ export async function suggestCdekCities(query: string) {
   return response.json() as Promise<CdekSuggestedCityDto[]>;
 }
 
-export async function suggestCdekOffices(city_code: number) {
+export async function suggestCdekOffices(
+  city_code: number,
+  packageParams: CdekOfficeLookupPackageParams
+) {
   const token = await getCdekToken();
 
   if (!city_code) {
@@ -114,10 +119,10 @@ export async function suggestCdekOffices(city_code: number) {
     city_code: String(city_code),
     type: "ALL",
     country_code: cdekConfig.countryCode,
-    weight_max: cdekOrderProperties.weightMax,
-    length: cdekOrderProperties.length,
-    width: cdekOrderProperties.width,
-    height: cdekOrderProperties.height,
+    weight_max: String(packageParams.weight / 1000),
+    length: String(packageParams.length),
+    width: String(packageParams.width),
+    height: String(packageParams.height),
     lang: "rus",
     is_handout: "1",
   });
@@ -136,7 +141,7 @@ export async function suggestCdekOffices(city_code: number) {
 
 export async function suggestCdekDeliveryPrice(
   to_city_code: number,
-  order_weight: number = 600,
+  packages: CdekPackageDto[],
   from_city_code: number = cdekOrderProperties.fromCityCode,
   tariff_code: number = cdekOrderProperties.tariffCode
 ) {
@@ -146,8 +151,8 @@ export async function suggestCdekDeliveryPrice(
     throw ApiError.badRequest("Query must contain to-city cdek code");
   } else if (!from_city_code) {
     throw ApiError.badRequest("Query must contain from-city cdek code");
-  } else if (!order_weight) {
-    throw ApiError.badRequest("Query must contain order weight");
+  } else if (!Array.isArray(packages) || packages.length === 0) {
+    throw ApiError.badRequest("Query must contain packages");
   } else if (!tariff_code) {
     throw ApiError.badRequest("Query must contain tarrif code");
   }
@@ -163,11 +168,7 @@ export async function suggestCdekDeliveryPrice(
     to_location: {
       code: to_city_code,
     },
-    packages: [
-      {
-        weight: order_weight,
-      },
-    ],
+    packages,
   };
 
   const response = await fetchCdek(`/calculator/tariff`, {

@@ -2,6 +2,10 @@ export type CreateItemBody = {
   name: string;
   price: number;
   position: number;
+  packageWeightGrams: unknown;
+  packageLengthCm: unknown;
+  packageWidthCm: unknown;
+  packageHeightCm: unknown;
   points: ItemPoint[];
   info: ItemInformation[];
 };

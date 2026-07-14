@@ -123,6 +123,13 @@ export type CdekPackageDto = {
   height?: number;
 };
 
+export type CdekOfficeLookupPackageParams = {
+  weight: number;
+  length: number;
+  width: number;
+  height: number;
+};
+
 /**
  * Запрос на получение цены доставки
  */
@@ -238,7 +245,7 @@ export type CdekSuggestedCityFromFront = {
 
 export type CdekCreatingOrderBody = {
   type?: 1 | 2; // 1 -- ИМ, 2 -- доставка
-  additional_order_types?: []; // могут быть другие
+  additional_order_types?: number[]; // могут быть другие
   number?: string; // внутренний для ИС номер заказа
   accompanying_number?: string; // номер СНТ
   tariff_code: number; // код тарифа
@@ -253,14 +260,12 @@ export type CdekCreatingOrderBody = {
     vat_sum?: number;
     vat_rate?: number;
   };
-  delivery_recipient_cost_adv?: [
-    {
-      threshold?: number; // порог стоимости заказа
-      sum?: number; // доп. сбор при достижении порога
-      vat_sum?: number;
-      vat_rate?: number;
-    },
-  ];
+  delivery_recipient_cost_adv?: {
+    threshold?: number; // порог стоимости заказа
+    sum?: number; // доп. сбор при достижении порога
+    vat_sum?: number;
+    vat_rate?: number;
+  }[];
   sender?: {
     company?: string;
     name?: string;
@@ -272,12 +277,10 @@ export type CdekCreatingOrderBody = {
     tin?: string;
     passport_date_of_birth?: null;
     email?: string;
-    phones?: [
-      {
-        number?: string;
-        additional?: string;
-      },
-    ];
+    phones?: {
+      number?: string;
+      additional?: string;
+    }[];
   };
   seller?: {
     name?: string;
@@ -297,12 +300,10 @@ export type CdekCreatingOrderBody = {
     tin?: string;
     passport_date_of_birth?: null;
     email?: string;
-    phones: [
-      {
-        number: string;
-        additional?: string;
-      },
-    ];
+    phones: {
+      number: string;
+      additional?: string;
+    }[];
   };
   from_location?: {
     code?: number; // код населенного пункта СДЭК
@@ -342,57 +343,51 @@ export type CdekCreatingOrderBody = {
     address: string;
     postal_code?: string;
   };
-  services?: [
-    {
-      code?: string;
-      parameter?: number;
-    },
-  ];
-  packages: [
-    {
-      number: string;
-      weight: number; // общий вес упаковки в граммах
-      length?: number;
-      width?: number;
-      height?: number;
-      comment?: string;
-      items: [
-        {
-          name: string;
-          ware_key: string;
-          marking: null;
-          payment: {
-            value: number; // стоимость единицы товарного вложения
-            vat_sum?: number;
-            vat_rate?: number;
-          };
-          weight: number; // вес единицы товара в граммах
-          weight_gross?: number;
-          amount: number; // количество единиц товара
-          name_i18n?: string;
-          brand?: string;
-          country_code?: string;
-          material?: null;
-          wifi_gsm?: null;
-          url?: string;
-          seller?: {
-            name?: string;
-            inn?: string;
-            phone?: string;
-            ownership_form?: null;
-            address?: string;
-            giis_subdivision_id?: null;
-          };
-          cost: number; // объявленная стоимость товара
-          feacn_code?: string;
-          jewel_uin?: null;
-          used?: null;
-        },
-      ];
-      package_id: null;
-    },
-  ];
-  delivery_types?: [null];
+  services?: {
+    code?: string;
+    parameter?: number;
+  }[];
+  packages: {
+    number: string;
+    weight: number; // общий вес упаковки в граммах
+    length?: number;
+    width?: number;
+    height?: number;
+    comment?: string;
+    items: {
+      name: string;
+      ware_key: string;
+      marking: null;
+      payment: {
+        value: number; // стоимость единицы товарного вложения
+        vat_sum?: number;
+        vat_rate?: number;
+      };
+      weight: number; // вес единицы товара в граммах
+      weight_gross?: number;
+      amount: number; // количество единиц товара
+      name_i18n?: string;
+      brand?: string;
+      country_code?: string;
+      material?: null;
+      wifi_gsm?: null;
+      url?: string;
+      seller?: {
+        name?: string;
+        inn?: string;
+        phone?: string;
+        ownership_form?: null;
+        address?: string;
+        giis_subdivision_id?: null;
+      };
+      cost: number; // объявленная стоимость товара
+      feacn_code?: string;
+      jewel_uin?: null;
+      used?: null;
+    }[];
+    package_id: null;
+  }[];
+  delivery_types?: null[];
   print?: "WAYBILL" | "BARCODE";
   widgetToken?: null;
   is_client_return?: null;
@@ -468,14 +463,12 @@ export type cdekShipmentResponce = {
       vat_sum?: number;
       vat_rate?: number;
     };
-    delivery_recipient_cost_adv?: [
-      {
-        threshold?: number; // порог стоимости заказа
-        sum?: number; // доп. сбор при достижении порога
-        vat_sum?: number;
-        vat_rate?: number;
-      },
-    ];
+    delivery_recipient_cost_adv?: {
+      threshold?: number; // порог стоимости заказа
+      sum?: number; // доп. сбор при достижении порога
+      vat_sum?: number;
+      vat_rate?: number;
+    }[];
     sender: {
       // (! required !) объект отправителя
       company?: string;
@@ -488,12 +481,10 @@ export type cdekShipmentResponce = {
       tin?: string;
       passport_date_of_birth?: string;
       email?: string;
-      phones?: [
-        {
-          number?: string;
-          additional?: string;
-        },
-      ];
+      phones?: {
+        number?: string;
+        additional?: string;
+      }[];
       passport_requirements_satisfied?: boolean;
     };
     seller?: {
@@ -515,12 +506,10 @@ export type cdekShipmentResponce = {
       tin?: string;
       passport_date_of_birth?: string;
       email?: string;
-      phones?: [
-        {
-          number?: string;
-          additional?: string;
-        },
-      ];
+      phones?: {
+        number?: string;
+        additional?: string;
+      }[];
       passport_requirements_satisfied?: boolean;
     };
     from_location: {
@@ -564,20 +553,16 @@ export type cdekShipmentResponce = {
       address?: string;
       postal_code?: string;
     };
-    services?: [
-      {
-        code?: string;
-        parameter?: string | number;
-      },
-    ];
+    services?: {
+      code?: string;
+      parameter?: string | number;
+    }[];
     delivery_mode?: 1 | 2 | 3 | 4 | 6 | 7 | 8 | 9 | 10 | 11;
     has_reverse_order?: boolean;
-    delay_reasons?: [
-      {
-        date?: string;
-        reason?: string;
-      },
-    ];
+    delay_reasons?: {
+      date?: string;
+      reason?: string;
+    }[];
     delivery_types?: number[];
     planned_delivery_date?: string;
     delivery_detail?: {
@@ -587,121 +572,105 @@ export type cdekShipmentResponce = {
       vat_rate?: number;
       vat_sum?: number;
     };
-    delivery_problem?: [
-      {
-        code?: string;
-        create_date?: string;
-        message?: string;
-      },
-    ];
+    delivery_problem?: {
+      code?: string;
+      create_date?: string;
+      message?: string;
+    }[];
     calls?: {
-      failed_calls?: [
-        {
-          date_time?: string;
-          reason_code?: string;
-        },
-      ];
-      rescheduled_calls?: [
-        {
-          date_time?: string;
-          date_next?: string;
-          time_next?: string;
-          comment?: string;
-        },
-      ];
-    };
-    packages: [
-      {
-        // (! required !) упаковка заказа
-        number: string; // (! required !) номер упаковки
-        weight: number; // (! required !) общий вес упаковки в граммах
-        length?: number;
-        width?: number;
-        height?: number;
-        comment?: string;
-        items?: [
-          {
-            name?: string;
-            ware_key?: string;
-            marking?: string;
-            payment?: {
-              value?: number; // стоимость единицы товарного вложения
-              vat_sum?: number;
-              vat_rate?: number;
-            };
-            weight?: number; // вес единицы товара в граммах
-            weight_gross?: number;
-            amount?: number; // количество единиц товара
-            name_i18n?: string;
-            brand?: string;
-            country_code?: string;
-            material?: string;
-            wifi_gsm?: string;
-            url?: string;
-            seller?: {
-              name?: string;
-              inn?: string;
-              phone?: string;
-              ownership_form?: string;
-              address?: string;
-              giis_subdivision_id?: string;
-            };
-            cost?: number; // объявленная стоимость товара
-            feacn_code?: string;
-            item_id?: string;
-            itemId?: string;
-            jewel_uin?: string;
-            used?: boolean;
-          },
-        ];
-        package_id?: string;
-      },
-    ];
-    statuses?: [
-      {
-        code?: CdekOrderStatusCode;
-        name?: string;
+      failed_calls?: {
         date_time?: string;
         reason_code?: string;
-        city?: string;
-        city_uuid?: string;
-        deleted?: boolean;
-      },
-    ];
+      }[];
+      rescheduled_calls?: {
+        date_time?: string;
+        date_next?: string;
+        time_next?: string;
+        comment?: string;
+      }[];
+    };
+    packages: {
+      // (! required !) упаковка заказа
+      number: string; // (! required !) номер упаковки
+      weight: number; // (! required !) общий вес упаковки в граммах
+      length?: number;
+      width?: number;
+      height?: number;
+      comment?: string;
+      items?: {
+        name?: string;
+        ware_key?: string;
+        marking?: string;
+        payment?: {
+          value?: number; // стоимость единицы товарного вложения
+          vat_sum?: number;
+          vat_rate?: number;
+        };
+        weight?: number; // вес единицы товара в граммах
+        weight_gross?: number;
+        amount?: number; // количество единиц товара
+        name_i18n?: string;
+        brand?: string;
+        country_code?: string;
+        material?: string;
+        wifi_gsm?: string;
+        url?: string;
+        seller?: {
+          name?: string;
+          inn?: string;
+          phone?: string;
+          ownership_form?: string;
+          address?: string;
+          giis_subdivision_id?: string;
+        };
+        cost?: number; // объявленная стоимость товара
+        feacn_code?: string;
+        item_id?: string;
+        itemId?: string;
+        jewel_uin?: string;
+        used?: boolean;
+      }[];
+      package_id?: string;
+    }[];
+    statuses?: {
+      code?: CdekOrderStatusCode;
+      name?: string;
+      date_time?: string;
+      reason_code?: string;
+      city?: string;
+      city_uuid?: string;
+      deleted?: boolean;
+    }[];
     is_client_return: boolean; // (! required !) признак клиентского возврата
     developer_key?: string;
   };
-  requests: [
+  requests: {
     // (! required !) список запросов к API по заказу
-    {
-      request_uuid?: string;
-      type: string; // (! required !) тип запроса к API
-      date_time: string; // (! required !) дата и время создания запроса
-      state: string; // (! required !) состояние обработки запроса
-      errors?: CdekErrorDto[];
-      warnings?: CdekWarningDto[];
-    },
-  ];
-  related_entities?: [
-    {
-      uuid: string; // (! required !) идентификатор связанной сущности
-      type:
-        | "return_order"
-        | "direct_order"
-        | "client_return_order"
-        | "client_direct_order"
-        | "waybill"
-        | "barcode"
-        | "reverse_order"
-        | "delivery"; // (! required !) тип связанной сущности
-      url?: string;
-      create_time?: string;
-      cdek_number?: number;
-      date?: string;
-      time_from?: string;
-      time_to?: string;
-    },
-  ];
+    request_uuid?: string;
+    type: string; // (! required !) тип запроса к API
+    date_time: string; // (! required !) дата и время создания запроса
+    state: string; // (! required !) состояние обработки запроса
+    errors?: CdekErrorDto[];
+    warnings?: CdekWarningDto[];
+  }[];
+  related_entities?: {
+    uuid: string; // (! required !) идентификатор связанной сущности
+    type:
+      | "return_order"
+      | "direct_order"
+      | "client_return_order"
+      | "client_direct_order"
+      | "waybill"
+      | "barcode"
+      | "reverse_order"
+      | "delivery"; // (! required !) тип связанной сущности
+    url?: string;
+    create_time?: string;
+    cdek_number?: number;
+    date?: string;
+    time_from?: string;
+    time_to?: string;
+  }[];
 };
 
 export type CdekEntityResponse = {

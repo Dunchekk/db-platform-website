@@ -3,20 +3,30 @@ import M_Input from "../../molecules/M_Input/M_Input";
 import type { ComponentPropsWithoutRef } from "react";
 import cls from "@/components/organisms/O_CheckoutDeliveryFields/O_CheckoutDeliveryFields.module.css";
 import A_Button from "../../atoms/A_Button/A_Button";
-import { BASE_WEIGHT, getCities, getOffices } from "@/shared/api/cdek";
-import { CdekOffice, CdekSuggestedCity } from "@/shared/types/cdek.types";
+import { getCities, getOffices } from "@/shared/api/cdek";
+import {
+  CdekOffice,
+  CdekPackageParams,
+  CdekSuggestedCity,
+} from "@/shared/types/cdek.types";
 import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
 import { getDeliveryPrice } from "@/shared/api/cdek";
-import { useCheckoutItems } from "@/features/checkout/checkout.store";
+import { CheckoutItem } from "@/shared/types/checkout.types";
 
 type Props = {
+  cartPackageParams: CdekPackageParams;
+  cartItems: CheckoutItem[];
   isCartEmpty: boolean;
+  isSubmitting: boolean;
   showToast: (message: string, type: "default" | "success" | "error") => void;
 } & ComponentPropsWithoutRef<"div">;
 
 const O_CheckoutDeliveryFields = ({
+  cartPackageParams,
+  cartItems,
   isCartEmpty,
   className,
+  isSubmitting,
   showToast,
   ...props
 }: Props) => {
@@ -24,7 +34,6 @@ const O_CheckoutDeliveryFields = ({
   const setField = useCheckoutFormInputs((state) => state.setField);
   const selectedCity = useCheckoutFormInputs((state) => state.form.city);
   const selectedOffice = useCheckoutFormInputs((state) => state.form.office);
-  const getQuantity = useCheckoutItems((state) => state.getAllQuantity);
 
   const [isCitiesOpen, setIsCitiesOpen] = useState<boolean>(false);
   const [cities, setCities] = useState<CdekSuggestedCity[]>([]);
@@ -41,6 +50,30 @@ const O_CheckoutDeliveryFields = ({
   const [queryOffices, setQueryOffices] = useState<string>(
     selectedOffice?.location?.address || ""
   );
+
+  const hasValidPackageParams =
+    cartPackageParams.weight > 0 &&
+    cartPackageParams.length > 0 &&
+    cartPackageParams.width > 0 &&
+    cartPackageParams.height > 0;
+
+  const loadOffices = async (cityCode: number): Promise<CdekOffice[]> => {
+    if (!hasValidPackageParams) {
+      showToast("не удалось посчитать параметры упаковки заказа", "error");
+      return [];
+    }
+
+    try {
+      return await getOffices(cityCode, cartPackageParams);
+    } catch (e) {
+      if (e instanceof Error) {
+        showToast(`ошибка при загрузке пунктов выдачи: ${e.message}`, "error");
+      }
+
+      console.log(e);
+      return [];
+    }
+  };
 
   const handleCityInputChange = async (
     e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>
@@ -70,7 +103,7 @@ const O_CheckoutDeliveryFields = ({
   const handleCityClick = async (city: CdekSuggestedCity) => {
     setField("city", city);
     setQueryCities(city.label);
-    const newOffices = await getOffices(city.code);
+    const newOffices = await loadOffices(city.code);
     setOffices(newOffices);
     setField("office", null);
     setQueryOffices("");
@@ -80,11 +113,21 @@ const O_CheckoutDeliveryFields = ({
   const handleOfficeClick = async (office: CdekOffice) => {
     setField("office", office);
 
+    if (!selectedCity) {
+      showToast("укажите город для получения", "error");
+      return;
+    }
+
+    if (!hasValidPackageParams) {
+      showToast("не удалось посчитать параметры упаковки заказа", "error");
+      return;
+    }
+
     try {
-      const priceResponse = await getDeliveryPrice(
-        selectedCity.code,
-        getQuantity() * BASE_WEIGHT
-      );
+      const priceResponse = await getDeliveryPrice({
+        city_code: selectedCity.code,
+        items: cartItems,
+      });
       setField("deliveryPrice", priceResponse.delivery_sum);
       setMinPeriod(priceResponse.period_min);
       setMaxPeriod(priceResponse.period_max);
@@ -110,11 +153,11 @@ const O_CheckoutDeliveryFields = ({
 
     const query = e.target.value.toLowerCase().trim();
     if (e.target.value.trim() === "" && selectedCity) {
-      const newOffices = await getOffices(selectedCity.code);
+      const newOffices = await loadOffices(selectedCity.code);
       setOffices(newOffices);
       return;
     }
-    const allOffices = await getOffices(selectedCity.code);
+    const allOffices = await loadOffices(selectedCity.code);
     const newOffices = allOffices.filter(
       (office) =>
         office.location?.address?.toLowerCase().includes(query) ||
@@ -233,7 +276,11 @@ const O_CheckoutDeliveryFields = ({
           }
         }}
       >
-        <A_Button className={cls.submit} type="submit" disabled={isCartEmpty}>
+        <A_Button
+          className={cls.submit}
+          type="submit"
+          disabled={isCartEmpty || isSubmitting}
+        >
           {"————> оформить заказ"}
         </A_Button>
       </span>

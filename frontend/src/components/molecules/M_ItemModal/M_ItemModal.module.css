@@ -39,6 +39,9 @@
 
 .column1 {
   grid-column: 1 / 2;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space) / 2);
 }
 
 .column2 {
@@ -63,6 +66,16 @@
 .properties {
   display: flex;
   gap: var(--space);
+}
+
+.packageSizes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space);
+}
+
+.aboutpackage {
+  margin-top: calc(var(--space) * 2);
 }
 
 .points {

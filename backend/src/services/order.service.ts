@@ -55,6 +55,10 @@ export const prepareOrderItems = async (
       price: dbItem.price,
       quantity: item.quantity,
       total,
+      packageWeightGrams: dbItem.packageWeightGrams,
+      packageLengthCm: dbItem.packageLengthCm,
+      packageWidthCm: dbItem.packageWidthCm,
+      packageHeightCm: dbItem.packageHeightCm,
     };
   });
 

@@ -5,6 +5,13 @@ export type CdekSuggestedCity = {
   countryCode: string;
 };
 
+export type CdekPackageParams = {
+  weight: number;
+  length: number;
+  width: number;
+  height: number;
+};
+
 export type CdekPhoneDto = {
   number: string;
   additional: string;

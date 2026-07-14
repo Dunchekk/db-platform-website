@@ -1,10 +1,16 @@
 import ApiError from "../error/ApiError";
 import type { NextFunction, Request, Response } from "express";
 import {
+  DeliveryPricePreviewBody,
+} from "../types/checkout.types";
+import {
   suggestCdekCities,
   suggestCdekDeliveryPrice,
   suggestCdekOffices,
 } from "../services/cdek.api";
+import { validatePositiveInteger } from "../helpers/validation";
+import { buildCdekPackagesFromOrderItems } from "../services/helpers/buildCdekPackagesFromOrderItems";
+import { prepareOrderItems } from "../services/order.service";
 
 class CdekController {
   async getCitiesByParams(req: Request, res: Response, next: NextFunction) {
@@ -42,19 +48,20 @@ class CdekController {
 
   async getOfficesByParams(req: Request, res: Response, next: NextFunction) {
     // GET https://api.cdek.ru/v2/deliverypoints
-    // GET /api/cdek/delivery-points?city_code=44
+    // GET /api/cdek/delivery-points?city_code=44&weight=1200&length=40&width=30&height=8
     try {
-      const city_code =
-        typeof req.query.city_code === "string" &&
-        !isNaN(Number(req.query.city_code))
-          ? Number(req.query.city_code)
-          : null;
+      const city_code = validatePositiveInteger(
+        req.query.city_code,
+        "city_code"
+      );
+      const packageParams = {
+        weight: validatePositiveInteger(req.query.weight, "weight"),
+        length: validatePositiveInteger(req.query.length, "length"),
+        width: validatePositiveInteger(req.query.width, "width"),
+        height: validatePositiveInteger(req.query.height, "height"),
+      };
 
-      if (!city_code) {
-        throw ApiError.badRequest("City query must contain city cdek code");
-      }
-
-      const offices = await suggestCdekOffices(city_code);
+      const offices = await suggestCdekOffices(city_code, packageParams);
 
       const normalized = offices.map((office) => ({
         code: office.code, // Код ПВЗ
@@ -93,29 +100,33 @@ class CdekController {
     res: Response,
     next: NextFunction
   ) {
-    // GET /api/cdek/delivery-price?city_code=44&weight=1200
+    // POST /api/cdek/delivery-price { city_code: 44, items: [{ itemId: 1, quantity: 2 }] }
     try {
-      const city_code =
-        typeof req.query.city_code === "string" &&
-        !isNaN(Number(req.query.city_code))
-          ? Number(req.query.city_code)
-          : null;
+      const { city_code, items } = req.body as Partial<DeliveryPricePreviewBody>;
 
-      const weight =
-        typeof req.query.weight === "string" && !isNaN(Number(req.query.weight))
-          ? Number(req.query.weight)
-          : null;
+      const normalizedCityCode = validatePositiveInteger(city_code, "city_code");
 
-      if (city_code === null) {
-        throw ApiError.badRequest("Price query must contain city cdek code");
-      } else if (weight === null) {
-        throw ApiError.badRequest("Weight query must contain some value");
+      if (!Array.isArray(items) || items.length === 0) {
+        throw ApiError.badRequest("Price query must contain items");
       }
 
-      const deliveryInfo = await suggestCdekDeliveryPrice(city_code, weight);
+      const normalizedItems = items.map((item, index) => ({
+        itemId: validatePositiveInteger(item?.itemId, `items[${index}].itemId`),
+        quantity: validatePositiveInteger(
+          item?.quantity,
+          `items[${index}].quantity`
+        ),
+      }));
+
+      const { orderItemsData } = await prepareOrderItems(normalizedItems);
+      const cdekPackages = buildCdekPackagesFromOrderItems(orderItemsData);
+      const deliveryInfo = await suggestCdekDeliveryPrice(
+        normalizedCityCode,
+        cdekPackages
+      );
 
       const normalizedDeliveryInfo = {
-        delivery_sum: deliveryInfo.delivery_sum,
+        delivery_sum: deliveryInfo.total_sum,
         period_min: deliveryInfo.calendar_min ?? deliveryInfo.period_min,
         period_max: deliveryInfo.calendar_max ?? deliveryInfo.period_max,
         currency: deliveryInfo.currency === "RUB" ? "₽" : deliveryInfo.currency,

@@ -24,6 +24,10 @@ export type PreparedOrderItem = {
   price: number;
   quantity: number;
   total: number;
+  packageWeightGrams: number;
+  packageLengthCm: number;
+  packageWidthCm: number;
+  packageHeightCm: number;
 };
 
 export type PreparedOrder = {
@@ -35,6 +39,11 @@ export type PreparedOrder = {
 export type ReqOrderItem = {
   itemId: number;
   quantity: number;
+};
+
+export type DeliveryPricePreviewBody = {
+  city_code: number;
+  items: ReqOrderItem[];
 };
 
 export type OrderWithCurrentPayment = Order & {

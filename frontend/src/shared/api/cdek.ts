@@ -1,6 +1,13 @@
 import { $host } from ".";
-import { CdekOffice, CdekSuggestedCity } from "../types/cdek.types";
-import { NormalizedDeliveryInfo } from "../types/checkout.types";
+import {
+  CdekOffice,
+  CdekPackageParams,
+  CdekSuggestedCity,
+} from "../types/cdek.types";
+import {
+  DeliveryPricePreviewBody,
+  NormalizedDeliveryInfo,
+} from "../types/checkout.types";
 import {
   CDEK_GET_CITIES_URL,
   CDEK_GET_DELIVERY_PRICE_URL,
@@ -14,25 +21,27 @@ export const getCities = async (
   return response;
 };
 
-export const getOffices = async (city_code: number): Promise<CdekOffice[]> => {
+export const getOffices = async (
+  city_code: number,
+  packageParams: CdekPackageParams
+): Promise<CdekOffice[]> => {
+  const params = new URLSearchParams({
+    city_code: String(city_code),
+    weight: String(packageParams.weight),
+    length: String(packageParams.length),
+    width: String(packageParams.width),
+    height: String(packageParams.height),
+  });
+
   const response = await $host.get(
-    CDEK_GET_OFFICES_URL + `?city_code=${city_code}`
+    `${CDEK_GET_OFFICES_URL}?${params.toString()}`
   );
   return response;
 };
 
-export const BASE_WEIGHT = 500; // в граммах
-
 export const getDeliveryPrice = async (
-  city_code: number,
-  weight: number
+  body: DeliveryPricePreviewBody
 ): Promise<NormalizedDeliveryInfo> => {
-  const params = new URLSearchParams({
-    city_code: String(city_code),
-    weight: String(weight),
-  });
-  const response = await $host.get(
-    `${CDEK_GET_DELIVERY_PRICE_URL}?${params.toString()}`
-  );
+  const response = await $host.post(CDEK_GET_DELIVERY_PRICE_URL, body);
   return response;
 };

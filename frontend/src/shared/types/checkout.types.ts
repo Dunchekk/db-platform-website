@@ -22,6 +22,11 @@ export type CheckoutItem = {
   quantity: number;
 };
 
+export type DeliveryPricePreviewBody = {
+  city_code: number;
+  items: CheckoutItem[];
+};
+
 export type CheckoutItemsStore = {
   items: CheckoutItem[];
   addItem: (itemId: number) => void;

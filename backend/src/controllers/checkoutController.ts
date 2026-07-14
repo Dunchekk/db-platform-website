@@ -9,8 +9,7 @@ import {
 import "dotenv/config";
 import { resolveCheckoutPayment } from "../services/yookassa.service";
 import { logEvents, logger } from "../lib/logger";
-
-const BASE_WEIGHT = 500; // в граммах
+import { buildCdekPackagesFromOrderItems } from "../services/helpers/buildCdekPackagesFromOrderItems";
 
 class CheckoutController {
   async createOrder(req: Request, res: Response, next: NextFunction) {
@@ -48,12 +47,12 @@ class CheckoutController {
         cityCode: city?.code,
       });
 
-      const { subtotal, orderItemsData, totalQuantity } =
-        await prepareOrderItems(items);
+      const { subtotal, orderItemsData } = await prepareOrderItems(items);
+      const cdekPackages = buildCdekPackagesFromOrderItems(orderItemsData);
 
       const updateDeliveryPrice = await suggestCdekDeliveryPrice(
         city.code,
-        totalQuantity * BASE_WEIGHT
+        cdekPackages
       );
 
       // создаем заказ
