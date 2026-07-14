@@ -3,6 +3,7 @@ import { prisma } from "../db";
 import { CreateItemBody, ItemInformation } from "../types/item.types";
 import ApiError from "../error/ApiError";
 import { parseIdParam } from "../helpers/parseIdParam";
+import { validateItemPackage } from "../helpers/validateItemPackage";
 
 class ItemController {
   async getAllItems(req: Request, res: Response, next: NextFunction) {
@@ -31,6 +32,7 @@ class ItemController {
     try {
       // POST api/items/
       const { name, price, position, points, info }: CreateItemBody = req.body;
+      const itemPackage = validateItemPackage(req.body);
 
       const item = await prisma.$transaction(async (tx) => {
         const createdItem = await tx.item.create({
@@ -38,6 +40,7 @@ class ItemController {
             name,
             price,
             position,
+            ...itemPackage,
           },
         });
 
@@ -84,6 +87,7 @@ class ItemController {
     try {
       const id = parseIdParam(req.params.id);
       const { name, price, position, points, info }: CreateItemBody = req.body;
+      const itemPackage = validateItemPackage(req.body);
 
       const item = await prisma.$transaction(async (tx) => {
         const updatedItem = await tx.item.update({
@@ -92,6 +96,7 @@ class ItemController {
             name,
             price,
             position,
+            ...itemPackage,
           },
         });
 
