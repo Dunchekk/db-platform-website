@@ -1,5 +1,9 @@
 import { $host } from ".";
-import { CdekOffice, CdekSuggestedCity } from "../types/cdek.types";
+import {
+  CdekOffice,
+  CdekPackageParams,
+  CdekSuggestedCity,
+} from "../types/cdek.types";
 import { NormalizedDeliveryInfo } from "../types/checkout.types";
 import {
   CDEK_GET_CITIES_URL,
@@ -14,9 +18,20 @@ export const getCities = async (
   return response;
 };
 
-export const getOffices = async (city_code: number): Promise<CdekOffice[]> => {
+export const getOffices = async (
+  city_code: number,
+  packageParams: CdekPackageParams
+): Promise<CdekOffice[]> => {
+  const params = new URLSearchParams({
+    city_code: String(city_code),
+    weight: String(packageParams.weight),
+    length: String(packageParams.length),
+    width: String(packageParams.width),
+    height: String(packageParams.height),
+  });
+
   const response = await $host.get(
-    CDEK_GET_OFFICES_URL + `?city_code=${city_code}`
+    `${CDEK_GET_OFFICES_URL}?${params.toString()}`
   );
   return response;
 };
