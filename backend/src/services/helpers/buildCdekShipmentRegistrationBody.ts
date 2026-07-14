@@ -36,7 +36,7 @@ export function buildCdekShipmentRegistrationBody(
       ],
       package_id: null,
     }))
-  ) as unknown as CdekCreatingOrderBody["packages"];
+  );
 
   return {
     type: 1,
