@@ -272,6 +272,7 @@ const CheckoutLayer = () => {
         <O_CheckoutDeliveryFields
           className={cls.column}
           cartPackageParams={cartPackageParams}
+          cartItems={cartItems}
           isSubmitting={isSubmitting}
           isCartEmpty={isCartEmpty}
           showToast={showToast}

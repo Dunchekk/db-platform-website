@@ -11,9 +11,11 @@ import {
 } from "@/shared/types/cdek.types";
 import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
 import { getDeliveryPrice } from "@/shared/api/cdek";
+import { CheckoutItem } from "@/shared/types/checkout.types";
 
 type Props = {
   cartPackageParams: CdekPackageParams;
+  cartItems: CheckoutItem[];
   isCartEmpty: boolean;
   isSubmitting: boolean;
   showToast: (message: string, type: "default" | "success" | "error") => void;
@@ -21,6 +23,7 @@ type Props = {
 
 const O_CheckoutDeliveryFields = ({
   cartPackageParams,
+  cartItems,
   isCartEmpty,
   className,
   isSubmitting,
@@ -121,10 +124,10 @@ const O_CheckoutDeliveryFields = ({
     }
 
     try {
-      const priceResponse = await getDeliveryPrice(
-        selectedCity.code,
-        cartPackageParams.weight
-      );
+      const priceResponse = await getDeliveryPrice({
+        city_code: selectedCity.code,
+        items: cartItems,
+      });
       setField("deliveryPrice", priceResponse.delivery_sum);
       setMinPeriod(priceResponse.period_min);
       setMaxPeriod(priceResponse.period_max);
