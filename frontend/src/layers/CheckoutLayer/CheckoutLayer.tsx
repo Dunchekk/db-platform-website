@@ -15,6 +15,7 @@ import { checkPaymentStatus, createOrder } from "@/shared/api/checkout";
 import A_Toast from "@/components/atoms/A_Toast/A_Toast";
 import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
 import { useLocation } from "react-router";
+import type { CdekPackageParams } from "@/shared/types/cdek.types";
 
 const PAYMENT_STATUS_POLL_ATTEMPTS = 5;
 const PAYMENT_STATUS_POLL_DELAY = 1500;
@@ -68,9 +69,21 @@ const CheckoutLayer = () => {
     return sum + object.price * object.quantity;
   }, 0);
 
-  const cartWeightGrams = cartObjects.reduce((sum, object) => {
-    return sum + object.packageWeightGrams * object.quantity;
-  }, 0);
+  const cartPackageParams = cartObjects.reduce<CdekPackageParams>(
+    (params, object) => {
+      if (object.quantity <= 0) {
+        return params;
+      }
+
+      return {
+        weight: params.weight + object.packageWeightGrams * object.quantity,
+        length: Math.max(params.length, object.packageLengthCm),
+        width: Math.max(params.width, object.packageWidthCm),
+        height: Math.max(params.height, object.packageHeightCm),
+      };
+    },
+    { weight: 0, length: 0, width: 0, height: 0 }
+  );
 
   useEffect(() => {
     const searchParams = new URLSearchParams(search);
@@ -258,7 +271,7 @@ const CheckoutLayer = () => {
 
         <O_CheckoutDeliveryFields
           className={cls.column}
-          cartWeightGrams={cartWeightGrams}
+          cartPackageParams={cartPackageParams}
           isSubmitting={isSubmitting}
           isCartEmpty={isCartEmpty}
           showToast={showToast}
