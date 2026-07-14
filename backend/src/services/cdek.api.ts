@@ -2,6 +2,7 @@ import ApiError from "../error/ApiError";
 import {
   CdekCreatingOrderBody,
   CdekEntityResponse,
+  CdekOfficeLookupPackageParams,
   CdekPackageDto,
   CdekTokenResponse,
   CdekSuggestedCityDto,
@@ -104,7 +105,10 @@ export async function suggestCdekCities(query: string) {
   return response.json() as Promise<CdekSuggestedCityDto[]>;
 }
 
-export async function suggestCdekOffices(city_code: number) {
+export async function suggestCdekOffices(
+  city_code: number,
+  packageParams: CdekOfficeLookupPackageParams
+) {
   const token = await getCdekToken();
 
   if (!city_code) {
@@ -115,10 +119,10 @@ export async function suggestCdekOffices(city_code: number) {
     city_code: String(city_code),
     type: "ALL",
     country_code: cdekConfig.countryCode,
-    weight_max: cdekOrderProperties.weightMax,
-    length: cdekOrderProperties.length,
-    width: cdekOrderProperties.width,
-    height: cdekOrderProperties.height,
+    weight_max: String(packageParams.weight / 1000),
+    length: String(packageParams.length),
+    width: String(packageParams.width),
+    height: String(packageParams.height),
     lang: "rus",
     is_handout: "1",
   });

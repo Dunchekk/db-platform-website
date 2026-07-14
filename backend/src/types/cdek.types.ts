@@ -123,6 +123,13 @@ export type CdekPackageDto = {
   height?: number;
 };
 
+export type CdekOfficeLookupPackageParams = {
+  weight: number;
+  length: number;
+  width: number;
+  height: number;
+};
+
 /**
  * Запрос на получение цены доставки
  */
