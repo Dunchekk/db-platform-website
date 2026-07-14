@@ -21,8 +21,6 @@ export const getOffices = async (city_code: number): Promise<CdekOffice[]> => {
   return response;
 };
 
-export const BASE_WEIGHT = 500; // в граммах
-
 export const getDeliveryPrice = async (
   city_code: number,
   weight: number

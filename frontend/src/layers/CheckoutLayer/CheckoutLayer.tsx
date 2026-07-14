@@ -68,6 +68,10 @@ const CheckoutLayer = () => {
     return sum + object.price * object.quantity;
   }, 0);
 
+  const cartWeightGrams = cartObjects.reduce((sum, object) => {
+    return sum + object.packageWeightGrams * object.quantity;
+  }, 0);
+
   useEffect(() => {
     const searchParams = new URLSearchParams(search);
     const paymentReturn = searchParams.get("paymentReturn");
@@ -254,6 +258,7 @@ const CheckoutLayer = () => {
 
         <O_CheckoutDeliveryFields
           className={cls.column}
+          cartWeightGrams={cartWeightGrams}
           isSubmitting={isSubmitting}
           isCartEmpty={isCartEmpty}
           showToast={showToast}

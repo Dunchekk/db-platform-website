@@ -3,19 +3,20 @@ import M_Input from "../../molecules/M_Input/M_Input";
 import type { ComponentPropsWithoutRef } from "react";
 import cls from "@/components/organisms/O_CheckoutDeliveryFields/O_CheckoutDeliveryFields.module.css";
 import A_Button from "../../atoms/A_Button/A_Button";
-import { BASE_WEIGHT, getCities, getOffices } from "@/shared/api/cdek";
+import { getCities, getOffices } from "@/shared/api/cdek";
 import { CdekOffice, CdekSuggestedCity } from "@/shared/types/cdek.types";
 import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
 import { getDeliveryPrice } from "@/shared/api/cdek";
-import { useCheckoutItems } from "@/features/checkout/checkout.store";
 
 type Props = {
+  cartWeightGrams: number;
   isCartEmpty: boolean;
   isSubmitting: boolean;
   showToast: (message: string, type: "default" | "success" | "error") => void;
 } & ComponentPropsWithoutRef<"div">;
 
 const O_CheckoutDeliveryFields = ({
+  cartWeightGrams,
   isCartEmpty,
   className,
   isSubmitting,
@@ -26,7 +27,6 @@ const O_CheckoutDeliveryFields = ({
   const setField = useCheckoutFormInputs((state) => state.setField);
   const selectedCity = useCheckoutFormInputs((state) => state.form.city);
   const selectedOffice = useCheckoutFormInputs((state) => state.form.office);
-  const getQuantity = useCheckoutItems((state) => state.getAllQuantity);
 
   const [isCitiesOpen, setIsCitiesOpen] = useState<boolean>(false);
   const [cities, setCities] = useState<CdekSuggestedCity[]>([]);
@@ -82,10 +82,20 @@ const O_CheckoutDeliveryFields = ({
   const handleOfficeClick = async (office: CdekOffice) => {
     setField("office", office);
 
+    if (!selectedCity) {
+      showToast("укажите город для получения", "error");
+      return;
+    }
+
+    if (cartWeightGrams <= 0) {
+      showToast("не удалось посчитать вес заказа", "error");
+      return;
+    }
+
     try {
       const priceResponse = await getDeliveryPrice(
         selectedCity.code,
-        getQuantity() * BASE_WEIGHT
+        cartWeightGrams
       );
       setField("deliveryPrice", priceResponse.delivery_sum);
       setMinPeriod(priceResponse.period_min);
