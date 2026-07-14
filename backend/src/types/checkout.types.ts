@@ -41,6 +41,11 @@ export type ReqOrderItem = {
   quantity: number;
 };
 
+export type DeliveryPricePreviewBody = {
+  city_code: number;
+  items: ReqOrderItem[];
+};
+
 export type OrderWithCurrentPayment = Order & {
   currentPayment: Payment | null;
 };
