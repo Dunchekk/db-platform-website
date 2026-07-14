@@ -10,10 +10,6 @@ export const cdekConfig = {
 export const cdekOrderProperties = {
   weightMin: null, // Минимальный вес (в кг.), принимаемый в ПВЗ (> WeightMin)
   weightMax: "0", // Максимальный вес (в кг.), принимаемый в ПВЗ (<=WeightMax)
-  length: "40", // величина посылок
-  width: "30",
-  height: "8",
-  baseWeight: "350",
   fromCityCode: 44,
   tariffCode: 136,
   name: "Дубовицкий Иван Максимович",

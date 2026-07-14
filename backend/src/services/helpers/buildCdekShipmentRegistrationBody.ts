@@ -3,10 +3,6 @@ import { validatePhone } from "../../helpers/validation";
 import { CdekCreatingOrderBody } from "../../types/cdek.types";
 
 type CdekOrderPropertiesForRegistrationBody = {
-  baseWeight: string;
-  length: string;
-  width: string;
-  height: string;
   tariffCode: number;
   name: string;
   inn: string;
@@ -18,17 +14,29 @@ export function buildCdekShipmentRegistrationBody(
   order: Order & { items: OrderItem[] },
   cdekOrderProperties: CdekOrderPropertiesForRegistrationBody
 ): CdekCreatingOrderBody {
-  const packageItems = order.items.map((item) => ({
-    name: item.title,
-    ware_key: String(item.itemId ?? item.id),
-    payment: {
-      value: item.price,
-    },
-    weight: cdekOrderProperties.baseWeight,
-    amount: item.quantity,
-    cost: item.price,
-    marking: null,
-  })) as unknown as CdekCreatingOrderBody["packages"][number]["items"];
+  const packages = order.items.flatMap((item) =>
+    Array.from({ length: item.quantity }, (_, index) => ({
+      number: `${order.id}-${item.id}-${index + 1}`,
+      weight: item.packageWeightGrams,
+      width: item.packageWidthCm,
+      height: item.packageHeightCm,
+      length: item.packageLengthCm,
+      items: [
+        {
+          name: item.title,
+          ware_key: String(item.itemId ?? item.id),
+          payment: {
+            value: 0,
+          },
+          weight: item.packageWeightGrams,
+          amount: 1,
+          cost: item.price,
+          marking: null,
+        },
+      ],
+      package_id: null,
+    }))
+  ) as unknown as CdekCreatingOrderBody["packages"];
 
   return {
     type: 1,
@@ -49,16 +57,6 @@ export function buildCdekShipmentRegistrationBody(
       email: `${order?.email}`,
       phones: [{ number: `${validatePhone(order?.phone)}` }],
     },
-    packages: [
-      {
-        number: String(order.id),
-        weight: Number(cdekOrderProperties.baseWeight) * packageItems.length,
-        width: Number(cdekOrderProperties.width),
-        height: Number(cdekOrderProperties.height),
-        length: Number(cdekOrderProperties.length),
-        items: packageItems,
-        package_id: null,
-      },
-    ],
+    packages,
   };
 }
