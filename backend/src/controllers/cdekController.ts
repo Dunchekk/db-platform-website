@@ -126,7 +126,7 @@ class CdekController {
       );
 
       const normalizedDeliveryInfo = {
-        delivery_sum: deliveryInfo.delivery_sum,
+        delivery_sum: deliveryInfo.total_sum,
         period_min: deliveryInfo.calendar_min ?? deliveryInfo.period_min,
         period_max: deliveryInfo.calendar_max ?? deliveryInfo.period_max,
         currency: deliveryInfo.currency === "RUB" ? "₽" : deliveryInfo.currency,
