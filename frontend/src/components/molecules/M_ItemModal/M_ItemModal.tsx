@@ -5,6 +5,7 @@ import M_InfoInputs from "../M_InfoInputs/M_InfoInputs";
 import A_Button from "@/components/atoms/A_Button/A_Button";
 import {
   changeItem,
+  CreateItemPreviewUploadError,
   createItemWithPreview,
   getItems,
 } from "@/shared/api/objects";
@@ -173,6 +174,11 @@ const M_ItemModal = ({
         setIsModuleOpen(false);
       }
     } catch (e) {
+      if (e instanceof CreateItemPreviewUploadError) {
+        const data = await getItems();
+        setObjects(data);
+      }
+
       if (e instanceof Error) {
         showToast(`ошибка сохранения: ${e.message}`, "error");
       }
