@@ -3,10 +3,15 @@ import cls from "@/components/molecules/M_ItemModal/M_ItemModal.module.css";
 import M_Input from "../M_Input/M_Input";
 import M_InfoInputs from "../M_InfoInputs/M_InfoInputs";
 import A_Button from "@/components/atoms/A_Button/A_Button";
-import { changeItem, createItem, getItems } from "@/shared/api/objects";
+import {
+  changeItem,
+  createItemWithPreview,
+  getItems,
+} from "@/shared/api/objects";
 import { PayloadDbObject } from "@/shared/types/object.types";
 import { useObjects } from "@/features/objects/objects.store";
 import { parsePositiveInteger } from "@/shared/helpers/parsePositiveInteger";
+import M_InputFile from "../M_InputFile/M_InputFile";
 
 type Props = {
   className?: string;
@@ -61,6 +66,7 @@ const M_ItemModal = ({
   const [points, setPoints] = useState(initialPoints);
   const [info, setInfo] = useState(initialInfo);
   const [point, setPoint] = useState<string>("");
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -75,6 +81,7 @@ const M_ItemModal = ({
     setPoints([]);
     setInfo([]);
     setPoint("");
+    setPreviewFile(null);
   };
 
   const deleteInfo = (index: number) => {
@@ -158,7 +165,7 @@ const M_ItemModal = ({
         setObjects(data);
         setIsModuleOpen(false);
       } else {
-        await createItem(payload);
+        await createItemWithPreview(payload, previewFile);
         showToast("объект добавлен!", "success");
         clearInputs();
         const data = await getItems();
@@ -297,7 +304,19 @@ const M_ItemModal = ({
                 ✓
               </A_Button>
             </div>
-            <div></div>
+            {!isChange ? (
+              <>
+                <span className={cls.aboutpackage}>превью:</span>
+                <div className={cls.preview}>
+                  <M_InputFile
+                    className={cls.previewInput}
+                    file={previewFile}
+                    onChangeFile={setPreviewFile}
+                    accept="image/*"
+                  />
+                </div>
+              </>
+            ) : null}
           </div>
         </div>
         <A_Button className={cls.submit} type="submit" disabled={isSubmitting}>
