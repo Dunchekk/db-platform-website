@@ -11,7 +11,9 @@ class ItemController {
     try {
       const items = await prisma.item.findMany({
         include: {
-          images: true,
+          images: {
+            orderBy: { position: "asc" },
+          },
           points: true,
           info: true,
         },
