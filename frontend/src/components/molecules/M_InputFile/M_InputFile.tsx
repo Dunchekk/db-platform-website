@@ -10,10 +10,18 @@ type Props = {
 const M_InputFile = ({ className, file, onChangeFile, ...rest }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const clearFile = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+    onChangeFile?.(null);
+  };
+
   return (
     <div
       className={[cls.wrapper, className].filter(Boolean).join(" ")}
-      onClick={() => inputRef.current.click()}
+      onClick={() => inputRef.current?.click()}
     >
       <input
         {...rest}
@@ -22,9 +30,16 @@ const M_InputFile = ({ className, file, onChangeFile, ...rest }: Props) => {
         className={cls.input}
         onChange={(e) => onChangeFile(e.target.files?.[0] ?? null)}
       />
+      {file ? (
+        <button className={cls.clear} type="button" onClick={clearFile}>
+          X
+        </button>
+      ) : null}
       <span className={cls.active}>{"+"}</span>
 
-      <span>{file ? file.name : "Файл не выбран"}</span>
+      <span className={cls.fileName}>
+        {file ? file.name : "Файл не выбран"}
+      </span>
     </div>
   );
 };
