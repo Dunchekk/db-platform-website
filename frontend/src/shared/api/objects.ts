@@ -15,6 +15,25 @@ export const createItem = async (item: PayloadDbObject) => {
   return response;
 };
 
+export const createItemWithPreview = async (
+  item: PayloadDbObject,
+  previewFile?: File | null
+) => {
+  const createdItem = await createItem(item);
+
+  if (!previewFile) {
+    return createdItem;
+  }
+
+  try {
+    await uploadItemFile(createdItem.id, previewFile);
+  } catch {
+    throw new Error("объект создан, но превью не загрузилось");
+  }
+
+  return createdItem;
+};
+
 export const changeItem = async (itemId: number, item: PayloadDbObject) => {
   const response = await $authHost.put(ITEM_URL(itemId), item);
 
