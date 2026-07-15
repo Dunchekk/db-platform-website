@@ -8,7 +8,8 @@
     "build:prod": "webpack --env mode=production",
     "deploy:pages": "npm run build:prod && gh-pages -d docs",
     "start": "webpack serve --env mode=development",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "type-check": "tsc --noEmit"
   },
   "author": "dunchek",
   "license": "ISC",

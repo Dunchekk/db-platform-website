@@ -15,6 +15,32 @@ export const createItem = async (item: PayloadDbObject) => {
   return response;
 };
 
+export class CreateItemPreviewUploadError extends Error {
+  constructor() {
+    super("объект создан, но превью не загрузилось");
+    this.name = this.constructor.name;
+  }
+}
+
+export const createItemWithPreview = async (
+  item: PayloadDbObject,
+  previewFile?: File | null
+) => {
+  const createdItem = await createItem(item);
+
+  if (!previewFile) {
+    return createdItem;
+  }
+
+  try {
+    await uploadItemFile(createdItem.id, previewFile);
+  } catch {
+    throw new CreateItemPreviewUploadError();
+  }
+
+  return createdItem;
+};
+
 export const changeItem = async (itemId: number, item: PayloadDbObject) => {
   const response = await $authHost.put(ITEM_URL(itemId), item);
 

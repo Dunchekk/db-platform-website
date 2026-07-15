@@ -3,6 +3,10 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  position: relative;
+  gap: calc(var(--space) / 2);
+  text-align: center;
+  cursor: pointer;
 }
 
 .input {
@@ -14,6 +18,23 @@
 
 .active {
   text-decoration: none;
+}
+
+.fileName {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 
 .wrapper:hover .active {
