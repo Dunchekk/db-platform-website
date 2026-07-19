@@ -1,0 +1,23 @@
+.controls {
+  position: fixed;
+  right: var(--inner-buttons-padding);
+  bottom: var(--inner-buttons-padding);
+  z-index: 120;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space);
+}
+
+.orders,
+.close {
+  all: unset;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.orders:hover,
+.close:hover,
+.open {
+  text-decoration: underline;
+}

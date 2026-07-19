@@ -16,6 +16,7 @@ import A_Loader from "@/components/atoms/A_Loader/A_Loader";
 import { getItems } from "@/shared/api/objects";
 import { useObjects } from "@/features/objects/objects.store";
 import A_Toast from "@/components/atoms/A_Toast/A_Toast";
+import M_AdminOrdersWidget from "@/components/molecules/M_AdminOrdersWidget/M_AdminOrdersWidget";
 
 export default function App() {
   const navigate = useNavigate();
@@ -50,6 +51,7 @@ export default function App() {
 
   const [loading, setLoading] = useState<boolean>(false);
   const setIsAuth = useAuth((state) => state.setIsAuth);
+  const isAuth = useAuth((state) => state.isAuth);
   const setObjects = useObjects((state) => state.setObjects);
 
   const setIsAuthChecked = useAuth((state) => state.setIsAuthChecked);
@@ -117,6 +119,7 @@ export default function App() {
       <A_Circle />
       {openedLayers.includes("objects") && <A_CardButton />}
       <A_Cursor />
+      {isAuth ? <M_AdminOrdersWidget /> : null}
       {loading ? <A_Loader /> : null}
       {toast ? (
         <A_Toast
