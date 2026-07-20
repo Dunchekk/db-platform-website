@@ -17,6 +17,8 @@ import { getItems } from "@/shared/api/objects";
 import { useObjects } from "@/features/objects/objects.store";
 import A_Toast from "@/components/atoms/A_Toast/A_Toast";
 import M_AdminOrdersWidget from "@/components/molecules/M_AdminOrdersWidget/M_AdminOrdersWidget";
+import { useCheckoutItems } from "@/features/checkout/checkout.store";
+import type { DbObject } from "@/shared/types/object.types";
 
 export default function App() {
   const navigate = useNavigate();
@@ -86,8 +88,11 @@ export default function App() {
 
   useEffect(() => {
     getItems()
-      .then((data) => {
+      .then((data: DbObject[]) => {
         setObjects(data);
+        useCheckoutItems
+          .getState()
+          .removeUnavailableItems(data.map((item) => item.id));
       })
       .catch((err) => {
         console.error(err);
