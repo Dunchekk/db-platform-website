@@ -15,5 +15,7 @@ export const cdekOrderProperties = {
   name: "Дубовицкий Иван Максимович",
   inn: "0000000000000000",
   phone: "24567820957",
-  shipmentPoint: "",
+  // Код формы собственности по ОКФС — 16 («Частная собственность»). Для указанного в выписке российского ИП
+  ownershipForm: 16,
+  shipmentPoint: "MSK664",
 };
