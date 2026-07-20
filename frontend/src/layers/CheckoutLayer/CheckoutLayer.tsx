@@ -20,6 +20,42 @@ import type { CdekPackageParams } from "@/shared/types/cdek.types";
 const PAYMENT_STATUS_POLL_ATTEMPTS = 5;
 const PAYMENT_STATUS_POLL_DELAY = 1500;
 
+const generateCheckoutAttemptKey = () => {
+  const browserCrypto = globalThis.crypto;
+
+  if (
+    browserCrypto &&
+    typeof browserCrypto.randomUUID === "function"
+  ) {
+    return browserCrypto.randomUUID();
+  }
+
+  if (
+    browserCrypto &&
+    typeof browserCrypto.getRandomValues === "function"
+  ) {
+    const bytes = browserCrypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+    const hex = Array.from(bytes, (byte) =>
+      (byte + 0x100).toString(16).slice(1)
+    );
+
+    return [
+      hex.slice(0, 4).join(""),
+      hex.slice(4, 6).join(""),
+      hex.slice(6, 8).join(""),
+      hex.slice(8, 10).join(""),
+      hex.slice(10, 16).join(""),
+    ].join("-");
+  }
+
+  return `checkout-${Date.now().toString(36)}-${Math.random()
+    .toString(36)
+    .slice(2, 10)}`;
+};
+
 const CheckoutLayer = () => {
   const { pathname, search } = useLocation();
   const allObjects: DbObject[] = useObjects((state) => state.objects);
@@ -183,7 +219,7 @@ const CheckoutLayer = () => {
       return;
     }
 
-    let attemptKey;
+    let attemptKey: string;
 
     const newFingerPrint = JSON.stringify({
       items: [...cartItems].sort((a, b) => a.itemId - b.itemId),
@@ -201,7 +237,7 @@ const CheckoutLayer = () => {
     if (form.checkoutAttemptKey && form.fingerprint === newFingerPrint) {
       attemptKey = form.checkoutAttemptKey;
     } else {
-      attemptKey = crypto.randomUUID() as string;
+      attemptKey = generateCheckoutAttemptKey();
       setField("checkoutAttemptKey", attemptKey);
       setField("fingerprint", newFingerPrint);
     }
