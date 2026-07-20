@@ -31,6 +31,7 @@ export type CheckoutItemsStore = {
   items: CheckoutItem[];
   addItem: (itemId: number) => void;
   decreaseItem: (itemId: number) => void;
+  removeUnavailableItems: (availableItemIds: number[]) => void;
   clearItems: () => void;
   getAllQuantity: () => number;
 };

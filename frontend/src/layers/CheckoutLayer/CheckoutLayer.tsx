@@ -76,6 +76,11 @@ const CheckoutLayer = () => {
       };
     });
 
+  const validCartItems: CheckoutItem[] = cartObjects.map((object) => ({
+    itemId: object.id,
+    quantity: object.quantity,
+  }));
+
   // toast ↓
   const [toast, setToast] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -99,7 +104,7 @@ const CheckoutLayer = () => {
   // );
   const setField = useCheckoutFormInputs((state) => state.setField);
 
-  const isCartEmpty = cartItems.length === 0;
+  const isCartEmpty = validCartItems.length === 0;
 
   const subtotal = cartObjects.reduce((sum, object) => {
     return sum + object.price * object.quantity;
@@ -222,7 +227,7 @@ const CheckoutLayer = () => {
     let attemptKey: string;
 
     const newFingerPrint = JSON.stringify({
-      items: [...cartItems].sort((a, b) => a.itemId - b.itemId),
+      items: [...validCartItems].sort((a, b) => a.itemId - b.itemId),
       cityCode: form.city?.code ?? null,
       officeCode: form.office?.code ?? null,
       firstName: form.firstName.trim(),
@@ -256,7 +261,7 @@ const CheckoutLayer = () => {
       office: form.office,
       city: form.city,
       total: subtotal + deliveryPrice,
-      items: cartItems.map((item) => ({
+      items: validCartItems.map((item) => ({
         itemId: item.itemId,
         quantity: item.quantity,
       })),
@@ -308,7 +313,7 @@ const CheckoutLayer = () => {
         <O_CheckoutDeliveryFields
           className={cls.column}
           cartPackageParams={cartPackageParams}
-          cartItems={cartItems}
+          cartItems={validCartItems}
           isSubmitting={isSubmitting}
           isCartEmpty={isCartEmpty}
           showToast={showToast}

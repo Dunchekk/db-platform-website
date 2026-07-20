@@ -60,6 +60,20 @@ export const useCheckoutItems = create<CheckoutItemsStore>()(
         });
         resetDeliverySelection();
       },
+      removeUnavailableItems: (availableItemIds) => {
+        const availableItemIdsSet = new Set(availableItemIds);
+        const items = get().items;
+        const availableItems = items.filter((item) =>
+          availableItemIdsSet.has(item.itemId)
+        );
+
+        if (availableItems.length === items.length) {
+          return;
+        }
+
+        set({ items: availableItems });
+        resetDeliverySelection();
+      },
       clearItems: () => {
         set({ items: [] });
         resetDeliverySelection();
