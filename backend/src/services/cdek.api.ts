@@ -115,11 +115,13 @@ export async function suggestCdekOffices(
     throw ApiError.badRequest("City query must contain city cdek code");
   }
 
+  const weightMaxKg = Math.ceil(packageParams.weight / 1000);
+
   const params = new URLSearchParams({
     city_code: String(city_code),
     type: "ALL",
     country_code: cdekConfig.countryCode,
-    weight_max: String(packageParams.weight / 1000),
+    weight_max: String(weightMaxKg),
     length: String(packageParams.length),
     width: String(packageParams.width),
     height: String(packageParams.height),
