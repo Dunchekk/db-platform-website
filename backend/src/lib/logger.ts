@@ -47,8 +47,11 @@ export const logEvents = {
   cdekShipmentCreateSkippedExisting: "cdek_shipment_create_skipped_existing",
   cdekShipmentRestored: "cdek_shipment_restored",
   cdekShipmentPollRetry: "cdek_shipment_poll_retry",
+  cdekShipmentPollExhausted: "cdek_shipment_poll_exhausted",
   cdekShipmentInvalidStatus: "cdek_shipment_invalid_status",
   cdekShipmentCreatedConfirmed: "cdek_shipment_created_confirmed",
+  cdekShipmentCreateResponseReceived:
+    "cdek_shipment_create_response_received",
   cdekShipmentRemoteCreateSucceeded: "cdek_shipment_remote_create_succeeded",
   cdekShipmentRemoteCreateFailed: "cdek_shipment_remote_create_failed",
 } as const;
