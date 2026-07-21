@@ -189,10 +189,26 @@ export async function suggestCdekDeliveryPrice(
 //-------------------------
 
 export async function fetchCdekShipment(params: {
+  providerShipmentId?: string | null;
   trackingNumber?: string | null;
   orderId?: number | null;
 }) {
   const token = await getCdekToken();
+
+  if (params.providerShipmentId) {
+    const response = await fetchCdek(
+      `/orders/${encodeURIComponent(params.providerShipmentId)}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      }
+    );
+
+    return response.json() as Promise<cdekShipmentResponce>;
+  }
 
   const searchParams = new URLSearchParams();
 
@@ -206,7 +222,7 @@ export async function fetchCdekShipment(params: {
 
   if (!searchParams.size) {
     throw ApiError.badRequest(
-      "CDEK shipment lookup requires trackingNumber or orderId"
+      "CDEK shipment lookup requires providerShipmentId, trackingNumber or orderId"
     );
   }
 
