@@ -79,7 +79,11 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
       shipmentStatus: shipment.status,
       providerShipmentId: shipment.providerShipmentId,
     });
-    return shipment;
+    return waitForCdekShipment({
+      orderId,
+      providerShipmentId: shipment.providerShipmentId,
+      fetchShipment: fetchCdekShipment,
+    });
   }
 
   if (shipment.status === "PENDING" && !canCreateRemoteShipment) {
@@ -159,6 +163,15 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
     // проверка статуса (последнего во всех статусах)
     const lastRequest = responseBody.requests[responseBody.requests.length - 1];
 
+    logger.info(logEvents.cdekShipmentCreateResponseReceived, {
+      orderId,
+      shipmentId: shipment.id,
+      providerShipmentId: responseBody.entity?.uuid,
+      cdekRequestState: lastRequest?.state,
+      cdekRequestErrors: lastRequest?.errors,
+      cdekRequestWarnings: lastRequest?.warnings,
+    });
+
     if (!responseBody.entity?.uuid || lastRequest?.state === "INVALID") {
       const cdekError = lastRequest?.errors
         ?.map((item) => item.message)
@@ -181,10 +194,13 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
       orderId,
       shipmentId: shipment.id,
       providerShipmentId: responseBody.entity.uuid,
+      cdekRequestState: lastRequest?.state,
+      cdekRequestWarnings: lastRequest?.warnings,
     });
 
     return waitForCdekShipment({
       orderId,
+      providerShipmentId: responseBody.entity.uuid,
       fetchShipment: fetchCdekShipment,
     });
   } catch (e) {
