@@ -8,9 +8,19 @@ import path from "path";
 import { logEvents, logger } from "./lib/logger";
 dotenv.config();
 const PORT = process.env.PORT || 5000;
+const allowedCorsOrigins = (process.env.CORS_ORIGINS ?? "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 const app = express();
-app.use(cors()); // миддлвер для корс
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      callback(null, !origin || allowedCorsOrigins.includes(origin));
+    },
+  })
+); // миддлвер для корс
 app.use(express.json()); // миддлвер для жсонов
 app.use(express.static(path.resolve(__dirname, "static")));
 app.use("/api", apiRouter);
