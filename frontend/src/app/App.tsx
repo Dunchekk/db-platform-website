@@ -16,6 +16,9 @@ import A_Loader from "@/components/atoms/A_Loader/A_Loader";
 import { getItems } from "@/shared/api/objects";
 import { useObjects } from "@/features/objects/objects.store";
 import A_Toast from "@/components/atoms/A_Toast/A_Toast";
+import M_AdminOrdersWidget from "@/components/molecules/M_AdminOrdersWidget/M_AdminOrdersWidget";
+import { useCheckoutItems } from "@/features/checkout/checkout.store";
+import type { DbObject } from "@/shared/types/object.types";
 
 export default function App() {
   const navigate = useNavigate();
@@ -50,6 +53,7 @@ export default function App() {
 
   const [loading, setLoading] = useState<boolean>(false);
   const setIsAuth = useAuth((state) => state.setIsAuth);
+  const isAuth = useAuth((state) => state.isAuth);
   const setObjects = useObjects((state) => state.setObjects);
 
   const setIsAuthChecked = useAuth((state) => state.setIsAuthChecked);
@@ -84,8 +88,11 @@ export default function App() {
 
   useEffect(() => {
     getItems()
-      .then((data) => {
+      .then((data: DbObject[]) => {
         setObjects(data);
+        useCheckoutItems
+          .getState()
+          .removeUnavailableItems(data.map((item) => item.id));
       })
       .catch((err) => {
         console.error(err);
@@ -117,6 +124,7 @@ export default function App() {
       <A_Circle />
       {openedLayers.includes("objects") && <A_CardButton />}
       <A_Cursor />
+      {isAuth ? <M_AdminOrdersWidget /> : null}
       {loading ? <A_Loader /> : null}
       {toast ? (
         <A_Toast

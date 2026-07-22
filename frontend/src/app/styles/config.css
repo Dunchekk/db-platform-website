@@ -25,6 +25,7 @@
   --text-color-black-opacity: rgba(0, 0, 0, 0.6);
 
   --text-1-text-size: clamp(16px, calc(12.118px + 0.5vw), 18px);
+  --table-text-size: 70%;
 
   --text-2-text-size: clamp(24px, calc(12.118px + 0.6vw), 30px);
 

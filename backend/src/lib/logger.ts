@@ -47,8 +47,11 @@ export const logEvents = {
   cdekShipmentCreateSkippedExisting: "cdek_shipment_create_skipped_existing",
   cdekShipmentRestored: "cdek_shipment_restored",
   cdekShipmentPollRetry: "cdek_shipment_poll_retry",
+  cdekShipmentPollExhausted: "cdek_shipment_poll_exhausted",
   cdekShipmentInvalidStatus: "cdek_shipment_invalid_status",
   cdekShipmentCreatedConfirmed: "cdek_shipment_created_confirmed",
+  cdekShipmentCreateResponseReceived:
+    "cdek_shipment_create_response_received",
   cdekShipmentRemoteCreateSucceeded: "cdek_shipment_remote_create_succeeded",
   cdekShipmentRemoteCreateFailed: "cdek_shipment_remote_create_failed",
 } as const;
@@ -95,12 +98,19 @@ function serializePayload(
     return {};
   }
 
+  const seen = new WeakSet<object>();
+  // в serializeValue для массивов/объектов теперь возвращается "[Circular]",
+  // если объект уже встречался. Всё остальное оставил как было.
+
   return Object.fromEntries(
-    Object.entries(payload).map(([key, value]) => [key, serializeValue(value)])
+    Object.entries(payload).map(([key, value]) => [
+      key,
+      serializeValue(value, seen),
+    ])
   );
 }
 
-function serializeValue(value: unknown): unknown {
+function serializeValue(value: unknown, seen: WeakSet<object>): unknown {
   if (value instanceof Error) {
     return {
       name: value.name,
@@ -114,14 +124,26 @@ function serializeValue(value: unknown): unknown {
   }
 
   if (Array.isArray(value)) {
-    return value.map(serializeValue);
+    if (seen.has(value)) {
+      return "[Circular]";
+    }
+
+    seen.add(value);
+
+    return value.map((item) => serializeValue(item, seen));
   }
 
   if (value && typeof value === "object") {
+    if (seen.has(value)) {
+      return "[Circular]";
+    }
+
+    seen.add(value);
+
     return Object.fromEntries(
       Object.entries(value).map(([key, nestedValue]) => [
         key,
-        serializeValue(nestedValue),
+        serializeValue(nestedValue, seen),
       ])
     );
   }

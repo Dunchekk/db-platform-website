@@ -13,7 +13,9 @@ export const cdekOrderProperties = {
   fromCityCode: 44,
   tariffCode: 136,
   name: "Дубовицкий Иван Максимович",
-  inn: "0000000000000000",
-  phone: "24567820957",
-  shipmentPoint: "",
+  inn: "973302833571",
+  phone: "+79645556042",
+  // Код формы собственности по ОКФС — 16 («Частная собственность»). Для указанного в выписке российского ИП
+  ownershipForm: 16,
+  shipmentPoint: "MSK664",
 };

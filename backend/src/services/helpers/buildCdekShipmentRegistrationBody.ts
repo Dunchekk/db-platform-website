@@ -7,6 +7,7 @@ type CdekOrderPropertiesForRegistrationBody = {
   name: string;
   inn: string;
   phone: string;
+  ownershipForm: number;
   shipmentPoint: string;
 };
 
@@ -49,6 +50,7 @@ export function buildCdekShipmentRegistrationBody(
       name: cdekOrderProperties.name,
       inn: cdekOrderProperties.inn,
       phone: cdekOrderProperties.phone,
+      ownership_form: cdekOrderProperties.ownershipForm,
     },
     recipient: {
       name: [order.lastName, order.firstName, order.patronymic]

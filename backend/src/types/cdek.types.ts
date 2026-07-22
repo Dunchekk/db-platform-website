@@ -286,7 +286,7 @@ export type CdekCreatingOrderBody = {
     name?: string;
     inn?: string;
     phone?: string;
-    ownership_form?: null;
+    ownership_form?: number;
     address?: string;
   };
   recipient: {

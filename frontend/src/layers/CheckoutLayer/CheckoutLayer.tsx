@@ -20,6 +20,36 @@ import type { CdekPackageParams } from "@/shared/types/cdek.types";
 const PAYMENT_STATUS_POLL_ATTEMPTS = 5;
 const PAYMENT_STATUS_POLL_DELAY = 1500;
 
+const generateCheckoutAttemptKey = () => {
+  const browserCrypto = globalThis.crypto;
+
+  if (browserCrypto && typeof browserCrypto.randomUUID === "function") {
+    return browserCrypto.randomUUID();
+  }
+
+  if (browserCrypto && typeof browserCrypto.getRandomValues === "function") {
+    const bytes = browserCrypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+    const hex = Array.from(bytes, (byte) =>
+      (byte + 0x100).toString(16).slice(1)
+    );
+
+    return [
+      hex.slice(0, 4).join(""),
+      hex.slice(4, 6).join(""),
+      hex.slice(6, 8).join(""),
+      hex.slice(8, 10).join(""),
+      hex.slice(10, 16).join(""),
+    ].join("-");
+  }
+
+  return `checkout-${Date.now().toString(36)}-${Math.random()
+    .toString(36)
+    .slice(2, 10)}`;
+};
+
 const CheckoutLayer = () => {
   const { pathname, search } = useLocation();
   const allObjects: DbObject[] = useObjects((state) => state.objects);
@@ -28,7 +58,7 @@ const CheckoutLayer = () => {
     (state) => state.form.deliveryPrice
   );
 
-  // const clearItems = useCheckoutItems((state) => state.clearItems);
+  const clearItems = useCheckoutItems((state) => state.clearItems);
 
   const cartObjects: CartViewObject[] = allObjects
     .filter((object) => cartItems.some((item) => item.itemId === object.id))
@@ -39,6 +69,11 @@ const CheckoutLayer = () => {
         quantity: cartItem.quantity ?? 0,
       };
     });
+
+  const validCartItems: CheckoutItem[] = cartObjects.map((object) => ({
+    itemId: object.id,
+    quantity: object.quantity,
+  }));
 
   // toast ↓
   const [toast, setToast] = useState<string | null>(null);
@@ -63,7 +98,7 @@ const CheckoutLayer = () => {
   // );
   const setField = useCheckoutFormInputs((state) => state.setField);
 
-  const isCartEmpty = cartItems.length === 0;
+  const isCartEmpty = validCartItems.length === 0;
 
   const subtotal = cartObjects.reduce((sum, object) => {
     return sum + object.price * object.quantity;
@@ -113,6 +148,7 @@ const CheckoutLayer = () => {
         }
 
         if (response.isPaid) {
+          clearItems();
           showToast("Заказ оплачен, проверьте свою почту", "success");
           return;
         }
@@ -125,20 +161,20 @@ const CheckoutLayer = () => {
 
     syncPaymentStatus().catch((e) => {
       if (isCancelled) {
-        showToast(
-          "Не удалось подтвердить оплату. Проверьте свою почту, и, если что, напишите мне",
-          "error"
-        );
         return;
       }
 
+      showToast(
+        "Не удалось подтвердить оплату. Проверьте свою почту, и, если что, напишите мне",
+        "error"
+      );
       console.log(e);
     });
 
     return () => {
       isCancelled = true;
     };
-  }, [pathname, search]);
+  }, [clearItems, pathname, search]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -183,10 +219,10 @@ const CheckoutLayer = () => {
       return;
     }
 
-    let attemptKey;
+    let attemptKey: string;
 
     const newFingerPrint = JSON.stringify({
-      items: [...cartItems].sort((a, b) => a.itemId - b.itemId),
+      items: [...validCartItems].sort((a, b) => a.itemId - b.itemId),
       cityCode: form.city?.code ?? null,
       officeCode: form.office?.code ?? null,
       firstName: form.firstName.trim(),
@@ -201,7 +237,7 @@ const CheckoutLayer = () => {
     if (form.checkoutAttemptKey && form.fingerprint === newFingerPrint) {
       attemptKey = form.checkoutAttemptKey;
     } else {
-      attemptKey = crypto.randomUUID() as string;
+      attemptKey = generateCheckoutAttemptKey();
       setField("checkoutAttemptKey", attemptKey);
       setField("fingerprint", newFingerPrint);
     }
@@ -220,7 +256,7 @@ const CheckoutLayer = () => {
       office: form.office,
       city: form.city,
       total: subtotal + deliveryPrice,
-      items: cartItems.map((item) => ({
+      items: validCartItems.map((item) => ({
         itemId: item.itemId,
         quantity: item.quantity,
       })),
@@ -272,7 +308,7 @@ const CheckoutLayer = () => {
         <O_CheckoutDeliveryFields
           className={cls.column}
           cartPackageParams={cartPackageParams}
-          cartItems={cartItems}
+          cartItems={validCartItems}
           isSubmitting={isSubmitting}
           isCartEmpty={isCartEmpty}
           showToast={showToast}

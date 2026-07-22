@@ -2,6 +2,7 @@ import ApiError from "../error/ApiError";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^[\d+\-()\s]+$/;
+const RUSSIAN_PHONE_REGEX = /^\+7\d{10}$/;
 
 export const validateRequiredString = (
   value: string | undefined,
@@ -53,9 +54,21 @@ export const validatePhone = (phone: string | undefined): string => {
 
   const digitsOnly = normalized.replace(/\D/g, "");
 
-  if (digitsOnly.length < 10 || digitsOnly.length > 15) {
+  let cdekPhone: string;
+
+  if (digitsOnly.length === 10) {
+    cdekPhone = `+7${digitsOnly}`;
+  } else if (digitsOnly.length === 11 && digitsOnly.startsWith("8")) {
+    cdekPhone = `+7${digitsOnly.slice(1)}`;
+  } else if (digitsOnly.length === 11 && digitsOnly.startsWith("7")) {
+    cdekPhone = `+${digitsOnly}`;
+  } else {
     throw ApiError.badRequest("Phone format is invalid");
   }
 
-  return normalized;
+  if (!RUSSIAN_PHONE_REGEX.test(cdekPhone)) {
+    throw ApiError.badRequest("Phone format is invalid");
+  }
+
+  return cdekPhone;
 };
