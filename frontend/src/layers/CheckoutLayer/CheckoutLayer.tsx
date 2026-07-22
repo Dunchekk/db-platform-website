@@ -23,17 +23,11 @@ const PAYMENT_STATUS_POLL_DELAY = 1500;
 const generateCheckoutAttemptKey = () => {
   const browserCrypto = globalThis.crypto;
 
-  if (
-    browserCrypto &&
-    typeof browserCrypto.randomUUID === "function"
-  ) {
+  if (browserCrypto && typeof browserCrypto.randomUUID === "function") {
     return browserCrypto.randomUUID();
   }
 
-  if (
-    browserCrypto &&
-    typeof browserCrypto.getRandomValues === "function"
-  ) {
+  if (browserCrypto && typeof browserCrypto.getRandomValues === "function") {
     const bytes = browserCrypto.getRandomValues(new Uint8Array(16));
     bytes[6] = (bytes[6] & 0x0f) | 0x40;
     bytes[8] = (bytes[8] & 0x3f) | 0x80;
@@ -64,7 +58,7 @@ const CheckoutLayer = () => {
     (state) => state.form.deliveryPrice
   );
 
-  // const clearItems = useCheckoutItems((state) => state.clearItems);
+  const clearItems = useCheckoutItems((state) => state.clearItems);
 
   const cartObjects: CartViewObject[] = allObjects
     .filter((object) => cartItems.some((item) => item.itemId === object.id))
@@ -154,6 +148,7 @@ const CheckoutLayer = () => {
         }
 
         if (response.isPaid) {
+          clearItems();
           showToast("Заказ оплачен, проверьте свою почту", "success");
           return;
         }
@@ -166,20 +161,20 @@ const CheckoutLayer = () => {
 
     syncPaymentStatus().catch((e) => {
       if (isCancelled) {
-        showToast(
-          "Не удалось подтвердить оплату. Проверьте свою почту, и, если что, напишите мне",
-          "error"
-        );
         return;
       }
 
+      showToast(
+        "Не удалось подтвердить оплату. Проверьте свою почту, и, если что, напишите мне",
+        "error"
+      );
       console.log(e);
     });
 
     return () => {
       isCancelled = true;
     };
-  }, [pathname, search]);
+  }, [clearItems, pathname, search]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
