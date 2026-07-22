@@ -45,6 +45,25 @@ services:
 
     restart: unless-stopped
 
+  notification-worker:
+    build:
+      context: ./backend
+      args:
+        DATABASE_URL: ${DATABASE_URL}
+
+    container_name: db_platform_notification_worker
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    env_file:
+      - ./backend/.env
+
+    command: ["node", "dist/src/workers/notification.worker.js"]
+
+    restart: unless-stopped
+
   frontend:
     build:
       context: ./frontend
