@@ -1,8 +1,8 @@
-import "dotenv/config";
 import nodemailer from "nodemailer";
 import { prisma } from "../db";
 import { logEvents, logger } from "../lib/logger";
 import { buildConfirmationOrderMail } from "./helpers/buildConfirmationOrderMail";
+import { env } from "../config/env";
 
 // Nodemailer + SMTP обычного ящика Яндекс 360
 
@@ -11,8 +11,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_APP_PASSWORD,
+    user: env.MAIL_USER,
+    pass: env.MAIL_APP_PASSWORD,
   },
 });
 
@@ -59,7 +59,7 @@ export async function sendConfirmationOrderMail(orderId: number) {
     });
 
     const answer = await transporter.sendMail({
-      from: `"db" <${process.env.MAIL_USER}>`,
+      from: `"db" <${env.MAIL_USER}>`,
       to: order.email,
       subject,
       text,
