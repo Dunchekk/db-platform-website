@@ -6,7 +6,6 @@ import {
   getOrCreateCheckoutOrder,
   prepareOrderItems,
 } from "../services/order.service";
-import "dotenv/config";
 import { resolveCheckoutPayment } from "../services/yookassa.service";
 import { logEvents, logger } from "../lib/logger";
 import { buildCdekPackagesFromOrderItems } from "../services/helpers/buildCdekPackagesFromOrderItems";
