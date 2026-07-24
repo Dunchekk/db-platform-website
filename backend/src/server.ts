@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import express from "express";
 import { checkDb, prisma } from "./db";
 import cors from "cors";
@@ -6,9 +5,10 @@ import apiRouter from "./routes";
 import errorHandler from "./middleware/ErrorHandlingMiddleware";
 import path from "path";
 import { logEvents, logger } from "./lib/logger";
-dotenv.config();
-const PORT = process.env.PORT || 5000;
-const allowedCorsOrigins = (process.env.CORS_ORIGINS ?? "")
+import { env } from "./config/env";
+
+const PORT = env.PORT;
+const allowedCorsOrigins = env.CORS_ORIGINS
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
