@@ -1,10 +1,10 @@
-import { requiredEnv } from "./requiredEnv";
+import { env } from "../config/env";
 
 export function buildFrontendPaymentReturnUrl(
   orderId: number,
   paymentId: number
 ): string {
-  const baseReturnUrl = requiredEnv("FRONTEND_RETURN_URL");
+  const baseReturnUrl = env.FRONTEND_RETURN_URL;
   const returnUrl = new URL(baseReturnUrl);
 
   returnUrl.searchParams.set("paymentReturn", "1");
