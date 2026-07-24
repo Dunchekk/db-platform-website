@@ -1,6 +1,7 @@
 // backend/src/middleware/security.middleware.ts
 import type { RequestHandler } from "express";
 import { rateLimit } from "express-rate-limit";
+import { env } from "../config/env";
 
 export const loginRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -43,10 +44,10 @@ export const webhookRateLimiter = rateLimit({
 });
 
 export const verifyYouKassaWebhookSecret: RequestHandler = (req, res, next) => {
-  const expectedSecret = process.env.YOUKASSA_WEBHOOK_SECRET;
+  const expectedSecret = env.YOUKASSA_WEBHOOK_SECRET;
   const receivedSecret = req.params.secret;
 
-  if (!expectedSecret || receivedSecret !== expectedSecret) {
+  if (receivedSecret !== expectedSecret) {
     return res.sendStatus(404);
   }
 

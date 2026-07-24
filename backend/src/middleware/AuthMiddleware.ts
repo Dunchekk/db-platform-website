@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { jwtVerify } from "jose";
-import "dotenv/config";
+import { env } from "../config/env";
 
 const authMiddleware: RequestHandler = async (req, res, next) => {
   if (req.method === "OPTIONS") {
@@ -10,7 +10,7 @@ const authMiddleware: RequestHandler = async (req, res, next) => {
 
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Bearer lkdfmblfd...
-    const jwtSecret = new TextEncoder().encode(process.env.JWT_SECRET!);
+    const jwtSecret = new TextEncoder().encode(env.JWT_SECRET);
     if (!token) {
       return res.status(401).json({ message: "User is not authorized" });
     }
