@@ -2,6 +2,7 @@ import { Router } from "express";
 import { paymentController } from "../controllers/paymentController";
 import {
   paymentStatusRateLimiter,
+  verifyYouKassaWebhookSecret,
   webhookRateLimiter,
 } from "../middleware/Security.middleware";
 const paymentRouter = Router();
@@ -13,8 +14,9 @@ paymentRouter.get(
 );
 
 paymentRouter.post(
-  "/webhook/youkassa",
+  "/webhook/youkassa/:secret",
   webhookRateLimiter,
+  verifyYouKassaWebhookSecret,
   paymentController.handleYouKassaWebhook
 ); // для получения объектов
 

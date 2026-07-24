@@ -1,4 +1,5 @@
 // backend/src/middleware/security.middleware.ts
+import type { RequestHandler } from "express";
 import { rateLimit } from "express-rate-limit";
 
 export const loginRateLimiter = rateLimit({
@@ -40,3 +41,14 @@ export const webhookRateLimiter = rateLimit({
   legacyHeaders: false,
   message: { message: "Too many webhook requests" },
 });
+
+export const verifyYouKassaWebhookSecret: RequestHandler = (req, res, next) => {
+  const expectedSecret = process.env.YOUKASSA_WEBHOOK_SECRET;
+  const receivedSecret = req.params.secret;
+
+  if (!expectedSecret || receivedSecret !== expectedSecret) {
+    return res.sendStatus(404);
+  }
+
+  next();
+};
