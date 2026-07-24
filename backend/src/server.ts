@@ -14,6 +14,7 @@ const allowedCorsOrigins = (process.env.CORS_ORIGINS ?? "")
   .filter(Boolean);
 
 const app = express();
+app.set("trust proxy", 1); // иначе Express может видеть IP nginx/localhost, а не реального клиента. Тогда rate-limit будет считать всех одним человеком.
 app.use(
   cors({
     origin: (origin, callback) => {
