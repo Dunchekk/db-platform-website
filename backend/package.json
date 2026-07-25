@@ -10,7 +10,8 @@
     "generate": "npx prisma generate",
     "tcp": "nc -zv 172.27.112.1 5432",
     "lint": "eslint src prisma.config.ts",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
   },
   "author": "dunchek",
   "license": "ISC",
@@ -43,6 +44,7 @@
     "prettier": "^3.8.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.0"
+    "typescript-eslint": "^8.57.0",
+    "vitest": "^4.1.10"
   }
 }
