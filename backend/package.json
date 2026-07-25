@@ -11,9 +11,9 @@
     "tcp": "nc -zv 172.27.112.1 5432",
     "lint": "eslint src test prisma.config.ts",
     "type-check": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "npm run test:unit",
     "test:unit": "vitest run test/unit",
-    "test:integration": "vitest run test/integration"
+    "test:integration": "vitest run --config vitest.integration.config.ts"
   },
   "author": "dunchek",
   "license": "ISC",
