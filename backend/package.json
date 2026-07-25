@@ -9,7 +9,7 @@
     "worker:notifications": "ts-node-dev --transpile-only src/workers/notification.worker.ts",
     "generate": "npx prisma generate",
     "tcp": "nc -zv 172.27.112.1 5432",
-    "lint": "eslint src prisma.config.ts",
+    "lint": "eslint src test prisma.config.ts",
     "type-check": "tsc --noEmit",
     "test": "vitest run"
   },
