@@ -160,6 +160,35 @@ describe("POST /api/checkout", () => {
     expect(orderItemsCount).toBe(1);
     expect(paymentsCount).toBe(1);
   });
+
+  test("отклоняет заказ без товаров и ничего не сохраняет", async () => {
+    const item = await createTestItem();
+    const payload = {
+      ...buildCheckoutPayload(item.id, "checkout-attempt-empty-items"),
+      items: [],
+    };
+
+    const response = await request(app)
+      .post("/api/checkout")
+      .send(payload)
+      .expect(400);
+
+    expect(response.body).toEqual({
+      message: "Must be 1 item or more",
+    });
+
+    const [ordersCount, orderItemsCount, paymentsCount] = await Promise.all([
+      prisma.order.count(),
+      prisma.orderItem.count(),
+      prisma.payment.count(),
+    ]);
+
+    // перед каждым integration-тестом чистится БД (настройки в /backend/test/setup/integrationEnv.ts)
+    // так что тут действительно должны быть нули
+    expect(ordersCount).toBe(0);
+    expect(orderItemsCount).toBe(0);
+    expect(paymentsCount).toBe(0);
+  });
 });
 
 // helpers ↓
