@@ -21,7 +21,23 @@ vi.mock("../../src/services/yookassa.service", () => ({
   },
   CreatePayload: vi.fn(),
   resolveCheckoutPayment: vi.fn(
-    async (order: { id: number; total: number }) => {
+    async (order: {
+      id: number;
+      total: number;
+      currentPayment?: {
+        status: string;
+        confirmationUrl: string | null;
+      } | null;
+    }) => {
+      // если у заказа уже есть текущий PENDING payment с confirmationUrl,
+      // переиспользовать его (реальное поведение)
+      if (
+        order.currentPayment?.status === "PENDING" &&
+        order.currentPayment.confirmationUrl
+      ) {
+        return order.currentPayment;
+      }
+
       const { prisma } = await import("../../src/db");
       const payment = await prisma.payment.create({
         // mock создает настоящий Payment в тестовой БД.
@@ -61,65 +77,11 @@ const { prisma } = await import("../../src/db");
 
 describe("POST /api/checkout", () => {
   test("создаёт заказ с позициями и платежом", async () => {
-    const item = await prisma.item.create({
-      data: {
-        name: "Test item",
-        price: 1000,
-        position: 1,
-        packageWeightGrams: 500,
-        packageLengthCm: 20,
-        packageWidthCm: 10,
-        packageHeightCm: 5,
-      },
-    });
+    const item = await createTestItem();
 
     const response = await request(app)
       .post("/api/checkout")
-      .send({
-        checkoutAttemptKey: "checkout-attempt-1",
-        firstName: "Anna ",
-        lastName: "Test",
-        patronymic: "",
-        email: "Anna@example.com",
-        phone: "89991234567",
-        telegram: "@anna",
-        comment: "Позвонить перед доставкой",
-        deliveryPrice: 300,
-        subtotal: 2000,
-        total: 2300,
-        city: {
-          uuid: "city-uuid",
-          code: 44,
-          label: "Москва",
-          countryCode: "RU",
-        },
-        office: {
-          code: "PVZ-1",
-          uuid: "office-uuid",
-          type: "PVZ",
-          work_time: "10:00-20:00",
-          phones: [],
-          work_time_list: [],
-          location: {
-            country_code: "RU",
-            region_code: 77,
-            region: "Москва",
-            city_code: 44,
-            city: "Москва",
-            longitude: 37.62,
-            latitude: 55.75,
-            address: "Тестовый адрес",
-            address_full: "Москва, тестовый адрес",
-            city_uuid: "city-uuid",
-          },
-        },
-        items: [
-          {
-            itemId: item.id,
-            quantity: 2,
-          },
-        ],
-      })
+      .send(buildCheckoutPayload(item.id, "checkout-attempt-1"))
       .expect(200);
 
     expect(response.body).toEqual({
@@ -171,4 +133,95 @@ describe("POST /api/checkout", () => {
       confirmationUrl: "https://payment.example/confirm",
     });
   });
+
+  test("не создаёт дубль заказа при повторном checkoutAttemptKey", async () => {
+    const item = await createTestItem();
+    const payload = buildCheckoutPayload(item.id, "checkout-attempt-repeat");
+
+    const firstResponse = await request(app)
+      .post("/api/checkout")
+      .send(payload)
+      .expect(200);
+
+    const secondResponse = await request(app)
+      .post("/api/checkout")
+      .send(payload)
+      .expect(200);
+
+    expect(secondResponse.body).toEqual(firstResponse.body);
+
+    const [ordersCount, orderItemsCount, paymentsCount] = await Promise.all([
+      prisma.order.count(),
+      prisma.orderItem.count(),
+      prisma.payment.count(),
+    ]);
+
+    expect(ordersCount).toBe(1);
+    expect(orderItemsCount).toBe(1);
+    expect(paymentsCount).toBe(1);
+  });
 });
+
+// helpers ↓
+
+function createTestItem() {
+  return prisma.item.create({
+    data: {
+      name: "Test item",
+      price: 1000,
+      position: 1,
+      packageWeightGrams: 500,
+      packageLengthCm: 20,
+      packageWidthCm: 10,
+      packageHeightCm: 5,
+    },
+  });
+}
+
+function buildCheckoutPayload(itemId: number, checkoutAttemptKey: string) {
+  return {
+    checkoutAttemptKey,
+    firstName: "Anna",
+    lastName: "Test",
+    patronymic: "",
+    email: "anna@example.com",
+    phone: "89991234567",
+    telegram: "@anna",
+    comment: "Позвонить перед доставкой",
+    deliveryPrice: 300,
+    subtotal: 2000,
+    total: 2300,
+    city: {
+      uuid: "city-uuid",
+      code: 44,
+      label: "Москва",
+      countryCode: "RU",
+    },
+    office: {
+      code: "PVZ-1",
+      uuid: "office-uuid",
+      type: "PVZ",
+      work_time: "10:00-20:00",
+      phones: [],
+      work_time_list: [],
+      location: {
+        country_code: "RU",
+        region_code: 77,
+        region: "Москва",
+        city_code: 44,
+        city: "Москва",
+        longitude: 37.62,
+        latitude: 55.75,
+        address: "Тестовый адрес",
+        address_full: "Москва, тестовый адрес",
+        city_uuid: "city-uuid",
+      },
+    },
+    items: [
+      {
+        itemId,
+        quantity: 2,
+      },
+    ],
+  };
+}
