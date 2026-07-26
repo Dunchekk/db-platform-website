@@ -7,7 +7,11 @@ const { prisma } = await import("../../src/db");
 
 describe("GET /api/orders", () => {
   test("отклоняет запрос без токена", async () => {
-    await request(app).get("/api/orders").expect(401);
+    const response = await request(app).get("/api/orders").expect(401);
+
+    expect(response.body).toEqual({
+      message: "User is not authorized",
+    });
   });
 
   test("отклоняет пользователя без ADMIN роли", async () => {

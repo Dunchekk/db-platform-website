@@ -23,7 +23,9 @@ const authMiddleware: RequestHandler = async (req, res, next) => {
     };
     next();
   } catch (err) {
-    return res.status(401).json(err instanceof Error ? err.message : err);
+    return res.status(401).json({
+      message: err instanceof Error ? err.message : "User is not authorized",
+    });
   }
 };
 
