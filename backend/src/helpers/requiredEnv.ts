@@ -1,10 +1,5 @@
-import dotenv from "dotenv";
-dotenv.config();
+import { env } from "../config/env";
 
-export function requiredEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing env: ${name}`);
-  }
-  return value;
+export function requiredEnv(name: keyof typeof env): string {
+  return env[name];
 }

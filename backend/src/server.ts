@@ -1,22 +1,9 @@
-import dotenv from "dotenv";
-import express from "express";
 import { checkDb, prisma } from "./db";
-import cors from "cors";
-import apiRouter from "./routes";
-import errorHandler from "./middleware/ErrorHandlingMiddleware";
-import path from "path";
 import { logEvents, logger } from "./lib/logger";
-dotenv.config();
-const PORT = process.env.PORT || 5000;
+import { env } from "./config/env";
+import { app } from "./app";
 
-const app = express();
-app.use(cors()); // миддлвер для корс
-app.use(express.json()); // миддлвер для жсонов
-app.use(express.static(path.resolve(__dirname, "static")));
-app.use("/api", apiRouter);
-
-// мидлвер для ошибко должен быть замыкающим -- поэтому внутри него мы не вызвали next()
-app.use(errorHandler);
+const PORT = env.PORT;
 
 const start = async () => {
   try {

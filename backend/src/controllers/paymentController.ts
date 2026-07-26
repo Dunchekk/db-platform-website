@@ -1,5 +1,4 @@
 import type { NextFunction, Request, Response } from "express";
-import "dotenv/config";
 import { mapYooKassaStatus } from "../helpers/mapYooKassaStatus";
 import { prisma } from "../db";
 import { YouKassa } from "../services/yookassa.service";

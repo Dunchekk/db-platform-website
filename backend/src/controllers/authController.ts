@@ -1,12 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
 import ApiError from "../error/ApiError";
 import argon2 from "argon2";
-import "dotenv/config";
 import { SignJWT } from "jose";
+import { env } from "../config/env";
 
-const adminEmail = process.env.ADMIN_EMAIL!;
-const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH!;
-const jwtSecret = new TextEncoder().encode(process.env.JWT_SECRET!);
+const adminEmail = env.ADMIN_EMAIL;
+const adminPasswordHash = env.ADMIN_PASSWORD_HASH;
+const jwtSecret = new TextEncoder().encode(env.JWT_SECRET);
 
 class AuthController {
   async login(req: Request, res: Response, next: NextFunction) {

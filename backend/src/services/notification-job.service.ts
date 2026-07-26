@@ -2,8 +2,14 @@ import { prisma } from "../db";
 import { logEvents, logger } from "../lib/logger";
 import { sendConfirmationOrderMail } from "./mail.service";
 
+const NOTIFICATION_JOB_LOCK_TIMEOUT_MS = 15 * 60 * 1000;
+const STALE_LOCK_LAST_ERROR = "Notification job lock expired and was requeued";
+
 export async function claimNextNotificationJob() {
   const now = new Date();
+
+  await requeueStaleProcessingNotificationJobs(now);
+
   const pendingJob = await prisma.notificationJob.findFirst({
     where: {
       status: "PENDING",
@@ -64,6 +70,34 @@ export async function claimNextNotificationJob() {
       err: e,
     });
     return null;
+  }
+}
+
+async function requeueStaleProcessingNotificationJobs(now: Date) {
+  const lockedBefore = new Date(
+    now.getTime() - NOTIFICATION_JOB_LOCK_TIMEOUT_MS
+  );
+
+  const result = await prisma.notificationJob.updateMany({
+    where: {
+      status: "PROCESSING",
+      lockedAt: {
+        lt: lockedBefore,
+      },
+    },
+    data: {
+      status: "PENDING",
+      lockedAt: null,
+      lastError: STALE_LOCK_LAST_ERROR,
+    },
+  });
+
+  if (result.count > 0) {
+    logger.warn(logEvents.notificationJobRequeued, {
+      count: result.count,
+      lockedBefore,
+      reason: STALE_LOCK_LAST_ERROR,
+    });
   }
 }
 

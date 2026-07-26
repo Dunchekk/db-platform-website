@@ -7,12 +7,12 @@ import { shouldMarkProviderUnknown } from "../helpers/shouldMarkProviderUnknown"
 import { OrderWithCurrentPayment } from "../types/checkout.types";
 import { buildFrontendPaymentReturnUrl } from "../helpers/buildFrontendPaymentReturnUrl";
 
-import "dotenv";
 import { buildPaymentUpdateFromProvider } from "../helpers/buildPaymentUpdateFromProvider";
 import { logEvents, logger } from "../lib/logger";
+import { env } from "../config/env";
 
-const YOUKASSA_SECRET_KEY = process.env.YOUKASSA_SECRET_KEY as string;
-const SHOP_ID = process.env.SHOP_ID as string;
+const YOUKASSA_SECRET_KEY = env.YOUKASSA_SECRET_KEY;
+const SHOP_ID = env.SHOP_ID;
 
 export const YouKassa = new YooCheckout({
   shopId: SHOP_ID,

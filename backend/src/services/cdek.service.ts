@@ -1,4 +1,3 @@
-import "dotenv/config";
 import ApiError from "../error/ApiError";
 import { prisma } from "../db";
 import { Prisma } from "@prisma/client";

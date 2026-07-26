@@ -1,10 +1,10 @@
-import { requiredEnv } from "../helpers/requiredEnv";
+import { env } from "../config/env";
 
 export const cdekConfig = {
-  baseUrl: requiredEnv("CDEK_BASE_URL"),
-  clientId: requiredEnv("CDEK_CLIENT_ID"),
-  clientSecret: requiredEnv("CDEK_CLIENT_SECRET"),
-  countryCode: requiredEnv("CDEK_COUNTRY_CODE"),
+  baseUrl: env.CDEK_BASE_URL,
+  clientId: env.CDEK_CLIENT_ID,
+  clientSecret: env.CDEK_CLIENT_SECRET,
+  countryCode: env.CDEK_COUNTRY_CODE,
 };
 
 export const cdekOrderProperties = {
