@@ -12,7 +12,7 @@ type Props = {
 const A_Toast = ({
   type,
   message,
-  duration = 2500,
+  duration = 4000,
   className,
   onClose,
 }: Props) => {
