@@ -42,12 +42,12 @@ const M_itemCard = ({ object, className, showToast, ...rest }: Props) => {
 
               try {
                 await deleteItem(object.id);
-                showToast("объект удалён", "default");
+                showToast("Объект удалён", "default");
 
                 const data = await getItems();
                 setObjects(data);
               } catch (e) {
-                showToast("не удалось удалить объект.", "error");
+                showToast("Не удалось удалить объект", "error");
                 console.error("не удалось удалить объект:", e);
               }
             }}

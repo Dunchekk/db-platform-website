@@ -73,9 +73,9 @@ const M_PhotoesModal = ({
       await deleteItemFile(itemId, imageId);
       const data = await getItems();
       setObjects(data);
-      showToast("картинка удалена", "default");
+      showToast("Картинка удалена", "default");
     } catch (e) {
-      showToast("не удалось удалить картинку.", "error");
+      showToast("Не удалось удалить картинку", "error");
       console.error("не удалось удалить картинку:", e);
     } finally {
       setIsSubmitting(false);
@@ -91,12 +91,12 @@ const M_PhotoesModal = ({
 
     try {
       await uploadItemFile(objectId, file);
-      showToast("картинка добавлена", "success");
+      showToast("Картинка добавлена", "success");
       setFile(null);
       const data = await getItems();
       setObjects(data);
     } catch (e) {
-      showToast("не удалось загрузить картинку.", "error");
+      showToast("Не удалось загрузить картинку", "error");
       console.error("не удалось загрузить картинку:", e);
     } finally {
       setIsSubmitting(false);
@@ -124,7 +124,7 @@ const M_PhotoesModal = ({
 
     if (!image1 || !image2) {
       console.log("No item found");
-      showToast(`картинка не найдена`, "error");
+      showToast("Картинка не найдена", "error");
       return;
     }
 
@@ -136,7 +136,7 @@ const M_PhotoesModal = ({
       const data = await getItems();
       setObjects(data);
     } catch (e) {
-      showToast("не удалось переместить картинку.", "error");
+      showToast("Не удалось переместить картинку", "error");
       console.error("не удалось переместить картинку:", e);
     } finally {
       setIsSubmitting(false);

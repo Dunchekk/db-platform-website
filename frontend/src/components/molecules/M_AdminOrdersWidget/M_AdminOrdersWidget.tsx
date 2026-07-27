@@ -125,9 +125,9 @@ export default function M_AdminOrdersWidget() {
   const copyTrackingNumber = async (trackingNumber: string) => {
     try {
       await navigator.clipboard.writeText(trackingNumber);
-      showToast("скопировано!", "success");
+      showToast("Скопировано", "success");
     } catch {
-      showToast("не удалось скопировать", "error");
+      showToast("Не удалось скопировать", "error");
     }
   };
 

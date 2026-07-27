@@ -180,42 +180,42 @@ const CheckoutLayer = () => {
     e.preventDefault();
 
     if (isSubmitting) {
-      showToast("Оформляем заказ!", "success");
+      showToast("Оформляем заказ", "success");
       return;
     }
 
     if (isCartEmpty) {
-      showToast("добавьте что-нибудь в корзину", "error");
+      showToast("Добавьте что-нибудь в корзину", "error");
       return;
     } else if (!form.agreement) {
       showToast(
-        "необходимо согласие с публичной офертой и политикой обработки персональных данных",
+        "Необходимо согласие с публичной офертой и политикой обработки персональных данных",
         "error"
       );
       return;
     } else if (!form.firstName.trim()) {
-      showToast("пожалуйста, укажите ваше имя", "error");
+      showToast("Пожалуйста, укажите ваше имя", "error");
       return;
     } else if (!form.lastName.trim()) {
-      showToast("пожалуйста, укажите вашу фамилию", "error");
+      showToast("Пожалуйста, укажите вашу фамилию", "error");
       return;
     } else if (!form.email.trim()) {
-      showToast("пожалуйста, укажите ваш email", "error");
+      showToast("Пожалуйста, укажите ваш email", "error");
       return;
     } else if (!form.phone.trim()) {
-      showToast("пожалуйста, укажите ваш номер телефона", "error");
+      showToast("Пожалуйста, укажите ваш номер телефона", "error");
       return;
     } else if (typeof form.deliveryPrice !== "number") {
-      showToast("не удалось загрузить стоимость доставки", "error");
+      showToast("Не удалось загрузить стоимость доставки", "error");
       return;
     } else if (!subtotal) {
-      showToast("не удалось загрузить сумму заказа", "error");
+      showToast("Не удалось загрузить сумму заказа", "error");
       return;
     } else if (!form.city) {
-      showToast("пожалуйста, укажите город назначения для доставки", "error");
+      showToast("Пожалуйста, укажите город назначения для доставки", "error");
       return;
     } else if (!form.office) {
-      showToast("пожалуйста, укажите пункт назначения для доставки", "error");
+      showToast("Пожалуйста, укажите пункт назначения для доставки", "error");
       return;
     }
 
@@ -267,7 +267,7 @@ const CheckoutLayer = () => {
       const response = await createOrder(payload);
 
       if (response.alreadyPaid) {
-        showToast("этот заказ уже оплачен", "success");
+        showToast("Этот заказ уже оплачен", "success");
         return;
       }
 
@@ -284,7 +284,7 @@ const CheckoutLayer = () => {
       // clearItems();
       // showToast("----", "success"); // тут инфа о том куда приедет заказ + сделать рассылку на почту
     } catch (e) {
-      showToast("не получилось создать заказ.", "error");
+      showToast("Не получилось создать заказ", "error");
       console.error("не получилось создать заказ:", e);
     } finally {
       setTimeout(() => setIsSubmitting(false), 500);

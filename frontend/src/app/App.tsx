@@ -75,7 +75,7 @@ export default function App() {
     check()
       .then(() => {
         setIsAuth(true);
-        showToast("успешно авторизованы", "success");
+        showToast("Успешно авторизованы", "success");
       })
       .catch(() => {
         setIsAuth(false);
@@ -96,7 +96,7 @@ export default function App() {
       })
       .catch((err) => {
         console.error(err);
-        showToast("не удалось загрузить объекты", "error");
+        showToast("Не удалось загрузить объекты", "error");
       })
       .finally(() => {
         setObjectsReady(true);

@@ -121,7 +121,7 @@ const M_ItemModal = ({
     const pPackageHeightCm = parsePositiveInteger(packageHeightCm);
 
     if (!pName || !Number.isInteger(pPrice) || !Number.isInteger(pPosition)) {
-      showToast("не все обязательные поля заполнены", "error");
+      showToast("Не все обязательные поля заполнены", "error");
       return;
     }
 
@@ -131,7 +131,7 @@ const M_ItemModal = ({
       !pPackageWidthCm ||
       !pPackageHeightCm
     ) {
-      showToast("укажите вес и размеры упаковки целыми числами", "error");
+      showToast("Укажите вес и размеры упаковки целыми числами", "error");
       return;
     }
 
@@ -156,18 +156,18 @@ const M_ItemModal = ({
     try {
       if (isChange) {
         if (!obj) {
-          showToast("ни один объект не выделен", "error");
+          showToast("Ни один объект не выделен", "error");
           throw Error("No object selected");
         }
 
         await changeItem(obj.id, payload);
-        showToast("объект изменён!", "success");
+        showToast("Объект изменён", "success");
         const data = await getItems();
         setObjects(data);
         setIsModuleOpen(false);
       } else {
         await createItemWithPreview(payload, previewFile);
-        showToast("объект добавлен!", "success");
+        showToast("Объект добавлен", "success");
         clearInputs();
         const data = await getItems();
         setObjects(data);
@@ -179,7 +179,7 @@ const M_ItemModal = ({
         setObjects(data);
       }
 
-      showToast("ошибка сохранения.", "error");
+      showToast("Ошибка сохранения", "error");
       console.error("ошибка сохранения:", e);
     } finally {
       setIsSubmitting(false);

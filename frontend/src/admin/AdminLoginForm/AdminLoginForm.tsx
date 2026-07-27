@@ -31,11 +31,11 @@ const AdminLoginForm = () => {
     check()
       .then(() => {
         setIsAuth(true);
-        showToast("успешно авторизованы", "success");
+        showToast("Успешно авторизованы", "success");
       })
       .catch((e) => {
         setIsAuth(false);
-        showToast("требуется авторизация.", "error");
+        showToast("Требуется авторизация", "error");
         console.error("требуется авторизация:", e);
       });
   }, [setIsAuth]);
@@ -49,12 +49,12 @@ const AdminLoginForm = () => {
 
       setToken(response.token);
       setIsAuth(true);
-      showToast("успешно авторизованы", "success");
+      showToast("Успешно авторизованы", "success");
       setPassword("");
       setLogin("");
       navigate("/");
     } catch (err) {
-      showToast("требуется авторизация.", "error");
+      showToast("Требуется авторизация", "error");
       console.error("требуется авторизация:", err);
     }
   };
@@ -63,7 +63,7 @@ const AdminLoginForm = () => {
     setToken(null);
     setIsAuth(false);
     logout();
-    showToast("успешно разлогинились", "success");
+    showToast("Успешно разлогинились", "success");
     setPassword("");
     setLogin("");
     navigate("/");

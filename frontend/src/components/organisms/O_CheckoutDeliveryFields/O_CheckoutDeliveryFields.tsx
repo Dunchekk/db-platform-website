@@ -59,14 +59,14 @@ const O_CheckoutDeliveryFields = ({
 
   const loadOffices = async (cityCode: number): Promise<CdekOffice[]> => {
     if (!hasValidPackageParams) {
-      showToast("не удалось посчитать параметры упаковки заказа", "error");
+      showToast("Не удалось посчитать параметры упаковки заказа", "error");
       return [];
     }
 
     try {
       return await getOffices(cityCode, cartPackageParams);
     } catch (e) {
-      showToast("ошибка при загрузке пунктов выдачи.", "error");
+      showToast("Ошибка при загрузке пунктов выдачи", "error");
       console.error("ошибка при загрузке пунктов выдачи:", e);
       return [];
     }
@@ -87,7 +87,7 @@ const O_CheckoutDeliveryFields = ({
     try {
       newCities = await getCities(value);
     } catch (e) {
-      showToast("Ошибка при загрузке городов.", "error");
+      showToast("Ошибка при загрузке городов", "error");
       console.error("Ошибка при загрузке городов:", e);
     }
     setCities(newCities);
@@ -112,12 +112,12 @@ const O_CheckoutDeliveryFields = ({
     setField("office", office);
 
     if (!selectedCity) {
-      showToast("укажите город для получения", "error");
+      showToast("Укажите город для получения", "error");
       return;
     }
 
     if (!hasValidPackageParams) {
-      showToast("не удалось посчитать параметры упаковки заказа", "error");
+      showToast("Не удалось посчитать параметры упаковки заказа", "error");
       return;
     }
 
@@ -132,7 +132,7 @@ const O_CheckoutDeliveryFields = ({
       setQueryOffices(office.location.address);
       setIsOfficesOpen(false);
     } catch (e) {
-      showToast("ошибка загрузки цены доставки.", "error");
+      showToast("Ошибка загрузки цены доставки", "error");
       console.error("ошибка загрузки цены доставки:", e);
     }
   };
@@ -143,7 +143,7 @@ const O_CheckoutDeliveryFields = ({
     setQueryOffices(e.target.value);
 
     if (!selectedCity) {
-      showToast("укажите город для получения", "error");
+      showToast("Укажите город для получения", "error");
       return;
     }
 
@@ -268,7 +268,7 @@ const O_CheckoutDeliveryFields = ({
       <span
         onMouseEnter={() => {
           if (isCartEmpty) {
-            showToast("добавте что-то в корзину", "default");
+            showToast("Добавте что-то в корзину", "default");
           }
         }}
       >
