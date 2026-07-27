@@ -75,10 +75,8 @@ const M_PhotoesModal = ({
       setObjects(data);
       showToast("картинка удалена", "default");
     } catch (e) {
-      if (e instanceof Error) {
-        showToast(`не удалось удалить картинку: ${e.message}`, "error");
-      }
-      console.log(e);
+      showToast("не удалось удалить картинку.", "error");
+      console.error("не удалось удалить картинку:", e);
     } finally {
       setIsSubmitting(false);
     }
@@ -98,8 +96,8 @@ const M_PhotoesModal = ({
       const data = await getItems();
       setObjects(data);
     } catch (e) {
-      console.log(e);
-      showToast(`не удалось загрузить картинку: ${e.message}`, "error");
+      showToast("не удалось загрузить картинку.", "error");
+      console.error("не удалось загрузить картинку:", e);
     } finally {
       setIsSubmitting(false);
     }
@@ -138,8 +136,8 @@ const M_PhotoesModal = ({
       const data = await getItems();
       setObjects(data);
     } catch (e) {
-      console.log(e);
-      showToast(`не удалось переместить картинку: ${e.message}`, "error");
+      showToast("не удалось переместить картинку.", "error");
+      console.error("не удалось переместить картинку:", e);
     } finally {
       setIsSubmitting(false);
     }

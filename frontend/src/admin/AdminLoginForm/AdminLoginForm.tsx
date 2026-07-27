@@ -35,7 +35,8 @@ const AdminLoginForm = () => {
       })
       .catch((e) => {
         setIsAuth(false);
-        showToast(`${"требуется авторизация: " + e.message}`, "error");
+        showToast("требуется авторизация.", "error");
+        console.error("требуется авторизация:", e);
       });
   }, [setIsAuth]);
 
@@ -53,9 +54,8 @@ const AdminLoginForm = () => {
       setLogin("");
       navigate("/");
     } catch (err) {
-      if (err instanceof Error) {
-        showToast(`${"требуется авторизация: " + err.message}`, "error");
-      }
+      showToast("требуется авторизация.", "error");
+      console.error("требуется авторизация:", err);
     }
   };
 

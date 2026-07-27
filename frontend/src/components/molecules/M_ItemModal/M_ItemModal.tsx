@@ -179,10 +179,8 @@ const M_ItemModal = ({
         setObjects(data);
       }
 
-      if (e instanceof Error) {
-        showToast(`ошибка сохранения: ${e.message}`, "error");
-      }
-      console.log(e);
+      showToast("ошибка сохранения.", "error");
+      console.error("ошибка сохранения:", e);
     } finally {
       setIsSubmitting(false);
     }

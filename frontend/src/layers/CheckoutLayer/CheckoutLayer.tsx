@@ -168,7 +168,7 @@ const CheckoutLayer = () => {
         "Не удалось подтвердить оплату. Проверьте свою почту, и, если что, напишите мне",
         "error"
       );
-      console.log(e);
+      console.error("не удалось подтвердить оплату:", e);
     });
 
     return () => {
@@ -284,10 +284,8 @@ const CheckoutLayer = () => {
       // clearItems();
       // showToast("----", "success"); // тут инфа о том куда приедет заказ + сделать рассылку на почту
     } catch (e) {
-      if (e instanceof Error) {
-        showToast(`не получилось создать заказ: ${e.message}`, "error");
-      }
-      console.log(e);
+      showToast("не получилось создать заказ.", "error");
+      console.error("не получилось создать заказ:", e);
     } finally {
       setTimeout(() => setIsSubmitting(false), 500);
     }

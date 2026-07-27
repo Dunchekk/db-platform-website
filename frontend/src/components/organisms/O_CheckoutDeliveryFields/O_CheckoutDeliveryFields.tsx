@@ -66,11 +66,8 @@ const O_CheckoutDeliveryFields = ({
     try {
       return await getOffices(cityCode, cartPackageParams);
     } catch (e) {
-      if (e instanceof Error) {
-        showToast(`ошибка при загрузке пунктов выдачи: ${e.message}`, "error");
-      }
-
-      console.log(e);
+      showToast("ошибка при загрузке пунктов выдачи.", "error");
+      console.error("ошибка при загрузке пунктов выдачи:", e);
       return [];
     }
   };
@@ -90,7 +87,8 @@ const O_CheckoutDeliveryFields = ({
     try {
       newCities = await getCities(value);
     } catch (e) {
-      showToast(`Ошибка при загрузке городов: ${e.message}`, "error");
+      showToast("Ошибка при загрузке городов.", "error");
+      console.error("Ошибка при загрузке городов:", e);
     }
     setCities(newCities);
     setField("city", null);
@@ -134,10 +132,8 @@ const O_CheckoutDeliveryFields = ({
       setQueryOffices(office.location.address);
       setIsOfficesOpen(false);
     } catch (e) {
-      if (e instanceof Error) {
-        showToast(`ошибка загрузки цены доставки: ${e.message}`, "error");
-      }
-      console.log(e);
+      showToast("ошибка загрузки цены доставки.", "error");
+      console.error("ошибка загрузки цены доставки:", e);
     }
   };
 

@@ -47,10 +47,8 @@ const M_itemCard = ({ object, className, showToast, ...rest }: Props) => {
                 const data = await getItems();
                 setObjects(data);
               } catch (e) {
-                if (e instanceof Error) {
-                  showToast(`не удалось удалить объект: ${e.message}`, "error");
-                }
-                console.log(e);
+                showToast("не удалось удалить объект.", "error");
+                console.error("не удалось удалить объект:", e);
               }
             }}
             className={cls.delete}
