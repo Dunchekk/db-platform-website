@@ -1,5 +1,6 @@
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin, { Configuration } from "mini-css-extract-plugin";
+import CopyWebpackPlugin from "copy-webpack-plugin";
 import { BuildOptions } from "./types/types";
 // import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import { DefinePlugin } from "webpack";
@@ -14,12 +15,22 @@ export function buildPlugins(params: BuildOptions): Configuration["plugins"] {
   const plugins: Configuration["plugins"] = [
     new HtmlWebpackPlugin({
       template: params.paths.html,
-      favicon: path.resolve(params.paths.public, "favicon.svg"),
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(params.paths.public, "404.html"),
       filename: "404.html",
       inject: false,
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: params.paths.public,
+          to: ".",
+          globOptions: {
+            ignore: ["**/index.html", "**/404.html"],
+          },
+        },
+      ],
     }),
     new DefinePlugin({
       __PLATFORM__: JSON.stringify(params.platform),
