@@ -5,7 +5,7 @@ import {
   type InfoSectionId,
 } from "@/shared/types/info.types";
 
-type GetPathByStateParams = {
+export type GetPathByStateParams = {
   openedLayers: OverlayLayerId[];
   activeObjectId: string | null;
   activeInfoSection: InfoSectionId | null;
