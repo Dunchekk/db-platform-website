@@ -6,7 +6,6 @@ import { BuildOptions } from "./types/types";
 import { DefinePlugin } from "webpack";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import ReactRefrashWebpackPluguin from "@pmmmwh/react-refresh-webpack-plugin";
-import path from "path";
 
 export function buildPlugins(params: BuildOptions): Configuration["plugins"] {
   const isDev = params.mode === "development";
@@ -16,18 +15,13 @@ export function buildPlugins(params: BuildOptions): Configuration["plugins"] {
     new HtmlWebpackPlugin({
       template: params.paths.html,
     }),
-    new HtmlWebpackPlugin({
-      template: path.resolve(params.paths.public, "404.html"),
-      filename: "404.html",
-      inject: false,
-    }),
     new CopyWebpackPlugin({
       patterns: [
         {
           from: params.paths.public,
           to: ".",
           globOptions: {
-            ignore: ["**/index.html", "**/404.html"],
+            ignore: ["**/index.html"],
           },
         },
       ],
@@ -35,7 +29,7 @@ export function buildPlugins(params: BuildOptions): Configuration["plugins"] {
     new DefinePlugin({
       __PLATFORM__: JSON.stringify(params.platform),
       __API_URL__: JSON.stringify(
-        process.env.BACK_API_URL ?? "http://localhost:5000"
+        process.env.BACK_API_URL ?? "http://localhost:5000",
       ),
     }), // подменяет глобальные переменные на значения которые мы задаем при сборке
   ];
@@ -45,14 +39,14 @@ export function buildPlugins(params: BuildOptions): Configuration["plugins"] {
       new MiniCssExtractPlugin({
         filename: "css/[name].[contenthash:8].css",
         chunkFilename: "css/[name].[contenthash:8].css",
-      })
+      }),
     );
   }
 
   if (isDev) {
     plugins.push(
       new ForkTsCheckerWebpackPlugin(), // выносим проверку типов в отдельный процесс
-      new ReactRefrashWebpackPluguin()
+      new ReactRefrashWebpackPluguin(),
     );
   }
 
