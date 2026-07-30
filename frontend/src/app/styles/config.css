@@ -50,7 +50,7 @@
   --card-width-one: 32vw;
   --card-width-two: 25vw;
 
-  --info-buttons-width: 30vw;
+  --info-buttons-width: 35vw;
   --checkout-card-item-img-size: clamp(72px, 7vw, 220px);
   /* --checkout-card-item-img-size: 10vw; */
 

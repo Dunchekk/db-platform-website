@@ -21,8 +21,8 @@
   margin: 0;
 }
 
-.title {
-  margin-bottom: calc(var(--space) * 2);
+.content .title {
+  margin-bottom: calc(var(--space) * 1.5);
 }
 
 .section + .section {
@@ -36,7 +36,8 @@
 
 .point + .point,
 .point + .list,
-.list + .point {
+.list + .point,
+.section + .point {
   margin-top: calc(var(--space) * 2);
 }
 
@@ -46,6 +47,10 @@
 
 .details p + p {
   margin-top: calc(var(--space) * 2);
+}
+
+.revisionDate {
+  opacity: 0.6;
 }
 
 .list {

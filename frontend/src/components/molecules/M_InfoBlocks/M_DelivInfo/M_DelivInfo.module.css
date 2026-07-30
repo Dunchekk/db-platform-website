@@ -17,13 +17,12 @@
 
 .content p,
 .sectionTitle,
-.subsectionTitle,
 .list {
   margin: 0;
 }
 
-.title {
-  margin-bottom: calc(var(--space) * 2);
+.content .title {
+  margin-bottom: calc(var(--space) * 1.5);
 }
 
 .section + .section {
@@ -35,27 +34,27 @@
   margin-bottom: calc(var(--space) * 2);
 }
 
-.subsection + .subsection {
-  margin-top: calc(var(--space) * 3);
-}
-
-.subsectionTitle {
-  font: inherit;
-  margin-bottom: calc(var(--space) * 2);
-}
-
-.subsection p + p,
-.list + p {
+.point + .point,
+.point + .list,
+.list + .point,
+.section + .point {
   margin-top: calc(var(--space) * 2);
+}
+
+.details {
+  margin-top: calc(var(--space) * 2);
+}
+
+.details p + p {
+  margin-top: calc(var(--space) * 2);
+}
+
+.revisionDate {
+  opacity: 0.6;
 }
 
 .list {
   padding-left: calc(var(--space) * 2);
-}
-
-.subsection p + .list,
-.subsectionTitle + .list {
-  margin-top: calc(var(--space) * 2);
 }
 
 @media screen and (max-width: 1000px) {

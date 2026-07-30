@@ -28,8 +28,11 @@ const M_ContactInfo = ({ className, ...rest }: Props) => {
         </div>
         <div>
           <p>Дизайн и разработка:</p>
-          <p>Email: vasilevaevdokia875@gmail.com</p>
-          <p>Telegram: @dunchek</p>
+          <p>
+            Email: vasilevaevdokia875@gmail.com
+            <br />
+            Telegram: @dunchek
+          </p>
         </div>
       </div>
     </div>
