@@ -256,6 +256,7 @@ const CheckoutLayer = () => {
       office: form.office,
       city: form.city,
       total: subtotal + deliveryPrice,
+      agreement: form.agreement,
       items: validCartItems.map((item) => ({
         itemId: item.itemId,
         quantity: item.quantity,
