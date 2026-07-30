@@ -11,7 +11,7 @@ const M_ContactInfo = ({ className, ...rest }: Props) => {
         <p>
           Если возникли проблемы с заказом, доставкой и тому подобное, то
           быстрее всего решим, если напишете мне в телеграмме, отвечу в
-          ближайшие пару (?) дней. Почта тоже активна, но ответа, скорее всего,
+          ближайшие пару дней. Почта тоже активна, но ответа, скорее всего,
           придется ждать дольше.
         </p>
       </div>
@@ -19,16 +19,17 @@ const M_ContactInfo = ({ className, ...rest }: Props) => {
         <div>
           <p>Контакты:</p>
           <p>
-            Email: db-example@mail.ru
+            Email: contact@db-platform.ru
             <br />
-            Телефон: +7 495 123-45-67
+            Телефон: +7 964 555-60-42
             <br />
-            tg: @db-example
+            Telegram: @umni0enivblii
           </p>
         </div>
         <div>
           <p>Дизайн и разработка:</p>
-          <p>tg: @dunchek</p>
+          <p>Email: vasilevaevdokia875@gmail.com</p>
+          <p>Telegram: @dunchek</p>
         </div>
       </div>
     </div>
