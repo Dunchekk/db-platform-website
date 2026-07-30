@@ -30,10 +30,17 @@ class CheckoutController {
         // subtotal,
         // total,
         items,
+        agreement,
       }: ReqOrderBody = req.body;
 
       if (!checkoutAttemptKey) {
         throw ApiError.badRequest("checkoutAttemptKey is required");
+      }
+
+      if (agreement !== true) {
+        throw ApiError.badRequest(
+          "Personal data processing agreement is required"
+        );
       }
 
       if (!Array.isArray(items) || items.length <= 0) {
