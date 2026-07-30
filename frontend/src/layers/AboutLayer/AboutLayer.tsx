@@ -164,8 +164,6 @@ const AboutLayer = () => {
           </div>
         </div>
 
-        {/* убрать все nbsp позже */}
-
         <W_ScrollFadeBox className={cls.mobileScroll} height="100%">
           <p className={cls.mobileText}>
             Мне нравится создавать, и предметы, которые я создаю, получают
