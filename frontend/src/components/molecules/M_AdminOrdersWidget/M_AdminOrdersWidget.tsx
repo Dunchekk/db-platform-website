@@ -1,7 +1,7 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import cls from "@/components/molecules/M_AdminOrdersWidget/M_AdminOrdersWidget.module.css";
 import { useAuth } from "@/features/auth/auth.store";
-import { getAdminOrders } from "@/shared/api/adminOrders";
+import { getAdminOrders, retryOrderShipment } from "@/shared/api/adminOrders";
 import M_Input from "@/components/molecules/M_Input/M_Input";
 import A_Button from "@/components/atoms/A_Button/A_Button";
 import A_Toast from "@/components/atoms/A_Toast/A_Toast";
@@ -28,6 +28,9 @@ export default function M_AdminOrdersWidget() {
   const [sortBy, setSortBy] = useState<AdminOrderSortBy>("createdAt");
   const [sortDir, setSortDir] = useState<AdminOrderSortDir>("desc");
   const [isLoading, setIsLoading] = useState(false);
+  const [retryingShipmentOrderId, setRetryingShipmentOrderId] = useState<
+    number | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"error" | "success" | "default">(
@@ -128,6 +131,21 @@ export default function M_AdminOrdersWidget() {
       showToast("Скопировано", "success");
     } catch {
       showToast("Не удалось скопировать", "error");
+    }
+  };
+
+  const handleRetryShipment = async (orderId: number) => {
+    setRetryingShipmentOrderId(orderId);
+
+    try {
+      await retryOrderShipment(orderId);
+      showToast("Создание отправления запущено", "success");
+      await loadOrders();
+    } catch (e) {
+      showToast("Не удалось перезапустить доставку", "error");
+      console.error("не удалось перезапустить доставку:", e);
+    } finally {
+      setRetryingShipmentOrderId(null);
     }
   };
 
@@ -282,6 +300,17 @@ export default function M_AdminOrdersWidget() {
                             {order.shipment.providerShipmentId}
                           </span>
                         ) : null}
+                        {canRetryShipment(order) ? (
+                          <A_Button
+                            type="button"
+                            disabled={retryingShipmentOrderId === order.id}
+                            onClick={() => handleRetryShipment(order.id)}
+                          >
+                            {retryingShipmentOrderId === order.id
+                              ? "запуск..."
+                              : "повторить"}
+                          </A_Button>
+                        ) : null}
                       </td>
                       <td className={cls.unlimitedCell}>
                         <span title="итоговая сумма заказа">
@@ -367,4 +396,28 @@ function formatDate(value: string) {
 
 function formatMoney(value: number) {
   return `${value}\u00A0₽`;
+}
+
+function canRetryShipment(order: AdminOrder) {
+  const isPaid =
+    order.currentPayment?.status === "SUCCEEDED" ||
+    order.status === "PAID" ||
+    order.status === "FULFILLMENT_PENDING";
+
+  if (!isPaid) {
+    return false;
+  }
+
+  if (!order.shipment) {
+    return true;
+  }
+
+  if (
+    order.shipment.status === "FAILED" ||
+    order.shipment.status === "CANCELED"
+  ) {
+    return true;
+  }
+
+  return order.shipment.status === "PENDING" && !order.shipment.trackingNumber;
 }
