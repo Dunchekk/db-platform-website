@@ -126,33 +126,12 @@ class PaymentController {
 
       // обновляем статус заказа по событию
       if (event === "payment.succeeded") {
-        const order = await prisma.order.update({
-          where: { id: innerPayment.orderId },
-          data: {
-            status: "PAID",
-          },
-        });
-
-        logger.info(logEvents.orderMarkedPaidFromWebhook, {
+        await markCurrentPaymentOrderPaid({
+          orderId: innerPayment.orderId,
           paymentId: innerPayment.id,
-          orderId: order.id,
           providerPaymentId: innerPayment.providerPaymentId ?? actualPayment.id,
+          source: "webhook",
         });
-
-        try {
-          await createCdekShipmentForPaidOrder(order.id);
-        } catch (e) {
-          logger.error(logEvents.cdekShipmentCreateFailedForPaidOrder, {
-            paymentId: innerPayment.id,
-            orderId: order.id,
-            providerPaymentId: innerPayment.providerPaymentId ?? actualPayment.id,
-            err: e,
-          });
-          console.error("Failed to create CDEK shipment for paid order", {
-            orderId: order.id,
-            error: e,
-          });
-        }
       }
 
       if (event === "payment.canceled") {
@@ -243,6 +222,23 @@ class PaymentController {
         });
       }
 
+      if (actualPayment.status === "SUCCEEDED") {
+        const orderStatus = await markCurrentPaymentOrderPaid({
+          orderId: actualPayment.order.id,
+          paymentId: actualPayment.id,
+          providerPaymentId: actualPayment.providerPaymentId,
+          source: "status_check",
+        });
+
+        actualPayment = {
+          ...actualPayment,
+          order: {
+            ...actualPayment.order,
+            status: orderStatus,
+          },
+        };
+      }
+
       return res.json({
         orderId: actualPayment.order.id,
         paymentId: actualPayment.id,
@@ -260,3 +256,73 @@ class PaymentController {
 }
 
 export const paymentController = new PaymentController();
+
+type MarkPaidSource = "webhook" | "status_check";
+
+async function markCurrentPaymentOrderPaid({
+  orderId,
+  paymentId,
+  providerPaymentId,
+  source,
+}: {
+  orderId: number;
+  paymentId: number;
+  providerPaymentId?: string | null;
+  source: MarkPaidSource;
+}) {
+  const currentOrder = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { id: true, status: true, currentPaymentId: true },
+  });
+
+  if (!currentOrder || currentOrder.currentPaymentId !== paymentId) {
+    return currentOrder?.status ?? "PENDING_PAYMENT";
+  }
+
+  if (
+    currentOrder.status === "FULFILLMENT_PENDING" ||
+    currentOrder.status === "SHIPPED" ||
+    currentOrder.status === "DELIVERED"
+  ) {
+    return currentOrder.status;
+  }
+
+  const order =
+    currentOrder.status === "PAID"
+      ? currentOrder
+      : await prisma.order.update({
+          where: { id: orderId },
+          data: {
+            status: "PAID",
+          },
+          select: { id: true, status: true },
+        });
+
+  logger.info(
+    source === "webhook"
+      ? logEvents.orderMarkedPaidFromWebhook
+      : logEvents.orderMarkedPaidFromStatusCheck,
+    {
+      paymentId,
+      orderId: order.id,
+      providerPaymentId,
+    }
+  );
+
+  try {
+    await createCdekShipmentForPaidOrder(order.id);
+  } catch (e) {
+    logger.error(logEvents.cdekShipmentCreateFailedForPaidOrder, {
+      paymentId,
+      orderId: order.id,
+      providerPaymentId,
+      err: e,
+    });
+    console.error("Failed to create CDEK shipment for paid order", {
+      orderId: order.id,
+      error: e,
+    });
+  }
+
+  return order.status;
+}
