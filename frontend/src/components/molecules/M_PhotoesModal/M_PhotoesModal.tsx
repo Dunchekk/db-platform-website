@@ -42,8 +42,6 @@ const M_PhotoesModal = ({
         }))
     : [];
 
-  console.log(images);
-
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const setObjects = useObjects((state) => state.setObjects);
@@ -123,7 +121,6 @@ const M_PhotoesModal = ({
     const image2 = images.find((i) => i.id === image2Id);
 
     if (!image1 || !image2) {
-      console.log("No item found");
       showToast("Картинка не найдена", "error");
       return;
     }

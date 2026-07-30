@@ -24,8 +24,6 @@ const AboutLayer = () => {
     )
   );
 
-  console.log(images);
-
   useEffect(() => {
     const viewport = viewportRef.current;
     const track = trackRef.current;
