@@ -7,6 +7,10 @@ import { CheckOrderStatusParams } from "../types/checkout.types";
 import ApiError from "../error/ApiError";
 import { buildPaymentUpdateFromProvider } from "../helpers/buildPaymentUpdateFromProvider";
 import { logEvents, logger } from "../lib/logger";
+import {
+  withTimeout,
+  YOOKASSA_REQUEST_TIMEOUT_MS,
+} from "../helpers/withTimeout";
 
 class PaymentController {
   async handleYouKassaWebhook(req: Request, res: Response, next: NextFunction) {
@@ -36,7 +40,11 @@ class PaymentController {
       });
 
       // запрашиваем актуальный статус у провайдера
-      const actualPayment = await YouKassa.getPayment(object.id);
+      const actualPayment = await withTimeout(
+        YouKassa.getPayment(object.id),
+        YOOKASSA_REQUEST_TIMEOUT_MS,
+        "YooKassa get payment timed out"
+      );
 
       if (actualPayment.status !== object.status) {
         logger.warn(logEvents.paymentWebhookIgnoredStatusMismatch, {
@@ -195,7 +203,11 @@ class PaymentController {
         payment.providerPaymentId &&
         (payment.status === "PENDING" || payment.status === "PROVIDER_UNKNOWN")
       ) {
-        const providerPayment = await YouKassa.getPayment(payment.providerPaymentId);
+        const providerPayment = await withTimeout(
+          YouKassa.getPayment(payment.providerPaymentId),
+          YOOKASSA_REQUEST_TIMEOUT_MS,
+          "YooKassa get payment timed out"
+        );
 
         actualPayment = await prisma.payment.update({
           where: { id: payment.id },
