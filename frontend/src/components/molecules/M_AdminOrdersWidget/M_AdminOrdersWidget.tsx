@@ -10,6 +10,11 @@ import {
   AdminOrderSortBy,
   AdminOrderSortDir,
 } from "@/shared/types/admin-orders.types";
+import {
+  canRetryAdminOrderShipment,
+  formatAdminOrderDate,
+  formatAdminOrderMoney,
+} from "@/shared/helpers/adminOrdersView";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
@@ -216,7 +221,7 @@ export default function M_AdminOrdersWidget() {
                       <td>
                         <span title="внутренний номер заказа">#{order.id}</span>
                         <span title="дата создания заказа">
-                          {formatDate(order.createdAt)}
+                          {formatAdminOrderDate(order.createdAt)}
                         </span>
                       </td>
                       <td title="статус заказа">{order.status}</td>
@@ -300,7 +305,7 @@ export default function M_AdminOrdersWidget() {
                             {order.shipment.providerShipmentId}
                           </span>
                         ) : null}
-                        {canRetryShipment(order) ? (
+                        {canRetryAdminOrderShipment(order) ? (
                           <A_Button
                             type="button"
                             disabled={retryingShipmentOrderId === order.id}
@@ -314,13 +319,13 @@ export default function M_AdminOrdersWidget() {
                       </td>
                       <td className={cls.unlimitedCell}>
                         <span title="итоговая сумма заказа">
-                          {formatMoney(order.total)}
+                          {formatAdminOrderMoney(order.total)}
                         </span>
                         <span title="стоимость товаров из корзины">
-                          товары: {formatMoney(order.subtotal)}
+                          товары: {formatAdminOrderMoney(order.subtotal)}
                         </span>
                         <span title="стоимость доставки">
-                          доставка: {formatMoney(order.deliveryPrice)}
+                          доставка: {formatAdminOrderMoney(order.deliveryPrice)}
                         </span>
                       </td>
                     </tr>
@@ -382,42 +387,4 @@ export default function M_AdminOrdersWidget() {
       ) : null}
     </>
   );
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("ru-RU", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(value));
-}
-
-function formatMoney(value: number) {
-  return `${value}\u00A0₽`;
-}
-
-function canRetryShipment(order: AdminOrder) {
-  const isPaid =
-    order.currentPayment?.status === "SUCCEEDED" ||
-    order.status === "PAID" ||
-    order.status === "FULFILLMENT_PENDING";
-
-  if (!isPaid) {
-    return false;
-  }
-
-  if (!order.shipment) {
-    return true;
-  }
-
-  if (
-    order.shipment.status === "FAILED" ||
-    order.shipment.status === "CANCELED"
-  ) {
-    return true;
-  }
-
-  return order.shipment.status === "PENDING" && !order.shipment.trackingNumber;
 }
