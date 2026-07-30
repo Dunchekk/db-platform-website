@@ -25,6 +25,13 @@ process.env.CDEK_BASE_URL ??= "http://localhost:5001";
 process.env.CDEK_CLIENT_ID ??= "test-cdek-client-id";
 process.env.CDEK_CLIENT_SECRET ??= "test-cdek-client-secret";
 process.env.CDEK_COUNTRY_CODE ??= "RU";
+process.env.CDEK_FROM_CITY_CODE ??= "44";
+process.env.CDEK_TARIFF_CODE ??= "136";
+process.env.CDEK_SELLER_NAME ??= "Test Seller";
+process.env.CDEK_SELLER_INN ??= "1234567890";
+process.env.CDEK_SELLER_PHONE ??= "+79999999999";
+process.env.CDEK_SELLER_OWNERSHIP_FORM ??= "16";
+process.env.CDEK_SHIPMENT_POINT ??= "MSK001";
 process.env.MAIL_USER ??= "test@example.com";
 process.env.MAIL_APP_PASSWORD ??= "test-mail-password";
 

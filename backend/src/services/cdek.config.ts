@@ -10,12 +10,22 @@ export const cdekConfig = {
 export const cdekOrderProperties = {
   weightMin: null, // Минимальный вес (в кг.), принимаемый в ПВЗ (> WeightMin)
   weightMax: "0", // Максимальный вес (в кг.), принимаемый в ПВЗ (<=WeightMax)
-  fromCityCode: 44,
-  tariffCode: 136,
-  name: "Дубовицкий Иван Максимович",
-  inn: "973302833571",
-  phone: "+79645556042",
-  // Код формы собственности по ОКФС — 16 («Частная собственность»). Для указанного в выписке российского ИП
-  ownershipForm: 16,
-  shipmentPoint: "MSK664",
+  fromCityCode: parseRequiredIntegerEnv("CDEK_FROM_CITY_CODE"),
+  tariffCode: parseRequiredIntegerEnv("CDEK_TARIFF_CODE"),
+  name: env.CDEK_SELLER_NAME,
+  inn: env.CDEK_SELLER_INN,
+  phone: env.CDEK_SELLER_PHONE,
+  // Код формы собственности по ОКФС.
+  ownershipForm: parseRequiredIntegerEnv("CDEK_SELLER_OWNERSHIP_FORM"),
+  shipmentPoint: env.CDEK_SHIPMENT_POINT,
 };
+
+function parseRequiredIntegerEnv(name: keyof typeof env) {
+  const value = Number(env[name]);
+
+  if (!Number.isInteger(value)) {
+    throw new Error(`${name} must be an integer`);
+  }
+
+  return value;
+}
