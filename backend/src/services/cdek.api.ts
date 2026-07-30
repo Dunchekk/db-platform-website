@@ -13,12 +13,22 @@ import {
 } from "../types/cdek.types";
 import { cdekConfig, cdekOrderProperties } from "./cdek.config";
 
+const CDEK_REQUEST_TIMEOUT_MS = 10_000;
+
 let cachedToken: string | null = null;
 let tokenExpiresAt = 0;
 
 export async function fetchCdek(path: string, init: RequestInit) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, CDEK_REQUEST_TIMEOUT_MS);
+
   try {
-    const response = await fetch(`${cdekConfig.baseUrl}${path}`, init);
+    const response = await fetch(`${cdekConfig.baseUrl}${path}`, {
+      ...init,
+      signal: controller.signal,
+    });
 
     if (!response.ok) {
       const text = await response.text();
@@ -47,6 +57,8 @@ export async function fetchCdek(path: string, init: RequestInit) {
     }
 
     throw ApiError.serviceUnavailable("CDEK is unavailable");
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
