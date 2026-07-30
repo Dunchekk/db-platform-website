@@ -2,6 +2,8 @@ import { Prisma } from "@prisma/client";
 import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../db";
 import ApiError from "../error/ApiError";
+import { parseIdParam } from "../helpers/parseIdParam";
+import { createCdekShipmentForPaidOrder } from "../services/cdek.service";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
@@ -105,6 +107,45 @@ class OrdersController {
         sortDir,
         search: search || null,
       });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async retryShipment(req: Request, res: Response, next: NextFunction) {
+    try {
+      const orderId = parseIdParam(req.params.id);
+
+      const order = await prisma.order.findUnique({
+        where: {
+          id: orderId,
+        },
+        select: {
+          id: true,
+          status: true,
+          currentPayment: {
+            select: {
+              status: true,
+            },
+          },
+        },
+      });
+
+      if (!order) {
+        throw ApiError.notFound("Order not found");
+      }
+
+      if (
+        order.currentPayment?.status !== "SUCCEEDED" &&
+        order.status !== "PAID" &&
+        order.status !== "FULFILLMENT_PENDING"
+      ) {
+        throw ApiError.badRequest("Shipment retry requires a paid order");
+      }
+
+      const shipment = await createCdekShipmentForPaidOrder(order.id);
+
+      return res.json(shipment);
     } catch (error) {
       return next(error);
     }
