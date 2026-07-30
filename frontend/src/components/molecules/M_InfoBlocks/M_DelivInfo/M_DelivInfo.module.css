@@ -10,6 +10,54 @@
   --info-block-right-height: var(--max-main-box-height);
 }
 
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.content p,
+.sectionTitle,
+.subsectionTitle,
+.list {
+  margin: 0;
+}
+
+.title {
+  margin-bottom: calc(var(--space) * 2);
+}
+
+.section + .section {
+  margin-top: calc(var(--space) * 3);
+}
+
+.sectionTitle {
+  font: inherit;
+  margin-bottom: calc(var(--space) * 2);
+}
+
+.subsection + .subsection {
+  margin-top: calc(var(--space) * 3);
+}
+
+.subsectionTitle {
+  font: inherit;
+  margin-bottom: calc(var(--space) * 2);
+}
+
+.subsection p + p,
+.list + p {
+  margin-top: calc(var(--space) * 2);
+}
+
+.list {
+  padding-left: calc(var(--space) * 2);
+}
+
+.subsection p + .list,
+.subsectionTitle + .list {
+  margin-top: calc(var(--space) * 2);
+}
+
 @media screen and (max-width: 1000px) {
   .left {
     width: 100%;
