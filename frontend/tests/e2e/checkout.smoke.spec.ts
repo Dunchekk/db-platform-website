@@ -131,6 +131,7 @@ test("покупатель может оформить заказ до пере�
     deliveryPrice: 300,
     subtotal: 1200,
     total: 1500,
+    agreement: true,
     city: testCity,
     office: testOffice,
     items: [
