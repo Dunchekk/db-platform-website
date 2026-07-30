@@ -3,7 +3,6 @@ import App from "@/app/App";
 import { RouteObject } from "react-router";
 
 type Routes = RouteObject[];
-const isAuth: boolean = true;
 
 const baseRoutes: Routes = [
   {
@@ -34,22 +33,17 @@ const baseRoutes: Routes = [
     path: "/object/:id/checkout",
     element: <App />,
   },
+  {
+    path: "/admin",
+    element: <Admin />,
+  },
 ];
 
-const authRote: Routes = isAuth
-  ? [
-      {
-        path: "/admin",
-        element: <Admin />,
-      },
-    ]
-  : [];
-
-const restRoutes = [
+const restRoutes: Routes = [
   {
     path: "*",
     element: <App />,
   },
 ];
 
-export const routes = [...baseRoutes, ...authRote, ...restRoutes];
+export const routes = [...baseRoutes, ...restRoutes];
