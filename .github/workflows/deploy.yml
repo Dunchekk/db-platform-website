@@ -114,12 +114,21 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           command_timeout: 30m
           script: |
+            # Останавливаем deploy при первой ошибке, чтобы не продолжать
+            # миграции/рестарт после неудачного шага.
             set -e
 
             cd /opt/db-platform
 
             echo "Pull latest code"
             git pull --ff-only origin main
+
+            # Backup делаем до build: если backup упадёт и safety trap
+            # вернёт app-сервисы, поднимется старая рабочая версия.
+            # Перед миграциями сохраняем БД и uploads. В deploy-режиме backend
+            # и worker остаются остановленными до общего docker compose up -d.
+            echo "Backup production data before migrations"
+            BACKUP_LEAVE_APP_STOPPED=1 ./scripts/backup-prod.sh
 
             echo "Build backend without BuildKit"
             DOCKER_BUILDKIT=0 COMPOSE_DOCKER_CLI_BUILD=0 docker compose --env-file .env -f docker-compose.prod.yml build backend
@@ -130,9 +139,12 @@ jobs:
             echo "Build frontend without BuildKit"
             DOCKER_BUILDKIT=0 COMPOSE_DOCKER_CLI_BUILD=0 docker compose --env-file .env -f docker-compose.prod.yml build frontend
 
+            # Prisma migrations меняют production-схему БД, поэтому backup
+            # выше должен быть сделан до этого шага.
             echo "Run Prisma migrations"
             docker compose --env-file .env -f docker-compose.prod.yml run --rm backend npx prisma migrate deploy
 
+            # Поднимаем все сервисы уже после успешных миграций.
             echo "Start containers"
             docker compose --env-file .env -f docker-compose.prod.yml up -d
 

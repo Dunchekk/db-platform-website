@@ -19,12 +19,6 @@ export function buildLoaders(options: BuildOptions): ModuleOptions["rules"] {
     type: "asset/resource",
   };
 
-  const svgrLoader = {
-    test: /\.svg$/i,
-    issuer: /\.[jt]sx?$/,
-    use: [{ loader: "@svgr/webpack", options: { icon: true } }],
-  };
-
   const cssModuleLoader = {
     test: /\.module\.css$/i,
     use: [
@@ -76,12 +70,5 @@ export function buildLoaders(options: BuildOptions): ModuleOptions["rules"] {
     ],
   };
 
-  return [
-    accetLoader,
-    svgAssetLoader,
-    cssModuleLoader,
-    cssLoader,
-    tsLoader,
-    svgrLoader,
-  ];
+  return [accetLoader, svgAssetLoader, cssModuleLoader, cssLoader, tsLoader];
 }

@@ -5,11 +5,15 @@ import { buildConfirmationOrderMail } from "./helpers/buildConfirmationOrderMail
 import { env } from "../config/env";
 
 // Nodemailer + SMTP обычного ящика Яндекс 360
+const SMTP_TIMEOUT_MS = 15_000;
 
 const transporter = nodemailer.createTransport({
   host: "smtp.yandex.ru",
   port: 465,
   secure: true,
+  connectionTimeout: SMTP_TIMEOUT_MS,
+  greetingTimeout: SMTP_TIMEOUT_MS,
+  socketTimeout: SMTP_TIMEOUT_MS,
   auth: {
     user: env.MAIL_USER,
     pass: env.MAIL_APP_PASSWORD,

@@ -56,7 +56,7 @@ const O_CheckoutCartSummary = ({
               <span
                 onMouseEnter={() =>
                   showToast(
-                    "ввдеите данные о доставке, чтобы узнать итоговую цену",
+                    "Ввдеите данные о доставке, чтобы узнать итоговую цену",
                     "default"
                   )
                 }
@@ -89,7 +89,7 @@ const O_CheckoutCartSummary = ({
             <span
               onMouseEnter={() =>
                 showToast(
-                  "ввдеите данные о доставке, чтобы узнать итоговую цену",
+                  "Ввдеите данные о доставке, чтобы узнать итоговую цену",
                   "default"
                 )
               }

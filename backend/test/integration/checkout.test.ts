@@ -189,6 +189,33 @@ describe("POST /api/checkout", () => {
     expect(orderItemsCount).toBe(0);
     expect(paymentsCount).toBe(0);
   });
+
+  test("отклоняет заказ без согласия и ничего не сохраняет", async () => {
+    const item = await createTestItem();
+    const payload = {
+      ...buildCheckoutPayload(item.id, "checkout-attempt-no-agreement"),
+      agreement: false,
+    };
+
+    const response = await request(app)
+      .post("/api/checkout")
+      .send(payload)
+      .expect(400);
+
+    expect(response.body).toEqual({
+      message: "Personal data processing agreement is required",
+    });
+
+    const [ordersCount, orderItemsCount, paymentsCount] = await Promise.all([
+      prisma.order.count(),
+      prisma.orderItem.count(),
+      prisma.payment.count(),
+    ]);
+
+    expect(ordersCount).toBe(0);
+    expect(orderItemsCount).toBe(0);
+    expect(paymentsCount).toBe(0);
+  });
 });
 
 // helpers ↓
@@ -220,6 +247,7 @@ function buildCheckoutPayload(itemId: number, checkoutAttemptKey: string) {
     deliveryPrice: 300,
     subtotal: 2000,
     total: 2300,
+    agreement: true,
     city: {
       uuid: "city-uuid",
       code: 44,

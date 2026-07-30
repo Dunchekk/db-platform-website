@@ -24,8 +24,6 @@ const AboutLayer = () => {
     )
   );
 
-  console.log(images);
-
   useEffect(() => {
     const viewport = viewportRef.current;
     const track = trackRef.current;
@@ -165,8 +163,6 @@ const AboutLayer = () => {
             </p>
           </div>
         </div>
-
-        {/* убрать все nbsp позже */}
 
         <W_ScrollFadeBox className={cls.mobileScroll} height="100%">
           <p className={cls.mobileText}>

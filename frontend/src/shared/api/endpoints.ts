@@ -2,6 +2,8 @@ export const AUTH_LOGIN_URL = "/api/auth/login";
 export const AUTH_SESSION_URL = "/api/auth/session";
 
 export const ORDERS_URL = "/api/orders";
+export const ORDER_RETRY_SHIPMENT_URL = (orderId: number | string) =>
+  `/api/orders/${orderId}/retry-shipment`;
 
 export const ITEMS_URL = "/api/items";
 export const ITEM_URL = (id: number | string) => `/api/items/${id}`;

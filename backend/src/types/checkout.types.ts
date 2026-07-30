@@ -16,6 +16,7 @@ export type ReqOrderBody = {
   items: ReqOrderItem[];
   office: CdekOfficeFromFront;
   city: CdekSuggestedCityFromFront;
+  agreement: boolean;
 };
 
 export type PreparedOrderItem = {

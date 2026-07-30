@@ -28,6 +28,7 @@ export const logEvents = {
   paymentWebhookPaymentNotFound: "payment_webhook_payment_not_found",
   paymentStatusUpdatedFromWebhook: "payment_status_updated_from_webhook",
   orderMarkedPaidFromWebhook: "order_marked_paid_from_webhook",
+  orderMarkedPaidFromStatusCheck: "order_marked_paid_from_status_check",
   orderMarkedPendingPaymentFromWebhook:
     "order_marked_pending_payment_from_webhook",
   cdekShipmentCreateFailedForPaidOrder:

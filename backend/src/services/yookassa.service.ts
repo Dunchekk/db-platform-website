@@ -10,6 +10,10 @@ import { buildFrontendPaymentReturnUrl } from "../helpers/buildFrontendPaymentRe
 import { buildPaymentUpdateFromProvider } from "../helpers/buildPaymentUpdateFromProvider";
 import { logEvents, logger } from "../lib/logger";
 import { env } from "../config/env";
+import {
+  withTimeout,
+  YOOKASSA_REQUEST_TIMEOUT_MS,
+} from "../helpers/withTimeout";
 
 const YOUKASSA_SECRET_KEY = env.YOUKASSA_SECRET_KEY;
 const SHOP_ID = env.SHOP_ID;
@@ -105,9 +109,10 @@ async function createNewPaymentForOrder(order: OrderWithCurrentPayment) {
   const createPayload = await CreatePayload(order, order.id, innerPayment.id);
 
   try {
-    const providerPayment = await YouKassa.createPayment(
-      createPayload,
-      idempotenceKey
+    const providerPayment = await withTimeout(
+      YouKassa.createPayment(createPayload, idempotenceKey),
+      YOOKASSA_REQUEST_TIMEOUT_MS,
+      "YooKassa create payment timed out"
     );
 
     innerPayment = await prisma.payment.update({
@@ -162,9 +167,10 @@ async function tryRestoreUnknownPayment(
   const createPayload = await CreatePayload(order, order.id, payment.id);
 
   try {
-    const providerPayment = await YouKassa.createPayment(
-      createPayload,
-      payment.idempotenceKey
+    const providerPayment = await withTimeout(
+      YouKassa.createPayment(createPayload, payment.idempotenceKey),
+      YOOKASSA_REQUEST_TIMEOUT_MS,
+      "YooKassa restore payment timed out"
     );
 
     // если провайдер ответил успешно, просто синхронизируем локальный payment с его состоянием

@@ -71,8 +71,6 @@ const DetailsLayer = () => {
     return [];
   }, [object, API_URL]);
 
-  console.log(isChangePhotoesModalOpen); //убрать
-
   return (
     <div
       className={cls.main}

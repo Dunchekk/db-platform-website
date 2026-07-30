@@ -6,6 +6,7 @@ import M_ContactInfo from "@/components/molecules/M_InfoBlocks/M_ContactInfo/M_C
 import M_ConfInfo from "@/components/molecules/M_InfoBlocks/M_ConfInfo/M_ConfInfo";
 import M_DelivInfo from "@/components/molecules/M_InfoBlocks/M_DelivInfo/M_DelivInfo";
 import M_PublicInfo from "@/components/molecules/M_InfoBlocks/M_PublicInfo/M_PublicInfo";
+import M_PersonalDataConsent from "@/components/molecules/M_InfoBlocks/M_PersonalDataConsent/M_PersonalDataConsent";
 import A_InfoButtons from "@/components/atoms/A_InfoButtons/A_InfoButtons";
 import {
   DEFAULT_INFO_SECTION,
@@ -33,6 +34,8 @@ const InfoLayer = () => {
         return <M_PublicInfo className={cls.block} />;
       case "privacy":
         return <M_ConfInfo className={cls.block} />;
+      case "personal-data-consent":
+        return <M_PersonalDataConsent className={cls.block} />;
       case "requisites":
         return <M_ReqInfo className={cls.block} />;
       default:

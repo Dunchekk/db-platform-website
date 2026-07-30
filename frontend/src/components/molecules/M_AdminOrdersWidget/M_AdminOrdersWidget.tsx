@@ -1,10 +1,11 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import cls from "@/components/molecules/M_AdminOrdersWidget/M_AdminOrdersWidget.module.css";
 import { useAuth } from "@/features/auth/auth.store";
-import { getAdminOrders } from "@/shared/api/adminOrders";
+import { getAdminOrders, retryOrderShipment } from "@/shared/api/adminOrders";
 import M_Input from "@/components/molecules/M_Input/M_Input";
 import A_Button from "@/components/atoms/A_Button/A_Button";
 import A_Toast from "@/components/atoms/A_Toast/A_Toast";
+import M_AdminOrdersTable from "@/components/molecules/M_AdminOrdersTable/M_AdminOrdersTable";
 import {
   AdminOrder,
   AdminOrderSortBy,
@@ -28,6 +29,9 @@ export default function M_AdminOrdersWidget() {
   const [sortBy, setSortBy] = useState<AdminOrderSortBy>("createdAt");
   const [sortDir, setSortDir] = useState<AdminOrderSortDir>("desc");
   const [isLoading, setIsLoading] = useState(false);
+  const [retryingShipmentOrderId, setRetryingShipmentOrderId] = useState<
+    number | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [toastType, setToastType] = useState<"error" | "success" | "default">(
@@ -125,9 +129,24 @@ export default function M_AdminOrdersWidget() {
   const copyTrackingNumber = async (trackingNumber: string) => {
     try {
       await navigator.clipboard.writeText(trackingNumber);
-      showToast("скопировано!", "success");
+      showToast("Скопировано", "success");
     } catch {
-      showToast("не удалось скопировать", "error");
+      showToast("Не удалось скопировать", "error");
+    }
+  };
+
+  const handleRetryShipment = async (orderId: number) => {
+    setRetryingShipmentOrderId(orderId);
+
+    try {
+      await retryOrderShipment(orderId);
+      showToast("Создание отправления запущено", "success");
+      await loadOrders();
+    } catch (e) {
+      showToast("Не удалось перезапустить доставку", "error");
+      console.error("не удалось перезапустить доставку:", e);
+    } finally {
+      setRetryingShipmentOrderId(null);
     }
   };
 
@@ -166,146 +185,16 @@ export default function M_AdminOrdersWidget() {
               {search ? <span>поиск: {search}</span> : null}
             </div>
 
-            <div className={cls.tableScroll}>
-              <table className={cls.table}>
-                <thead>
-                  <tr>
-                    <th>
-                      <button
-                        type="button"
-                        onClick={() => applySort("createdAt")}
-                      >
-                        дата {sortBy === "createdAt" ? sortDirLabel : ""}
-                      </button>
-                    </th>
-                    <th>статус</th>
-                    <th>клиент</th>
-                    <th className={cls.unlimitedCell}>контакты</th>
-                    <th className={cls.unlimitedCell}>состав</th>
-                    <th>доставка</th>
-                    <th>оплата</th>
-                    <th>трек-номер</th>
-                    <th className={cls.unlimitedCell}>
-                      <button type="button" onClick={() => applySort("total")}>
-                        сумма {sortBy === "total" ? sortDirLabel : ""}
-                      </button>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((order) => (
-                    <tr key={order.id}>
-                      <td>
-                        <span title="внутренний номер заказа">#{order.id}</span>
-                        <span title="дата создания заказа">
-                          {formatDate(order.createdAt)}
-                        </span>
-                      </td>
-                      <td title="статус заказа">{order.status}</td>
-                      <td>
-                        <span title="клиент">
-                          {order.lastName} {order.firstName}{" "}
-                          {order.patronymic ?? ""}
-                        </span>
-                        {order.comment ? (
-                          <span
-                            className={cls.muted}
-                            title="комментарий клиента"
-                          >
-                            {order.comment}
-                          </span>
-                        ) : null}
-                      </td>
-                      <td className={cls.unlimitedCell}>
-                        <span title="email клиента">{order.email}</span>
-                        <span title="телефон клиента">{order.phone}</span>
-                        {order.telegram ? (
-                          <span className={cls.muted} title="Telegram клиента">
-                            {order.telegram} (tg)
-                          </span>
-                        ) : null}
-                      </td>
-                      <td className={cls.unlimitedCell}>
-                        {order.items.map((item) => (
-                          <span
-                            key={item.id}
-                            title="товар из корзины, его количество)"
-                          >
-                            -- {item.title} ({item.quantity})
-                          </span>
-                        ))}
-                      </td>
-                      <td>
-                        <span title="город доставки">
-                          {order.deliveryCityLabel}
-                        </span>
-                        <span title="адрес пункта выдачи">
-                          {order.deliveryOfficeAddress}
-                        </span>
-                        <span title="способ доставки">
-                          {order.deliveryMethod}
-                        </span>
-                      </td>
-                      <td>
-                        <span title="статус оплаты">
-                          {order.currentPayment?.status ?? "нет"}
-                        </span>
-                        {order.currentPayment?.providerPaymentId ? (
-                          <span title="id платежа в ЮKassa">
-                            {order.currentPayment.providerPaymentId}
-                          </span>
-                        ) : null}
-                      </td>
-                      <td>
-                        <span title="статус доставки">
-                          {order.shipment?.status ?? "нет"}
-                        </span>
-                        {order.shipment?.trackingNumber ? (
-                          <button
-                            type="button"
-                            className={cls.copyValue}
-                            onClick={() =>
-                              copyTrackingNumber(
-                                order.shipment!.trackingNumber!
-                              )
-                            }
-                            title="скопировать трек-номер"
-                          >
-                            {order.shipment.trackingNumber}
-                          </button>
-                        ) : null}
-                        {order.shipment?.providerShipmentId ? (
-                          <span
-                            className={cls.muted}
-                            title="внутренний id доставки"
-                          >
-                            {order.shipment.providerShipmentId}
-                          </span>
-                        ) : null}
-                      </td>
-                      <td className={cls.unlimitedCell}>
-                        <span title="итоговая сумма заказа">
-                          {formatMoney(order.total)}
-                        </span>
-                        <span title="стоимость товаров из корзины">
-                          товары: {formatMoney(order.subtotal)}
-                        </span>
-                        <span title="стоимость доставки">
-                          доставка: {formatMoney(order.deliveryPrice)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                  {!isLoading && orders.length === 0 ? (
-                    <tr>
-                      <td colSpan={9} title="результаты таблицы заказов">
-                        заказы не найдены
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            </div>
+            <M_AdminOrdersTable
+              orders={orders}
+              isLoading={isLoading}
+              sortBy={sortBy}
+              sortDirLabel={sortDirLabel}
+              retryingShipmentOrderId={retryingShipmentOrderId}
+              onSort={applySort}
+              onCopyTrackingNumber={copyTrackingNumber}
+              onRetryShipment={handleRetryShipment}
+            />
 
             <div className={cls.pagination}>
               <A_Button
@@ -353,18 +242,4 @@ export default function M_AdminOrdersWidget() {
       ) : null}
     </>
   );
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("ru-RU", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(value));
-}
-
-function formatMoney(value: number) {
-  return `${value}\u00A0₽`;
 }

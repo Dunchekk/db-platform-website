@@ -31,11 +31,12 @@ const AdminLoginForm = () => {
     check()
       .then(() => {
         setIsAuth(true);
-        showToast("успешно авторизованы", "success");
+        showToast("Успешно авторизованы", "success");
       })
       .catch((e) => {
         setIsAuth(false);
-        showToast(`${"требуется авторизация: " + e.message}`, "error");
+        showToast("Требуется авторизация", "error");
+        console.error("требуется авторизация:", e);
       });
   }, [setIsAuth]);
 
@@ -44,18 +45,16 @@ const AdminLoginForm = () => {
   const loginIn = async () => {
     try {
       const response = await login(email.trim(), password.trim());
-      console.log(response);
 
       setToken(response.token);
       setIsAuth(true);
-      showToast("успешно авторизованы", "success");
+      showToast("Успешно авторизованы", "success");
       setPassword("");
       setLogin("");
       navigate("/");
     } catch (err) {
-      if (err instanceof Error) {
-        showToast(`${"требуется авторизация: " + err.message}`, "error");
-      }
+      showToast("Требуется авторизация", "error");
+      console.error("требуется авторизация:", err);
     }
   };
 
@@ -63,7 +62,7 @@ const AdminLoginForm = () => {
     setToken(null);
     setIsAuth(false);
     logout();
-    showToast("успешно разлогинились", "success");
+    showToast("Успешно разлогинились", "success");
     setPassword("");
     setLogin("");
     navigate("/");

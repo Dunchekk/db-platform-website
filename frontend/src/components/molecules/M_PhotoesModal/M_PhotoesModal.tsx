@@ -42,8 +42,6 @@ const M_PhotoesModal = ({
         }))
     : [];
 
-  console.log(images);
-
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const setObjects = useObjects((state) => state.setObjects);
@@ -73,12 +71,10 @@ const M_PhotoesModal = ({
       await deleteItemFile(itemId, imageId);
       const data = await getItems();
       setObjects(data);
-      showToast("картинка удалена", "default");
+      showToast("Картинка удалена", "default");
     } catch (e) {
-      if (e instanceof Error) {
-        showToast(`не удалось удалить картинку: ${e.message}`, "error");
-      }
-      console.log(e);
+      showToast("Не удалось удалить картинку", "error");
+      console.error("не удалось удалить картинку:", e);
     } finally {
       setIsSubmitting(false);
     }
@@ -93,13 +89,13 @@ const M_PhotoesModal = ({
 
     try {
       await uploadItemFile(objectId, file);
-      showToast("картинка добавлена", "success");
+      showToast("Картинка добавлена", "success");
       setFile(null);
       const data = await getItems();
       setObjects(data);
     } catch (e) {
-      console.log(e);
-      showToast(`не удалось загрузить картинку: ${e.message}`, "error");
+      showToast("Не удалось загрузить картинку", "error");
+      console.error("не удалось загрузить картинку:", e);
     } finally {
       setIsSubmitting(false);
     }
@@ -125,8 +121,7 @@ const M_PhotoesModal = ({
     const image2 = images.find((i) => i.id === image2Id);
 
     if (!image1 || !image2) {
-      console.log("No item found");
-      showToast(`картинка не найдена`, "error");
+      showToast("Картинка не найдена", "error");
       return;
     }
 
@@ -138,8 +133,8 @@ const M_PhotoesModal = ({
       const data = await getItems();
       setObjects(data);
     } catch (e) {
-      console.log(e);
-      showToast(`не удалось переместить картинку: ${e.message}`, "error");
+      showToast("Не удалось переместить картинку", "error");
+      console.error("не удалось переместить картинку:", e);
     } finally {
       setIsSubmitting(false);
     }

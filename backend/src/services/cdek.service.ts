@@ -221,4 +221,4 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
 
     throw e;
   }
-} // доделать хелперы и рефактор.
+}

@@ -93,6 +93,67 @@ describe("POST /api/payment/webhook/youkassa/:secret", () => {
     expect(createCdekShipmentForPaidOrderMock).toHaveBeenCalledTimes(1);
     expect(createCdekShipmentForPaidOrderMock).toHaveBeenCalledWith(order.id);
   });
+
+  test("status check завершает успешный заказ, если webhook ещё не обработался", async () => {
+    const order = await createTestOrder();
+    const payment = await prisma.payment.create({
+      data: {
+        orderId: order.id,
+        amount: order.total,
+        providerPaymentId: "provider-payment-status-check",
+        confirmationUrl: "https://payment.example/confirm",
+      },
+    });
+
+    await prisma.order.update({
+      where: {
+        id: order.id,
+      },
+      data: {
+        currentPaymentId: payment.id,
+      },
+    });
+
+    getPaymentMock.mockResolvedValue({
+      id: "provider-payment-status-check",
+      status: "succeeded",
+      paid: true,
+      confirmation: {
+        confirmation_url: "https://payment.example/confirm",
+      },
+    });
+
+    const response = await request(app)
+      .get(`/api/payment/order/${order.id}/payment/${payment.id}/status`)
+      .expect(200);
+
+    expect(response.body).toMatchObject({
+      orderId: order.id,
+      paymentId: payment.id,
+      orderStatus: "PAID",
+      paymentStatus: "SUCCEEDED",
+      isPaid: true,
+    });
+
+    const updatedOrder = await prisma.order.findUnique({
+      where: {
+        id: order.id,
+      },
+    });
+    const updatedPayment = await prisma.payment.findUnique({
+      where: {
+        id: payment.id,
+      },
+    });
+
+    expect(updatedPayment).toMatchObject({
+      providerPaymentId: "provider-payment-status-check",
+      status: "SUCCEEDED",
+    });
+    expect(updatedOrder?.status).toBe("PAID");
+    expect(createCdekShipmentForPaidOrderMock).toHaveBeenCalledTimes(1);
+    expect(createCdekShipmentForPaidOrderMock).toHaveBeenCalledWith(order.id);
+  });
 });
 
 function createTestOrder() {
