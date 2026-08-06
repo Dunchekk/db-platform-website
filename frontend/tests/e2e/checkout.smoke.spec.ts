@@ -102,7 +102,7 @@ test("покупатель может оформить заказ до пере�
   await page.locator("li", { hasText: testOffice.location.address }).click();
 
   await page.getByLabel(/Публичной оферты/).check();
-  await page.getByLabel("Я очень крут*").check();
+  await page.getByLabel(/Согласия/).check();
 
   const checkoutRequestPromise = page.waitForRequest((request) => {
     return (

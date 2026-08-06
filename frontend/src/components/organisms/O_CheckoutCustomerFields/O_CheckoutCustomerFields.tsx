@@ -91,16 +91,8 @@ const O_CheckoutCustomerFields = ({
               onClick={(event) => event.stopPropagation()}
             >
               Публичной оферты
-            </Link>{" "}
-            и соглашаюсь с{" "}
-            <Link
-              to="/info/privacy"
-              className={cls.links}
-              onClick={(event) => event.stopPropagation()}
-            >
-              Политикой обработки персональных данных
             </Link>
-            *
+            .
           </label>
         </M_InputCheckbox>
         <M_InputCheckbox
@@ -112,7 +104,25 @@ const O_CheckoutCustomerFields = ({
             setField("coolness", !checkboxCoolness);
           }}
         >
-          <label htmlFor="coolness">Я очень крут*</label>
+          <label htmlFor="coolness">
+            Я даю согласие на обработку персональных данных на условиях{" "}
+            <Link
+              to="/info/personal-data-consent"
+              className={cls.links}
+              onClick={(event) => event.stopPropagation()}
+            >
+              Согласия
+            </Link>{" "}
+            и подтверждаю, что ознакомился с{" "}
+            <Link
+              to="/info/privacy"
+              className={cls.links}
+              onClick={(event) => event.stopPropagation()}
+            >
+              Политикой
+            </Link>{" "}
+            обработки персональных данных.
+          </label>
         </M_InputCheckbox>
       </div>
     </div>
