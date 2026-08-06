@@ -20,8 +20,8 @@ const AboutLayer = () => {
 
   const images: string[] = useObjects((state) => state.objects).flatMap((obj) =>
     obj.images.map((img) =>
-      img.url.startsWith("http") ? img.url : API_URL + img.url
-    )
+      img.url.startsWith("http") ? img.url : API_URL + img.url,
+    ),
   );
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const AboutLayer = () => {
     if (!viewport || !track) return;
 
     const reduceMotionQuery = window.matchMedia?.(
-      "(prefers-reduced-motion: reduce)"
+      "(prefers-reduced-motion: reduce)",
     );
     if (reduceMotionQuery?.matches) return;
 
@@ -114,7 +114,7 @@ const AboutLayer = () => {
         </div>
       </div>
       <div className={cls.wrapper}>
-        <div className={cls.dbHeader}> DB:</div>
+        <div className={cls.dbHeader}>&nbsp;&nbsp;DB:</div>
         <div className={cls.textwrapper}>
           <div className={cls.p}>
             <p>
