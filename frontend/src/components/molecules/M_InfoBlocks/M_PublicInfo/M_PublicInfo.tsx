@@ -23,7 +23,7 @@ const M_PublicInfo = ({ className, ...rest }: Props) => {
       >
         <div className={cls.content}>
           <p className={cls.title}>
-            ПУБЛИЧНАЯ ОФЕРТА О ЗАКЛЮЧЕНИИ ДОГОВОРА РОЗНИЧНОЙ КУПЛИ-ПРОДАЖИ
+            Публичная оферта о заключении договора розничной купли-продажи
           </p>
 
           <section className={cls.section}>
