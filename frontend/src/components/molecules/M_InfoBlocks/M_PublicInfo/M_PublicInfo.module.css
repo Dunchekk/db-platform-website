@@ -10,6 +10,54 @@
   --info-block-right-height: var(--max-main-box-height);
 }
 
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.content p,
+.sectionTitle,
+.list {
+  margin: 0;
+}
+
+.content .title {
+  margin-bottom: calc(var(--space) * 1.5);
+}
+
+.section + .section,
+.point + .section {
+  margin-top: calc(var(--space) * 3);
+}
+
+.sectionTitle {
+  font: inherit;
+  margin-bottom: calc(var(--space) * 2);
+}
+
+.point + .point,
+.point + .list,
+.list + .point,
+.section + .point {
+  margin-top: calc(var(--space) * 1.5);
+}
+
+.details {
+  margin-top: calc(var(--space) * 2);
+}
+
+.details p + p {
+  margin-top: calc(var(--space) * 2);
+}
+
+.revisionDate {
+  opacity: 0.6;
+}
+
+.list {
+  padding-left: calc(var(--space) * 2);
+}
+
 @media screen and (max-width: 1000px) {
   .left {
     width: 100%;
