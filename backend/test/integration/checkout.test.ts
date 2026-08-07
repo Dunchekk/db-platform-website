@@ -1,5 +1,9 @@
 import request from "supertest";
 import { describe, expect, test, vi } from "vitest";
+import {
+  CURRENT_OFFER_VERSION,
+  CURRENT_PERSONAL_DATA_CONSENT_VERSION,
+} from "../../src/config/legalDocuments";
 
 vi.mock("../../src/services/cdek.api", () => ({
   // подменяем весь модуль cdek.api
@@ -114,6 +118,12 @@ describe("POST /api/checkout", () => {
     expect(order?.deliveryMethod).toBe("CDEK_PVZ");
     expect(order?.deliveryCityCode).toBe(44);
     expect(order?.deliveryOfficeCode).toBe("PVZ-1");
+    expect(order?.offerVersion).toBe(CURRENT_OFFER_VERSION);
+    expect(order?.offerAcceptedAt).toBeInstanceOf(Date);
+    expect(order?.personalDataConsentVersion).toBe(
+      CURRENT_PERSONAL_DATA_CONSENT_VERSION
+    );
+    expect(order?.personalDataConsentAcceptedAt).toBeInstanceOf(Date);
     expect(order?.items).toHaveLength(1);
     expect(order?.items[0]).toMatchObject({
       itemId: item.id,
@@ -177,24 +187,38 @@ describe("POST /api/checkout", () => {
       message: "Must be 1 item or more",
     });
 
-    const [ordersCount, orderItemsCount, paymentsCount] = await Promise.all([
-      prisma.order.count(),
-      prisma.orderItem.count(),
-      prisma.payment.count(),
-    ]);
-
     // перед каждым integration-тестом чистится БД (настройки в /backend/test/setup/integrationEnv.ts)
     // так что тут действительно должны быть нули
-    expect(ordersCount).toBe(0);
-    expect(orderItemsCount).toBe(0);
-    expect(paymentsCount).toBe(0);
+    await expectCheckoutTablesToBeEmpty();
   });
 
-  test("отклоняет заказ без согласия и ничего не сохраняет", async () => {
+  test("отклоняет заказ без принятия оферты и ничего не сохраняет", async () => {
     const item = await createTestItem();
     const payload = {
-      ...buildCheckoutPayload(item.id, "checkout-attempt-no-agreement"),
-      agreement: false,
+      ...buildCheckoutPayload(item.id, "checkout-attempt-no-offer"),
+      offerAccepted: false,
+    };
+
+    const response = await request(app)
+      .post("/api/checkout")
+      .send(payload)
+      .expect(400);
+
+    expect(response.body).toEqual({
+      message: "Offer acceptance is required",
+    });
+
+    await expectCheckoutTablesToBeEmpty();
+  });
+
+  test("отклоняет заказ без согласия на обработку персональных данных и ничего не сохраняет", async () => {
+    const item = await createTestItem();
+    const payload = {
+      ...buildCheckoutPayload(
+        item.id,
+        "checkout-attempt-no-personal-data-consent"
+      ),
+      personalDataConsentAccepted: false,
     };
 
     const response = await request(app)
@@ -206,15 +230,51 @@ describe("POST /api/checkout", () => {
       message: "Personal data processing agreement is required",
     });
 
-    const [ordersCount, orderItemsCount, paymentsCount] = await Promise.all([
-      prisma.order.count(),
-      prisma.orderItem.count(),
-      prisma.payment.count(),
-    ]);
+    await expectCheckoutTablesToBeEmpty();
+  });
 
-    expect(ordersCount).toBe(0);
-    expect(orderItemsCount).toBe(0);
-    expect(paymentsCount).toBe(0);
+  test("отклоняет заказ с неактуальной версией оферты и ничего не сохраняет", async () => {
+    const item = await createTestItem();
+    const payload = {
+      ...buildCheckoutPayload(
+        item.id,
+        "checkout-attempt-invalid-offer-version"
+      ),
+      offerVersion: "0.9.0",
+    };
+
+    const response = await request(app)
+      .post("/api/checkout")
+      .send(payload)
+      .expect(400);
+
+    expect(response.body).toEqual({
+      message: "Offer version is invalid",
+    });
+
+    await expectCheckoutTablesToBeEmpty();
+  });
+
+  test("отклоняет заказ с неактуальной версией согласия и ничего не сохраняет", async () => {
+    const item = await createTestItem();
+    const payload = {
+      ...buildCheckoutPayload(
+        item.id,
+        "checkout-attempt-invalid-personal-data-consent-version"
+      ),
+      personalDataConsentVersion: "0.9.0",
+    };
+
+    const response = await request(app)
+      .post("/api/checkout")
+      .send(payload)
+      .expect(400);
+
+    expect(response.body).toEqual({
+      message: "Personal data processing agreement version is invalid",
+    });
+
+    await expectCheckoutTablesToBeEmpty();
   });
 });
 
@@ -247,7 +307,10 @@ function buildCheckoutPayload(itemId: number, checkoutAttemptKey: string) {
     deliveryPrice: 300,
     subtotal: 2000,
     total: 2300,
-    agreement: true,
+    offerAccepted: true,
+    offerVersion: CURRENT_OFFER_VERSION,
+    personalDataConsentAccepted: true,
+    personalDataConsentVersion: CURRENT_PERSONAL_DATA_CONSENT_VERSION,
     city: {
       uuid: "city-uuid",
       code: 44,
@@ -281,4 +344,16 @@ function buildCheckoutPayload(itemId: number, checkoutAttemptKey: string) {
       },
     ],
   };
+}
+
+async function expectCheckoutTablesToBeEmpty() {
+  const [ordersCount, orderItemsCount, paymentsCount] = await Promise.all([
+    prisma.order.count(),
+    prisma.orderItem.count(),
+    prisma.payment.count(),
+  ]);
+
+  expect(ordersCount).toBe(0);
+  expect(orderItemsCount).toBe(0);
+  expect(paymentsCount).toBe(0);
 }
