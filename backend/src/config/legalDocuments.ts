@@ -1,0 +1,2 @@
+export const CURRENT_OFFER_VERSION = "1.1.1";
+export const CURRENT_PERSONAL_DATA_CONSENT_VERSION = "1.1.1";
