@@ -84,6 +84,8 @@ export async function getOrCreateCheckoutOrder(
     office,
     city,
     comment,
+    offerVersion,
+    personalDataConsentVersion,
   }: CheckoutOrderInput
 ): Promise<OrderWithCurrentPayment> {
   const existingOrder = await loadOrderWithCurrentPayment(checkoutAttemptKey);
@@ -96,6 +98,8 @@ export async function getOrCreateCheckoutOrder(
 
   try {
     createdOrder = await prisma.$transaction(async (tx): Promise<Order> => {
+      const legalAcceptedAt = new Date();
+
       const newOrder = await tx.order.create({
         data: {
           firstName: validateRequiredString(firstName, "firstName"),
@@ -109,6 +113,10 @@ export async function getOrCreateCheckoutOrder(
           subtotal,
           checkoutAttemptKey,
           total: subtotal + deliveryPrice,
+          offerAcceptedAt: legalAcceptedAt,
+          offerVersion,
+          personalDataConsentAcceptedAt: legalAcceptedAt,
+          personalDataConsentVersion,
 
           deliveryOfficeUuid: office.uuid,
           deliveryCityCode: city.code,
