@@ -136,9 +136,13 @@ model Order {
   deliveryOfficeType    String?
   deliveryOfficeAddress String
 
-  comment            String?
-  subtotal           Int
-  total              Int
+  comment                       String?
+  subtotal                      Int
+  total                         Int
+  offerAcceptedAt               DateTime?
+  offerVersion                  String?
+  personalDataConsentAcceptedAt DateTime?
+  personalDataConsentVersion    String?
 
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
