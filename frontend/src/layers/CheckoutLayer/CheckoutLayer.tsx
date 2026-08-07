@@ -16,6 +16,10 @@ import A_Toast from "@/components/atoms/A_Toast/A_Toast";
 import { useCheckoutFormInputs } from "@/features/checkout/formData.store";
 import { useLocation } from "react-router";
 import type { CdekPackageParams } from "@/shared/types/cdek.types";
+import {
+  CURRENT_OFFER_VERSION,
+  CURRENT_PERSONAL_DATA_CONSENT_VERSION,
+} from "@/shared/legal/current";
 
 const PAYMENT_STATUS_POLL_ATTEMPTS = 5;
 const PAYMENT_STATUS_POLL_DELAY = 1500;
@@ -187,9 +191,15 @@ const CheckoutLayer = () => {
     if (isCartEmpty) {
       showToast("Добавьте что-нибудь в корзину", "error");
       return;
-    } else if (!form.agreement) {
+    } else if (!form.offerAccepted) {
       showToast(
-        "Необходимо согласие с публичной офертой и политикой обработки персональных данных",
+        "Необходимо принять условия публичной оферты",
+        "error"
+      );
+      return;
+    } else if (!form.personalDataConsentAccepted) {
+      showToast(
+        "Необходимо согласие на обработку персональных данных",
         "error"
       );
       return;
@@ -256,7 +266,10 @@ const CheckoutLayer = () => {
       office: form.office,
       city: form.city,
       total: subtotal + deliveryPrice,
-      agreement: form.agreement,
+      offerAccepted: form.offerAccepted,
+      offerVersion: CURRENT_OFFER_VERSION,
+      personalDataConsentAccepted: form.personalDataConsentAccepted,
+      personalDataConsentVersion: CURRENT_PERSONAL_DATA_CONSENT_VERSION,
       items: validCartItems.map((item) => ({
         itemId: item.itemId,
         quantity: item.quantity,
