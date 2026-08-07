@@ -4,7 +4,7 @@ import W_ScrollFadeBox from "@/components/wrappers/W_ScrollFadeBox/W_ScrollFadeB
 
 type Props = { className: string } & ComponentPropsWithoutRef<"div">;
 
-const Offer_v1_1_1 = ({ className, ...rest }: Props) => {
+const Offer_v1_0_0 = ({ className, ...rest }: Props) => {
   return (
     <div className={className} {...rest}>
       <div className={[cls.left, cls.leftTop].join(" ")}>
@@ -742,4 +742,4 @@ const Offer_v1_1_1 = ({ className, ...rest }: Props) => {
   );
 };
 
-export default Offer_v1_1_1;
+export default Offer_v1_0_0;

@@ -4,7 +4,7 @@ import W_ScrollFadeBox from "@/components/wrappers/W_ScrollFadeBox/W_ScrollFadeB
 
 type Props = { className: string } & ComponentPropsWithoutRef<"div">;
 
-const PersonalDataConsent_v1_1_1 = ({ className, ...rest }: Props) => {
+const PersonalDataConsent_v1_0_0 = ({ className, ...rest }: Props) => {
   return (
     <div className={className} {...rest}>
       <div className={[cls.left, cls.leftTop].join(" ")}>
@@ -425,4 +425,4 @@ const PersonalDataConsent_v1_1_1 = ({ className, ...rest }: Props) => {
   );
 };
 
-export default PersonalDataConsent_v1_1_1;
+export default PersonalDataConsent_v1_0_0;
