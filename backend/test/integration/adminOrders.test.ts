@@ -71,6 +71,130 @@ describe("GET /api/orders", () => {
   });
 });
 
+describe("PATCH /api/orders/:id/status", () => {
+  test("отклоняет запрос без ADMIN роли", async () => {
+    const order = await createTestOrder({
+      firstName: "Anna",
+      total: 3000,
+    });
+
+    const response = await request(app)
+      .patch(`/api/orders/${order.id}/status`)
+      .send({
+        status: "DELIVERED",
+      })
+      .expect(401);
+
+    expect(response.body).toEqual({
+      message: "User is not authorized",
+    });
+  });
+
+  test("отклоняет статус вне ручного списка", async () => {
+    const token = await createToken("ADMIN");
+    const order = await createTestOrder({
+      firstName: "Anna",
+      total: 3000,
+    });
+
+    const response = await request(app)
+      .patch(`/api/orders/${order.id}/status`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        status: "PAID",
+      })
+      .expect(400);
+
+    expect(response.body).toEqual({
+      message: "status must be SHIPPED, DELIVERED or CANCELLED",
+    });
+  });
+
+  test.each(["SHIPPED", "DELIVERED", "CANCELLED"])(
+    "позволяет админу вручную поставить статус %s",
+    async (status) => {
+      const token = await createToken("ADMIN");
+      const order = await createTestOrder({
+        firstName: "Anna",
+        total: 3000,
+      });
+
+      const response = await request(app)
+        .patch(`/api/orders/${order.id}/status`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          status,
+        })
+        .expect(200);
+
+      expect(response.body).toMatchObject({
+        id: order.id,
+        status,
+      });
+    }
+  );
+
+  test("при завершении очищает telegram и ставит completedAt", async () => {
+    const token = await createToken("ADMIN");
+    const order = await createTestOrder({
+      firstName: "Anna",
+      total: 3000,
+    });
+
+    await request(app)
+      .patch(`/api/orders/${order.id}/status`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        status: "DELIVERED",
+      })
+      .expect(200);
+
+    const updatedOrder = await prisma.order.findUnique({
+      where: {
+        id: order.id,
+      },
+    });
+
+    expect(updatedOrder).toMatchObject({
+      status: "DELIVERED",
+      telegram: null,
+    });
+    expect(updatedOrder?.completedAt).toBeInstanceOf(Date);
+  });
+
+  test("не перезаписывает completedAt, если он уже был", async () => {
+    const token = await createToken("ADMIN");
+    const completedAt = new Date("2026-01-01T00:00:00.000Z");
+    const order = await createTestOrder({
+      firstName: "Anna",
+      total: 3000,
+      completedAt,
+    });
+
+    await request(app)
+      .patch(`/api/orders/${order.id}/status`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        status: "CANCELLED",
+      })
+      .expect(200);
+
+    const updatedOrder = await prisma.order.findUnique({
+      where: {
+        id: order.id,
+      },
+    });
+
+    expect(updatedOrder).toMatchObject({
+      status: "CANCELLED",
+      telegram: null,
+    });
+    expect(updatedOrder?.completedAt?.toISOString()).toBe(
+      completedAt.toISOString()
+    );
+  });
+});
+
 async function createToken(role: string) {
   return new SignJWT({ role })
     .setProtectedHeader({
@@ -85,9 +209,11 @@ async function createToken(role: string) {
 function createTestOrder({
   firstName,
   total,
+  completedAt,
 }: {
   firstName: string;
   total: number;
+  completedAt?: Date;
 }) {
   return prisma.order.create({
     data: {
@@ -108,6 +234,7 @@ function createTestOrder({
       comment: "Тестовый заказ",
       subtotal: total - 300,
       total,
+      completedAt,
       items: {
         create: [
           {
