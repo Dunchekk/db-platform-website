@@ -16,7 +16,10 @@ export type ReqOrderBody = {
   items: ReqOrderItem[];
   office: CdekOfficeFromFront;
   city: CdekSuggestedCityFromFront;
-  agreement: boolean;
+  offerAccepted: boolean;
+  offerVersion: string;
+  personalDataConsentAccepted: boolean;
+  personalDataConsentVersion: string;
 };
 
 export type PreparedOrderItem = {
@@ -63,6 +66,8 @@ export type CheckoutOrderInput = {
   phone: string;
   telegram?: string;
   comment?: string;
+  offerVersion: string;
+  personalDataConsentVersion: string;
   office: CdekOfficeFromFront;
   city: CdekSuggestedCityFromFront;
 };

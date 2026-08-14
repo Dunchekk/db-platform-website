@@ -9,6 +9,10 @@ import {
 import { resolveCheckoutPayment } from "../services/yookassa.service";
 import { logEvents, logger } from "../lib/logger";
 import { buildCdekPackagesFromOrderItems } from "../services/helpers/buildCdekPackagesFromOrderItems";
+import {
+  CURRENT_OFFER_VERSION,
+  CURRENT_PERSONAL_DATA_CONSENT_VERSION,
+} from "../config/legalDocuments";
 
 class CheckoutController {
   async createOrder(req: Request, res: Response, next: NextFunction) {
@@ -30,16 +34,35 @@ class CheckoutController {
         // subtotal,
         // total,
         items,
-        agreement,
+        offerAccepted,
+        offerVersion,
+        personalDataConsentAccepted,
+        personalDataConsentVersion,
       }: ReqOrderBody = req.body;
 
       if (!checkoutAttemptKey) {
         throw ApiError.badRequest("checkoutAttemptKey is required");
       }
 
-      if (agreement !== true) {
+      if (offerAccepted !== true) {
+        throw ApiError.badRequest("Offer acceptance is required");
+      }
+
+      if (personalDataConsentAccepted !== true) {
         throw ApiError.badRequest(
           "Personal data processing agreement is required"
+        );
+      }
+
+      if (offerVersion !== CURRENT_OFFER_VERSION) {
+        throw ApiError.badRequest("Offer version is invalid");
+      }
+
+      if (
+        personalDataConsentVersion !== CURRENT_PERSONAL_DATA_CONSENT_VERSION
+      ) {
+        throw ApiError.badRequest(
+          "Personal data processing agreement version is invalid"
         );
       }
 
@@ -77,6 +100,8 @@ class CheckoutController {
         office,
         city,
         comment,
+        offerVersion,
+        personalDataConsentVersion,
       });
 
       const payment = await resolveCheckoutPayment(order);

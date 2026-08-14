@@ -11,10 +11,10 @@ export type CheckoutFormInputs = {
   telegram: string;
   comment: string;
   deliveryPrice: number | null;
-  coolness: boolean;
+  personalDataConsentAccepted: boolean;
   fingerprint: string | null;
   checkoutAttemptKey: string | null;
-  agreement: boolean;
+  offerAccepted: boolean;
   city: CdekSuggestedCity | null;
   office: CdekOffice | null;
 };
@@ -41,8 +41,8 @@ export const useCheckoutFormInputs = create<CheckoutFormStore>((set) => ({
     telegram: "",
     comment: "",
     deliveryPrice: null,
-    coolness: false,
-    agreement: false,
+    personalDataConsentAccepted: false,
+    offerAccepted: false,
     city: null,
     checkoutAttemptKey: null,
     fingerprint: null,
@@ -83,10 +83,10 @@ export const useCheckoutFormInputs = create<CheckoutFormStore>((set) => ({
         telegram: "",
         comment: "",
         deliveryPrice: 0,
-        coolness: false,
+        personalDataConsentAccepted: false,
         checkoutAttemptKey: null,
         fingerprint: null,
-        agreement: false,
+        offerAccepted: false,
         city: null,
         office: null,
       },

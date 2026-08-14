@@ -14,11 +14,11 @@ const O_CheckoutCustomerFields = ({
   ...props
 }: ComponentPropsWithoutRef<"div">) => {
   const setField = useCheckoutFormInputs((state) => state.setField);
-  const checkboxAgreement = useCheckoutFormInputs(
-    (state) => state.form.agreement
+  const offerAccepted = useCheckoutFormInputs(
+    (state) => state.form.offerAccepted
   );
-  const checkboxCoolness = useCheckoutFormInputs(
-    (state) => state.form.coolness
+  const personalDataConsentAccepted = useCheckoutFormInputs(
+    (state) => state.form.personalDataConsentAccepted
   );
 
   const firstName = useCheckoutFormInputs((state) => state.form.firstName);
@@ -77,10 +77,10 @@ const O_CheckoutCustomerFields = ({
         <M_InputCheckbox
           required
           className={cls.checkbox}
-          checked={checkboxAgreement}
+          checked={offerAccepted}
           id="policy"
           onChange={() => {
-            setField("agreement", !checkboxAgreement);
+            setField("offerAccepted", !offerAccepted);
           }}
         >
           <label htmlFor="policy">
@@ -98,13 +98,16 @@ const O_CheckoutCustomerFields = ({
         <M_InputCheckbox
           required
           className={cls.checkbox}
-          checked={checkboxCoolness}
-          id="coolness"
+          checked={personalDataConsentAccepted}
+          id="personal-data-consent"
           onChange={() => {
-            setField("coolness", !checkboxCoolness);
+            setField(
+              "personalDataConsentAccepted",
+              !personalDataConsentAccepted
+            );
           }}
         >
-          <label htmlFor="coolness">
+          <label htmlFor="personal-data-consent">
             Я даю согласие на обработку персональных данных на условиях{" "}
             <Link
               to="/info/personal-data-consent"

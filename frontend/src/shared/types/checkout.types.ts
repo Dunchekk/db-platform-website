@@ -15,7 +15,10 @@ export type CheckoutBody = {
   total: number;
   items: CheckoutItem[];
   checkoutAttemptKey: string | null;
-  agreement: boolean;
+  offerAccepted: boolean;
+  offerVersion: string;
+  personalDataConsentAccepted: boolean;
+  personalDataConsentVersion: string;
 };
 
 export type CheckoutItem = {

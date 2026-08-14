@@ -15,10 +15,10 @@ const initialForm: CheckoutFormInputs = {
   telegram: "",
   comment: "",
   deliveryPrice: null,
-  coolness: false,
+  personalDataConsentAccepted: false,
   checkoutAttemptKey: null,
   fingerprint: null,
-  agreement: false,
+  offerAccepted: false,
   city: null,
   office: null,
 };

@@ -167,16 +167,20 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
       shipmentId: shipment.id,
       providerShipmentId: responseBody.entity?.uuid,
       cdekRequestState: lastRequest?.state,
-      cdekRequestErrors: lastRequest?.errors,
-      cdekRequestWarnings: lastRequest?.warnings,
+      cdekRequestErrorCodes: lastRequest?.errors?.map((error) => error.code),
+      cdekRequestWarningCodes: lastRequest?.warnings?.map(
+        (warning) => warning.code
+      ),
     });
 
     if (!responseBody.entity?.uuid || lastRequest?.state === "INVALID") {
-      const cdekError = lastRequest?.errors
-        ?.map((item) => item.message)
+      const cdekErrorCodes = lastRequest?.errors
+        ?.map((item) => item.code)
         .join("; ");
       throw ApiError.badGateway(
-        `CDEK shipment creation failed${cdekError ? `: ${cdekError}` : ""}`
+        `CDEK shipment creation failed${
+          cdekErrorCodes ? ` with error codes: ${cdekErrorCodes}` : ""
+        }`
       );
     }
 
@@ -194,7 +198,9 @@ export async function createCdekShipmentForPaidOrder(orderId: number) {
       shipmentId: shipment.id,
       providerShipmentId: responseBody.entity.uuid,
       cdekRequestState: lastRequest?.state,
-      cdekRequestWarnings: lastRequest?.warnings,
+      cdekRequestWarningCodes: lastRequest?.warnings?.map(
+        (warning) => warning.code
+      ),
     });
 
     return waitForCdekShipment({

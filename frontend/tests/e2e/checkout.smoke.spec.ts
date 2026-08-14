@@ -4,6 +4,10 @@ import type {
   CdekSuggestedCity,
 } from "../../src/shared/types/cdek.types";
 import type { DbObject } from "../../src/shared/types/object.types";
+import {
+  CURRENT_OFFER_VERSION,
+  CURRENT_PERSONAL_DATA_CONSENT_VERSION,
+} from "../../src/shared/legal/current";
 
 const testItem: DbObject = {
   id: 1,
@@ -131,7 +135,10 @@ test("покупатель может оформить заказ до пере�
     deliveryPrice: 300,
     subtotal: 1200,
     total: 1500,
-    agreement: true,
+    offerAccepted: true,
+    offerVersion: CURRENT_OFFER_VERSION,
+    personalDataConsentAccepted: true,
+    personalDataConsentVersion: CURRENT_PERSONAL_DATA_CONSENT_VERSION,
     city: testCity,
     office: testOffice,
     items: [
