@@ -31,20 +31,18 @@ export async function fetchCdek(path: string, init: RequestInit) {
     });
 
     if (!response.ok) {
-      const text = await response.text();
-
       if (response.status === 401 || response.status === 403) {
         throw ApiError.badGateway(
-          `CDEK rejected credentials: ${response.status} ${text}`
+          `CDEK rejected credentials with status ${response.status}`
         );
       }
 
       if (response.status === 429) {
-        throw ApiError.serviceUnavailable(`CDEK rate limited request: ${text}`);
+        throw ApiError.serviceUnavailable("CDEK rate limited request");
       }
 
       throw ApiError.badGateway(
-        `CDEK request failed: ${response.status} ${text}`
+        `CDEK request failed with status ${response.status}`
       );
     }
 
