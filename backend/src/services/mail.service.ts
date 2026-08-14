@@ -58,8 +58,6 @@ export async function sendConfirmationOrderMail(orderId: number) {
     logger.info(logEvents.mailSendStarted, {
       orderId,
       shipmentId: shipment.id,
-      to: order.email,
-      subject,
     });
 
     const answer = await transporter.sendMail({
@@ -76,10 +74,9 @@ export async function sendConfirmationOrderMail(orderId: number) {
     logger.info(logEvents.mailSendSucceeded, {
       orderId,
       shipmentId: shipment.id,
-      to: order.email,
       messageId: answer.messageId,
-      rejected: answer.rejected,
-      accepted: answer.accepted,
+      acceptedCount: answer.accepted.length,
+      rejectedCount: answer.rejected.length,
     });
   } catch (e) {
     logger.error(logEvents.mailSendFailed, {
