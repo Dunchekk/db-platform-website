@@ -57,8 +57,12 @@ export async function waitForCdekShipment({
         attempt: attempt + 1,
         cdekShipmentStatus,
         cdekRequestState: lastRequest?.state,
-        cdekRequestErrors: lastRequest?.errors,
-        cdekRequestWarnings: lastRequest?.warnings,
+        cdekRequestErrorCodes: lastRequest?.errors?.map(
+          (error) => error.code
+        ),
+        cdekRequestWarningCodes: lastRequest?.warnings?.map(
+          (warning) => warning.code
+        ),
       });
       throw ApiError.badGateway(
         "CDEK shipment was created but returned INVALID status"
@@ -118,8 +122,12 @@ export async function waitForCdekShipment({
         nextAttemptDelayMs: CDEK_SHIPMENT_POLL_DELAY_MS,
         cdekShipmentStatus,
         cdekRequestState: lastRequest?.state,
-        cdekRequestErrors: lastRequest?.errors,
-        cdekRequestWarnings: lastRequest?.warnings,
+        cdekRequestErrorCodes: lastRequest?.errors?.map(
+          (error) => error.code
+        ),
+        cdekRequestWarningCodes: lastRequest?.warnings?.map(
+          (warning) => warning.code
+        ),
         cdekNumber: cdekShipmentInfo?.entity?.cdek_number,
         err: lastPollError,
       });
