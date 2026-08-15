@@ -1,12 +1,17 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import cls from "@/components/molecules/M_AdminOrdersWidget/M_AdminOrdersWidget.module.css";
 import { useAuth } from "@/features/auth/auth.store";
-import { getAdminOrders, retryOrderShipment } from "@/shared/api/adminOrders";
+import {
+  getAdminOrders,
+  retryOrderShipment,
+  updateAdminOrderStatus,
+} from "@/shared/api/adminOrders";
 import M_Input from "@/components/molecules/M_Input/M_Input";
 import A_Button from "@/components/atoms/A_Button/A_Button";
 import A_Toast from "@/components/atoms/A_Toast/A_Toast";
 import M_AdminOrdersTable from "@/components/molecules/M_AdminOrdersTable/M_AdminOrdersTable";
 import {
+  AdminManualOrderStatus,
   AdminOrder,
   AdminOrderSortBy,
   AdminOrderSortDir,
@@ -30,6 +35,9 @@ export default function M_AdminOrdersWidget() {
   const [sortDir, setSortDir] = useState<AdminOrderSortDir>("desc");
   const [isLoading, setIsLoading] = useState(false);
   const [retryingShipmentOrderId, setRetryingShipmentOrderId] = useState<
+    number | null
+  >(null);
+  const [updatingStatusOrderId, setUpdatingStatusOrderId] = useState<
     number | null
   >(null);
   const [error, setError] = useState<string | null>(null);
@@ -150,6 +158,24 @@ export default function M_AdminOrdersWidget() {
     }
   };
 
+  const handleUpdateStatus = async (
+    orderId: number,
+    status: AdminManualOrderStatus
+  ) => {
+    setUpdatingStatusOrderId(orderId);
+
+    try {
+      await updateAdminOrderStatus(orderId, status);
+      showToast("Статус заказа обновлен", "success");
+      await loadOrders();
+    } catch (e) {
+      showToast("Не удалось обновить статус заказа", "error");
+      console.error("не удалось обновить статус заказа:", e);
+    } finally {
+      setUpdatingStatusOrderId(null);
+    }
+  };
+
   return (
     <>
       {isOpen ? (
@@ -191,9 +217,11 @@ export default function M_AdminOrdersWidget() {
               sortBy={sortBy}
               sortDirLabel={sortDirLabel}
               retryingShipmentOrderId={retryingShipmentOrderId}
+              updatingStatusOrderId={updatingStatusOrderId}
               onSort={applySort}
               onCopyTrackingNumber={copyTrackingNumber}
               onRetryShipment={handleRetryShipment}
+              onUpdateStatus={handleUpdateStatus}
             />
 
             <div className={cls.pagination}>
