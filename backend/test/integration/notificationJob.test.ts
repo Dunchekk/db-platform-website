@@ -58,6 +58,7 @@ describe("notification job service", () => {
     const job = await createNotificationJob({
       status: "PROCESSING",
       lockedAt: new Date("2026-01-01T00:00:00.000Z"),
+      lastError: "Previous SMTP error",
     });
 
     await markNotificationJobSent(job.id);
@@ -137,10 +138,12 @@ async function createNotificationJob({
   status = "PENDING",
   runAt = new Date(),
   lockedAt = null,
+  lastError = null,
 }: {
   status?: "PENDING" | "PROCESSING" | "SENT" | "FAILED";
   runAt?: Date;
   lockedAt?: Date | null;
+  lastError?: string | null;
 } = {}) {
   const order = await createTestOrder();
   const shipment = await prisma.shipment.create({
@@ -161,6 +164,7 @@ async function createNotificationJob({
       shipmentId: shipment.id,
       runAt,
       lockedAt,
+      lastError,
     },
   });
 }

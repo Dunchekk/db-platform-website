@@ -129,6 +129,7 @@ export async function markNotificationJobSent(id: number) {
         status: "SENT",
         sentAt: new Date(),
         lockedAt: null,
+        lastError: null,
       },
     });
 
