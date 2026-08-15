@@ -1,10 +1,15 @@
 import { $authHost } from ".";
 import {
+  AdminManualOrderStatus,
   AdminOrdersQuery,
   AdminOrdersResponse,
   AdminOrderShipment,
 } from "@/shared/types/admin-orders.types";
-import { ORDERS_URL, ORDER_RETRY_SHIPMENT_URL } from "./endpoints";
+import {
+  ORDERS_URL,
+  ORDER_RETRY_SHIPMENT_URL,
+  ORDER_STATUS_URL,
+} from "./endpoints";
 
 export const getAdminOrders = async (query: AdminOrdersQuery = {}) => {
   const params = new URLSearchParams();
@@ -27,6 +32,15 @@ export const retryOrderShipment = async (orderId: number) => {
   const response = await $authHost.post(ORDER_RETRY_SHIPMENT_URL(orderId));
 
   return response as AdminOrderShipment;
+};
+
+export const updateAdminOrderStatus = async (
+  orderId: number,
+  status: AdminManualOrderStatus
+) => {
+  await $authHost.patch(ORDER_STATUS_URL(orderId), {
+    status,
+  });
 };
 
 function appendQueryParam(
