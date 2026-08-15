@@ -1,5 +1,16 @@
 export type AdminOrderSortBy = "createdAt" | "total";
 export type AdminOrderSortDir = "asc" | "desc";
+export type AdminOrderStatus =
+  | "PENDING_PAYMENT"
+  | "PAID"
+  | "FULFILLMENT_PENDING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";
+export type AdminManualOrderStatus = Extract<
+  AdminOrderStatus,
+  "SHIPPED" | "DELIVERED" | "CANCELLED"
+>;
 
 export type AdminOrdersQuery = {
   page?: number;
@@ -41,7 +52,7 @@ export type AdminOrderShipment = {
 
 export type AdminOrder = {
   id: number;
-  status: string;
+  status: AdminOrderStatus;
   firstName: string;
   lastName: string;
   patronymic: string | null;
@@ -57,6 +68,7 @@ export type AdminOrder = {
   total: number;
   createdAt: string;
   updatedAt: string;
+  completedAt: string | null;
   items: AdminOrderItem[];
   currentPayment: AdminOrderPayment | null;
   shipment: AdminOrderShipment | null;
