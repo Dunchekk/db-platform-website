@@ -77,6 +77,7 @@ export default function M_AdminOrdersTable({
               </td>
               <td title="статус заказа">
                 <select
+                  className={cls.statusSelect}
                   value={
                     MANUAL_ORDER_STATUSES.includes(
                       order.status as AdminManualOrderStatus
