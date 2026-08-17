@@ -203,6 +203,7 @@ CDEK используется в четырех местах:
 | `GET`    | `/api/payment/order/:orderId/payment/:paymentId/status` | Проверка статуса оплаты               |
 | `POST`   | `/api/payment/webhook/youkassa/:secret`                 | YooKassa webhook                      |
 | `GET`    | `/api/orders`                                           | Таблица заказов, `ADMIN`              |
+| `PATCH`  | `/api/orders/:id/status`                                | Ручное изменение статуса заказа, `ADMIN` |
 
 ## Качество и надежность
 
@@ -345,7 +346,16 @@ Backup описан в [docs/backup-restore.md](docs/backup-restore.md). Скр�
 - архивирует загруженные изображения;
 - пишет manifest с commit и состоянием compose-сервисов;
 - умеет оставлять app-сервисы остановленными для безопасного deploy;
-- удаляет старые backup-папки по retention.
+- вызывает отдельный cleanup старых backup-папок по retention.
+
+Database retention cleanup запускается отдельно через backend CLI после сборки:
+
+```bash
+docker compose --env-file .env -f docker-compose.prod.yml run --rm backend node dist/src/scripts/retentionCleanup.js --dry-run
+docker compose --env-file .env -f docker-compose.prod.yml run --rm backend node dist/src/scripts/retentionCleanup.js --apply
+```
+
+При deploy этот database cleanup автоматически не запускается: сначала нужно проверить `--dry-run`.
 
 ## Структура проекта
 

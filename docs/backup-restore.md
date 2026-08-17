@@ -41,6 +41,44 @@ cd /opt/db-platform
 BACKUP_LEAVE_APP_STOPPED=1 ./scripts/backup-prod.sh
 ```
 
+## Cleanup backup-папок
+
+Backup cleanup можно запускать отдельно от создания нового backup:
+
+```bash
+cd /opt/db-platform
+./scripts/cleanup-backups.sh
+```
+
+По умолчанию удаляются только timestamp-папки вида `YYYY-MM-DD_HH-MM-SS` старше 14 дней внутри `/opt/db-platform/backups`.
+
+Retention можно поменять для одного запуска:
+
+```bash
+cd /opt/db-platform
+BACKUP_RETENTION_DAYS=30 ./scripts/cleanup-backups.sh
+```
+
+Этот cleanup автоматически вызывается внутри `backup-prod.sh`, поэтому при deploy он тоже выполняется после создания backup.
+
+## Database retention cleanup
+
+Database retention cleanup чистит старые неоплаченные заказы и устаревшие технические/персональные поля в БД. Он не запускается автоматически при deploy.
+
+Сначала всегда запускать dry-run:
+
+```bash
+cd /opt/db-platform
+docker compose --env-file .env -f docker-compose.prod.yml run --rm backend node dist/src/scripts/retentionCleanup.js --dry-run
+```
+
+Если summary ожидаемый, применить cleanup:
+
+```bash
+cd /opt/db-platform
+docker compose --env-file .env -f docker-compose.prod.yml run --rm backend node dist/src/scripts/retentionCleanup.js --apply
+```
+
 ## Restore
 
 Restore перезаписывает текущие production-данные. Сначала выбрать backup-папку:

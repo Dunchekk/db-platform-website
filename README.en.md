@@ -201,6 +201,7 @@ Main backend routes:
 | `GET`    | `/api/payment/order/:orderId/payment/:paymentId/status` | Check payment status            |
 | `POST`   | `/api/payment/webhook/youkassa/:secret`                 | YooKassa webhook                |
 | `GET`    | `/api/orders`                                           | Admin orders table, `ADMIN`     |
+| `PATCH`  | `/api/orders/:id/status`                                | Manual order status update, `ADMIN` |
 
 ## Quality And Reliability
 
@@ -343,7 +344,16 @@ Backup is documented in [docs/backup-restore.md](docs/backup-restore.md). The [s
 - archives uploaded images;
 - writes a manifest with commit and compose service state;
 - can leave app services stopped for safer deployment;
-- removes old backup folders according to retention.
+- calls the standalone cleanup for old backup folders.
+
+Database retention cleanup is a separate backend CLI command after build:
+
+```bash
+docker compose --env-file .env -f docker-compose.prod.yml run --rm backend node dist/src/scripts/retentionCleanup.js --dry-run
+docker compose --env-file .env -f docker-compose.prod.yml run --rm backend node dist/src/scripts/retentionCleanup.js --apply
+```
+
+Deployment does not run this database cleanup automatically: check `--dry-run` first.
 
 ## Project Structure
 
