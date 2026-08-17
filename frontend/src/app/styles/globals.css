@@ -5,7 +5,7 @@ html {
 
 body {
   color: var(--text-color-black);
-  font-family: "IBM PLex";
+  font-family: "IBM Plex";
   overflow-wrap: break-word;
   line-height: var(--text-line-height);
   width: 100vw;
