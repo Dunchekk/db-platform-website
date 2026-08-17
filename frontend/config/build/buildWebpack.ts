@@ -1,4 +1,5 @@
 import { Configuration } from "webpack";
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import { buildDevServer } from "./buildDevServer";
 import { buildLoaders } from "./buildLoaders";
 import { buildPlugins } from "./buildPlugins";
@@ -25,6 +26,11 @@ export function buildWebpack(options: BuildOptions): Configuration {
       clean: true,
     },
     plugins: buildPlugins(options),
+    optimization: isProd
+      ? {
+          minimizer: ["...", new CssMinimizerPlugin()],
+        }
+      : undefined,
     devServer: isDev ? buildDevServer(options) : undefined,
   };
 }
