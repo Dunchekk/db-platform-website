@@ -6,9 +6,16 @@ import {
   formatAdminOrderMoney,
 } from "@/shared/helpers/adminOrdersView";
 import type {
+  AdminManualOrderStatus,
   AdminOrder,
   AdminOrderSortBy,
 } from "@/shared/types/admin-orders.types";
+
+const MANUAL_ORDER_STATUSES: AdminManualOrderStatus[] = [
+  "SHIPPED",
+  "DELIVERED",
+  "CANCELLED",
+];
 
 type Props = {
   orders: AdminOrder[];
@@ -16,9 +23,11 @@ type Props = {
   sortBy: AdminOrderSortBy;
   sortDirLabel: string;
   retryingShipmentOrderId: number | null;
+  updatingStatusOrderId: number | null;
   onSort: (sortBy: AdminOrderSortBy) => void;
   onCopyTrackingNumber: (trackingNumber: string) => void;
   onRetryShipment: (orderId: number) => void;
+  onUpdateStatus: (orderId: number, status: AdminManualOrderStatus) => void;
 };
 
 export default function M_AdminOrdersTable({
@@ -27,9 +36,11 @@ export default function M_AdminOrdersTable({
   sortBy,
   sortDirLabel,
   retryingShipmentOrderId,
+  updatingStatusOrderId,
   onSort,
   onCopyTrackingNumber,
   onRetryShipment,
+  onUpdateStatus,
 }: Props) {
   return (
     <div className={cls.tableScroll}>
@@ -64,7 +75,38 @@ export default function M_AdminOrdersTable({
                   {formatAdminOrderDate(order.createdAt)}
                 </span>
               </td>
-              <td title="статус заказа">{order.status}</td>
+              <td title="статус заказа">
+                <select
+                  className={cls.statusSelect}
+                  value={
+                    MANUAL_ORDER_STATUSES.includes(
+                      order.status as AdminManualOrderStatus
+                    )
+                      ? order.status
+                      : ""
+                  }
+                  disabled={updatingStatusOrderId === order.id}
+                  onChange={(event) =>
+                    onUpdateStatus(
+                      order.id,
+                      event.target.value as AdminManualOrderStatus
+                    )
+                  }
+                  aria-label={`статус заказа #${order.id}`}
+                >
+                  <option value="">{order.status}</option>
+                  {MANUAL_ORDER_STATUSES.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+                {order.completedAt ? (
+                  <span className={cls.muted} title="дата завершения заказа">
+                    {formatAdminOrderDate(order.completedAt)}
+                  </span>
+                ) : null}
+              </td>
               <td>
                 <span title="клиент">
                   {order.lastName} {order.firstName} {order.patronymic ?? ""}

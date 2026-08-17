@@ -146,12 +146,16 @@ model Order {
 
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
+  completedAt        DateTime?
 
   items              OrderItem[]
   payments           Payment[]   @relation("OrderPayments")
   currentPayment     Payment?    @relation("OrderCurrentPayment", fields: [currentPaymentId], references: [id], onDelete: SetNull)
   shipments          Shipment[]
   notificationJobs   NotificationJob[]
+
+  @@index([status, createdAt])
+  @@index([completedAt])
 }
 
 model OrderItem {

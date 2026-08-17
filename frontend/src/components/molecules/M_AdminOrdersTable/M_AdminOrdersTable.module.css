@@ -68,6 +68,33 @@
   margin-top: calc(var(--space) * 0.5);
 }
 
+.statusSelect {
+  width: 100%;
+  min-width: 115px;
+  padding-top: calc(var(--space) * 0.25);
+  padding-bottom: calc(var(--space) * 0.25);
+  color: inherit;
+  background: rgba(255, 255, 255, 0.3);
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.statusSelect:focus {
+  outline: none;
+  border-top-color: black;
+  border-bottom-color: black;
+}
+
+.statusSelect:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.statusSelect + .muted {
+  margin-top: calc(var(--space) * 0.5);
+}
+
 .copyValue {
   all: unset;
   display: block;

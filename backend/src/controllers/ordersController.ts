@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { OrderStatus, Prisma } from "@prisma/client";
 import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../db";
 import ApiError from "../error/ApiError";
@@ -54,6 +54,7 @@ class OrdersController {
             total: true,
             createdAt: true,
             updatedAt: true,
+            completedAt: true,
             items: {
               orderBy: { id: "asc" },
               select: {
@@ -150,6 +151,66 @@ class OrdersController {
       return next(error);
     }
   }
+
+  async updateStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+      const orderId = parseIdParam(req.params.id);
+      const nextStatus = parseManualOrderStatus(req.body?.status);
+
+      const order = await prisma.order.findUnique({
+        where: {
+          id: orderId,
+        },
+        select: {
+          id: true,
+          completedAt: true,
+        },
+      });
+
+      if (!order) {
+        throw ApiError.notFound("Order not found");
+      }
+
+      const isTerminalStatus =
+        nextStatus === "DELIVERED" || nextStatus === "CANCELLED";
+
+      const updatedOrder = await prisma.order.update({
+        where: {
+          id: order.id,
+        },
+        data: {
+          status: nextStatus,
+          ...(isTerminalStatus
+            ? {
+                telegram: null,
+                completedAt: order.completedAt ?? new Date(),
+              }
+            : {}),
+        },
+      });
+
+      return res.json(updatedOrder);
+    } catch (error) {
+      return next(error);
+    }
+  }
+}
+
+const MANUAL_ORDER_STATUSES = new Set<OrderStatus>([
+  "SHIPPED",
+  "DELIVERED",
+  "CANCELLED",
+]);
+
+function parseManualOrderStatus(value: unknown): OrderStatus {
+  if (
+    typeof value !== "string" ||
+    !MANUAL_ORDER_STATUSES.has(value as OrderStatus)
+  ) {
+    throw ApiError.badRequest("status must be SHIPPED, DELIVERED or CANCELLED");
+  }
+
+  return value as OrderStatus;
 }
 
 function parsePositiveQueryInteger(

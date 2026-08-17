@@ -5,6 +5,11 @@ import checkRoleMiddleware from "../middleware/CheckRoleMiddleware";
 const ordersRouter = Router();
 
 ordersRouter.get("/", checkRoleMiddleware("ADMIN"), ordersController.getOrders);
+ordersRouter.patch(
+  "/:id/status",
+  checkRoleMiddleware("ADMIN"),
+  ordersController.updateStatus
+);
 ordersRouter.post(
   "/:id/retry-shipment",
   checkRoleMiddleware("ADMIN"),
