@@ -67,32 +67,6 @@
         }
       })();
     </script>
-    <script>
-      (function () {
-        try {
-          var el = document.getElementById("boot-loader");
-          if (!el) return;
-
-          var reduceMotionQuery =
-            window.matchMedia &&
-            window.matchMedia("(prefers-reduced-motion: reduce)");
-
-          if (reduceMotionQuery && reduceMotionQuery.matches) {
-            el.classList.add("is-visible");
-            return;
-          }
-
-          window.requestAnimationFrame(function () {
-            window.requestAnimationFrame(function () {
-              if (el.dataset.state === "hidden") return;
-              el.classList.add("is-visible");
-            });
-          });
-        } catch (e) {
-          // no-op
-        }
-      })();
-    </script>
     <style>
       #boot-loader {
         position: fixed;
@@ -136,7 +110,7 @@
       #boot-loader .bootLoaderOrbit {
         position: absolute;
         inset: 0;
-        animation: bootLoaderSpin 900ms linear infinite;
+        animation: bootLoaderSpin 1s ease infinite;
       }
 
       #boot-loader .bootLoaderOrbitDot {
@@ -166,6 +140,32 @@
         </div>
       </div>
     </div>
+    <script>
+      (function () {
+        try {
+          var el = document.getElementById("boot-loader");
+          if (!el) return;
+
+          var reduceMotionQuery =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)");
+
+          if (reduceMotionQuery && reduceMotionQuery.matches) {
+            el.classList.add("is-visible");
+            return;
+          }
+
+          window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(function () {
+              if (el.dataset.state === "hidden") return;
+              el.classList.add("is-visible");
+            });
+          });
+        } catch (e) {
+          // no-op
+        }
+      })();
+    </script>
     <div id="root"></div>
   </body>
 </html>
