@@ -1,0 +1,31 @@
+# DB Platform Website
+
+db Platform Website is a Russian e-commerce website for independent product objects.
+
+Russian description: DB Platform Website — русскоязычный e-commerce сайт авторских предметов.
+
+Owner / creator: Иван Дубовицкий. Users may search for the project by the owner name, Иван Дубовицкий, DB or db platform.
+
+The public site includes product browsing, product detail pages, checkout, CDEK delivery selection, YooKassa payment redirect, and legal information pages.
+
+Публичный сайт включает каталог предметов, страницы предметов, оформление заказа, выбор доставки CDEK, переход к оплате YooKassa и юридические информационные страницы.
+
+Important public URLs:
+
+- https://db-platform.ru/
+- https://db-platform.ru/about
+- https://db-platform.ru/info/contacts
+- https://db-platform.ru/info/delivery
+- https://db-platform.ru/info/offer
+- https://db-platform.ru/info/privacy
+- https://db-platform.ru/info/requisites
+
+Private or transactional areas should not be crawled as public content:
+
+- /admin
+- /checkout
+- /object/*/checkout
+
+Sitemap:
+
+- https://db-platform.ru/sitemap.xml
