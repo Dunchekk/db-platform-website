@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router";
 
 import cls from "@/layers/DetailsLayer/DetailsLayer.module.css";
@@ -8,9 +8,14 @@ import { useObjects } from "@/features/objects/objects.store";
 import A_Button from "@/components/atoms/A_Button/A_Button";
 import { useCheckoutItems } from "@/features/checkout/checkout.store";
 import { useAuth } from "@/features/auth/auth.store";
-import M_ItemModal from "@/components/molecules/M_ItemModal/M_ItemModal";
-import M_PhotoesModal from "@/components/molecules/M_PhotoesModal/M_PhotoesModal";
 import A_Toast from "@/components/atoms/A_Toast/A_Toast";
+
+const M_ItemModal = lazy(
+  () => import("@/components/molecules/M_ItemModal/M_ItemModal")
+);
+const M_PhotoesModal = lazy(
+  () => import("@/components/molecules/M_PhotoesModal/M_PhotoesModal")
+);
 
 const DetailsLayer = () => {
   const { id } = useParams();
@@ -210,24 +215,28 @@ const DetailsLayer = () => {
           /* ------------------- */
         )}
         {isAuth && object ? (
-          <M_ItemModal
-            className={cls.modal}
-            objectId={Number(effectiveObjectId)}
-            showToast={showToast}
-            hidden={!isChangeObjectModalOpen}
-            key={object.id}
-            setIsModuleOpen={openChangeObjectModal}
-          />
-        ) : null}
+          <Suspense fallback={null}>
+            {isChangeObjectModalOpen ? (
+              <M_ItemModal
+                className={cls.modal}
+                objectId={Number(effectiveObjectId)}
+                showToast={showToast}
+                hidden={false}
+                key={object.id}
+                setIsModuleOpen={openChangeObjectModal}
+              />
+            ) : null}
 
-        {isAuth && object ? (
-          <M_PhotoesModal
-            className={cls.modal}
-            objectId={Number(effectiveObjectId)}
-            hidden={!isChangePhotoesModalOpen}
-            key={object.id}
-            setIsModuleOpen={openChangePhotoesModal}
-          />
+            {isChangePhotoesModalOpen ? (
+              <M_PhotoesModal
+                className={cls.modal}
+                objectId={Number(effectiveObjectId)}
+                hidden={false}
+                key={object.id}
+                setIsModuleOpen={openChangePhotoesModal}
+              />
+            ) : null}
+          </Suspense>
         ) : null}
       </div>
       {toast ? (

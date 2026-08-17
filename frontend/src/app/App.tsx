@@ -1,4 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 
 import { LayersStack } from "@/features/layer-switching/LayersStack";
@@ -16,9 +23,12 @@ import A_Loader from "@/components/atoms/A_Loader/A_Loader";
 import { getItems } from "@/shared/api/objects";
 import { useObjects } from "@/features/objects/objects.store";
 import A_Toast from "@/components/atoms/A_Toast/A_Toast";
-import M_AdminOrdersWidget from "@/components/molecules/M_AdminOrdersWidget/M_AdminOrdersWidget";
 import { useCheckoutItems } from "@/features/checkout/checkout.store";
 import type { DbObject } from "@/shared/types/object.types";
+
+const M_AdminOrdersWidget = lazy(
+  () => import("@/components/molecules/M_AdminOrdersWidget/M_AdminOrdersWidget")
+);
 
 export default function App() {
   const navigate = useNavigate();
@@ -124,7 +134,11 @@ export default function App() {
       <A_Circle />
       {openedLayers.includes("objects") && <A_CardButton />}
       <A_Cursor />
-      {isAuth ? <M_AdminOrdersWidget /> : null}
+      {isAuth ? (
+        <Suspense fallback={null}>
+          <M_AdminOrdersWidget />
+        </Suspense>
+      ) : null}
       {loading ? <A_Loader /> : null}
       {toast ? (
         <A_Toast

@@ -1,8 +1,10 @@
-import Admin from "@/admin/Admin";
 import App from "@/app/App";
+import { lazy, Suspense } from "react";
 import { RouteObject } from "react-router";
 
 type Routes = RouteObject[];
+
+const Admin = lazy(() => import("@/admin/Admin"));
 
 const baseRoutes: Routes = [
   {
@@ -35,7 +37,11 @@ const baseRoutes: Routes = [
   },
   {
     path: "/admin",
-    element: <Admin />,
+    element: (
+      <Suspense fallback={null}>
+        <Admin />
+      </Suspense>
+    ),
   },
 ];
 
