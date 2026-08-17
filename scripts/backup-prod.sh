@@ -20,7 +20,6 @@ ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 COMPOSE_FILE="${COMPOSE_FILE:-$ROOT_DIR/docker-compose.prod.yml}"
 ENV_FILE="${ENV_FILE:-$ROOT_DIR/.env}"
 BACKUP_ROOT="${BACKUP_ROOT:-$ROOT_DIR/backups}"
-RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-14}"
 LEAVE_APP_STOPPED="${BACKUP_LEAVE_APP_STOPPED:-0}"
 # Обычный режим: после backup сервисы запускаются обратно.
 # Deploy-режим: оставить backend и notification-worker остановленными до миграций.
@@ -106,20 +105,8 @@ else
   trap - EXIT
 fi
 
-# Удаляем только timestamp-папки backup старше RETENTION_DAYS.
-# Шаблон имени ограничивает rm только нашими backup-директориями.
-if [[ "$RETENTION_DAYS" =~ ^[0-9]+$ ]]; then
-  echo "Delete backups older than $RETENTION_DAYS days"
-  find "$BACKUP_ROOT" \
-    -mindepth 1 \
-    -maxdepth 1 \
-    -type d \
-    -name '????-??-??_??-??-??' \
-    -mtime +"$RETENTION_DAYS" \
-    -exec rm -rf {} +
-else
-  echo "Skip retention cleanup: BACKUP_RETENTION_DAYS is not a number"
-fi
+# Backup cleanup живет в отдельном скрипте - может быть запущен отдельно
+"$ROOT_DIR/scripts/cleanup-backups.sh"
 
 echo "Backup completed: $BACKUP_DIR"
 
